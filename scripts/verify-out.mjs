@@ -183,20 +183,34 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
     errors.push(`${lang} docs root omits the LCA task-route marker`);
     continue;
   }
+  if (!html.includes('data-docs-portal-map-v2="two-lca-journeys"')) {
+    errors.push(`${lang} docs root omits the two-journey map marker`);
+    continue;
+  }
+  if (!html.includes('data-docs-journey="lca-study"') || !html.includes('data-docs-journey="data-production"')) {
+    errors.push(`${lang} docs root omits one of the two LCA journeys`);
+    continue;
+  }
+  for (const tidasTarget of ['tidas-schema-intro', 'tidas-schema-validation']) {
+    const href = `https://tidas.tiangong.earth/${lang}/docs/core-modules/schema/${tidasTarget}/`;
+    if (!html.includes(`href="${href}"`)) {
+      errors.push(`${lang} docs root omits locale-aligned TIDAS target ${href}`);
+    }
+  }
   docsPortalCount += 1;
 }
-if (docsPortalCount === 4) passed.push('four-locale LCA docs task hubs');
+if (docsPortalCount === 4) passed.push('four-locale two-journey LCA docs hubs');
 
-// 11. 快速开始分类首页提供真实的首次使用路线和当前任务入口。
+// 11. 快速开始分类首页提供一条固定 golden path、完成标准和恢复入口。
 const quickStartTargets = [
   'quick-start/first-login',
   'quick-start/demonstrations',
   'user-guide/data',
-  'user-guide/create-my-data',
+  'user-guide/data-use',
   'user-guide/lcia',
   'user-guide/account-profile',
+  'user-guide/search',
   'faq',
-  'overview/resources-and-support',
 ];
 let quickStartGuideCount = 0;
 for (const lang of ['zh', 'en', 'de', 'fr']) {
@@ -206,7 +220,19 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
     continue;
   }
   if (!html.includes('data-quick-start-map="three-stage-onboarding"')) {
-    errors.push(`${lang} quick-start root omits the three-stage onboarding marker`);
+    errors.push(`${lang} quick-start root omits the compatibility onboarding marker`);
+    continue;
+  }
+  if (!html.includes('data-quick-start-map-v2="golden-path"')) {
+    errors.push(`${lang} quick-start root omits the golden-path marker`);
+    continue;
+  }
+  if (!html.includes('data-quick-start-prerequisites') || !html.includes('data-quick-start-sample') || !html.includes('data-quick-start-recovery')) {
+    errors.push(`${lang} quick-start root omits prerequisites, sample, or recovery guidance`);
+    continue;
+  }
+  if (html.includes('data-quick-start-branch')) {
+    errors.push(`${lang} quick-start root still exposes a branching first-task route`);
     continue;
   }
   if (!html.includes('data-quick-start-primary')) {
@@ -220,7 +246,7 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
   }
   quickStartGuideCount += 1;
 }
-if (quickStartGuideCount === 4) passed.push('four-locale guided quick-start routes');
+if (quickStartGuideCount === 4) passed.push('four-locale golden-path quick-start routes');
 
 // 12. 分类首页目录从本地化 page tree 自动派生；meta 增删或排序无需再手改首页。
 const categoryDirectorySource = fs.readFileSync(path.join(ROOT, 'components', 'category-directory.tsx'), 'utf8');
@@ -240,7 +266,7 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
   for (const base of directoryBases) {
     const metaFile = lang === 'zh' ? 'meta.json' : `meta.${lang}.json`;
     const meta = load(`content/docs/${base}/${metaFile}`);
-    const targets = meta.pages.filter((page) => page !== 'index');
+    const targets = meta.pages.filter((page) => page !== 'index' && !/^---.*---$/.test(page));
     const html = read(`${lang}/docs/${base}/index.html`);
     if (!html.includes(`data-category-directory="${base}"`)) {
       errors.push(`${lang}/${base} omits its automatic category-directory marker`);

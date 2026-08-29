@@ -10,7 +10,7 @@ type Language = 'zh' | 'en' | 'de' | 'fr';
 interface HomePath {
   title: string;
   description: string;
-  slug: string;
+  anchor: 'journey-lca-study' | 'journey-data-production';
 }
 
 interface HomeCopy {
@@ -34,21 +34,19 @@ interface HomeCopy {
 const copy: Record<Language, HomeCopy> = {
   zh: {
     eyebrow: 'TianGong LCA · 开源生命周期评价平台',
-    title: '从数据到模型，完成生命周期评价',
-    titleLines: ['从数据到模型，', '完成生命周期评价'],
+    title: '连接数据、模型与可审查的影响证据',
+    titleLines: ['连接数据、模型与', '可审查的影响证据'],
     description:
-      'TianGong LCA 将标准化数据、过程建模、LCIA 计算与团队评审串联起来。文档按真实任务组织，帮助你从查找数据、建立模型一路到理解结果。',
-    primary: '从快速入门开始',
-    secondary: '浏览任务指南',
-    pathsEyebrow: '任务指南',
-    pathsTitle: '从要完成的工作开始',
-    pathsDescription: '选择一个任务，直接进入对应步骤、界面说明和结果检查。',
-    openGuide: '打开指南',
+      'TianGong LCA 串联标准化数据、过程建模、LCIA 计算证据与团队评审。平台支持研究工作流，但不会替代目标与范围定义、专业解释或最终报告责任。',
+    primary: '完成 10–15 分钟快速开始',
+    secondary: '打开文档路线图',
+    pathsEyebrow: '两条用户旅程',
+    pathsTitle: '你要开展研究，还是生产数据？',
+    pathsDescription: '首页只帮助选择方向；完整阶段、平台边界和具体页面统一由文档路线图承接。',
+    openGuide: '查看完整旅程',
     paths: [
-      { title: '查找和使用数据', description: '搜索数据空间，查看数据集，并引用或复制所需记录。', slug: 'user-guide/data' },
-      { title: '创建数据与模型', description: '建立流和过程，连接交换，准备可计算的模型。', slug: 'user-guide/create-my-data' },
-      { title: '计算和解读 LCIA', description: '运行影响评价，查看过程或模型的结果。', slug: 'user-guide/lcia' },
-      { title: '评审与团队协作', description: '提交数据、处理反馈，并在团队数据空间协作。', slug: 'user-guide/data-review' },
+      { title: '开展一项 LCA 研究', description: '从目标与范围，经清单、产品系统和 LCIA，走到解释与报告。', anchor: 'journey-lca-study' },
+      { title: '生产可复用的 LCA 数据', description: '从来源证据，经 TIDAS 表达、校验与评审，走到发布和交换。', anchor: 'journey-data-production' },
     ],
     technicalLabel: '面向开发者与运维',
     integrationAction: '连接 MCP、CLI 与 OpenAPI',
@@ -67,20 +65,18 @@ const copy: Record<Language, HomeCopy> = {
   },
   en: {
     eyebrow: 'TianGong LCA · Open life cycle assessment platform',
-    title: 'Find data, build models, and complete an LCA',
+    title: 'Connect data, models, and reviewable impact evidence',
     description:
-      'TianGong LCA brings standardised data, process modelling, LCIA, and team review into one workspace. Follow the documentation by task, from finding data to interpreting results.',
-    primary: 'Complete the first steps',
-    secondary: 'Browse task guides',
-    pathsEyebrow: 'Task guides',
-    pathsTitle: 'Start with the task you need to complete',
-    pathsDescription: 'Choose a task to open the relevant steps, interface guidance, and result checks.',
-    openGuide: 'Open guide',
+      'TianGong LCA connects standardised data, process modelling, LCIA calculation evidence, and team review. It supports the study workflow without replacing goal-and-scope choices, expert interpretation, or responsibility for the final report.',
+    primary: 'Complete the 10–15 minute Quick Start',
+    secondary: 'Open the documentation map',
+    pathsEyebrow: 'Two user journeys',
+    pathsTitle: 'Are you conducting a study or producing data?',
+    pathsDescription: 'The home page only helps you choose a direction; the documentation map owns stages, boundaries, and detailed destinations.',
+    openGuide: 'View the full journey',
     paths: [
-      { title: 'Find and use data', description: 'Search data spaces, inspect datasets, and reference or copy the records you need.', slug: 'user-guide/data' },
-      { title: 'Create data and models', description: 'Build flows and processes, connect exchanges, and prepare a model for assessment.', slug: 'user-guide/create-my-data' },
-      { title: 'Calculate and interpret LCIA', description: 'Run impact assessment and read results for processes and models.', slug: 'user-guide/lcia' },
-      { title: 'Review and collaborate', description: 'Submit contributions for review, address feedback, and work in team data spaces.', slug: 'user-guide/data-review' },
+      { title: 'Conduct an LCA study', description: 'Move from goal and scope through inventory, product system, and LCIA to interpretation and reporting.', anchor: 'journey-lca-study' },
+      { title: 'Produce reusable LCA data', description: 'Move from source evidence through TIDAS expression, validation, and review to publication and exchange.', anchor: 'journey-data-production' },
     ],
     technicalLabel: 'For developers and operators',
     integrationAction: 'Connect MCP, CLI, and OpenAPI',
@@ -99,20 +95,18 @@ const copy: Record<Language, HomeCopy> = {
   },
   de: {
     eyebrow: 'TianGong LCA · Offene Plattform für Ökobilanzen',
-    title: 'Daten finden, Modelle erstellen und eine Ökobilanz durchführen',
+    title: 'Daten, Modelle und prüfbare Wirkungsnachweise verbinden',
     description:
-      'TianGong LCA vereint standardisierte Daten, Prozessmodellierung, Wirkungsabschätzung und Teamprüfung in einem Arbeitsbereich. Folgen Sie der Dokumentation nach Aufgabe – von der Datensuche bis zur Interpretation der Ergebnisse.',
-    primary: 'Erste Schritte durchführen',
-    secondary: 'Aufgabenguides ansehen',
-    pathsEyebrow: 'Aufgabenguides',
-    pathsTitle: 'Beginnen Sie mit Ihrer aktuellen Aufgabe',
-    pathsDescription: 'Wählen Sie eine Aufgabe, um direkt die passenden Schritte, Bedienhinweise und Ergebniskontrollen zu öffnen.',
-    openGuide: 'Guide öffnen',
+      'TianGong LCA verbindet standardisierte Daten, Prozessmodellierung, LCIA-Berechnungsnachweise und Teamprüfung. Die Plattform unterstützt die Studie, ersetzt aber weder Ziel-und-Umfang-Entscheidungen noch fachliche Interpretation oder Berichtsverantwortung.',
+    primary: 'Schnellstart in 10–15 Minuten',
+    secondary: 'Dokumentationskarte öffnen',
+    pathsEyebrow: 'Zwei Nutzerreisen',
+    pathsTitle: 'Führen Sie eine Studie durch oder erzeugen Sie Daten?',
+    pathsDescription: 'Die Startseite hilft nur bei der Richtungswahl; Stufen, Grenzen und Detailziele stehen in der Dokumentationskarte.',
+    openGuide: 'Vollständige Reise ansehen',
     paths: [
-      { title: 'Daten finden und verwenden', description: 'Datenräume durchsuchen, Datensätze prüfen und benötigte Einträge referenzieren oder kopieren.', slug: 'user-guide/data' },
-      { title: 'Daten und Modelle erstellen', description: 'Flüsse und Prozesse anlegen, Austausche verknüpfen und ein berechenbares Modell vorbereiten.', slug: 'user-guide/create-my-data' },
-      { title: 'LCIA berechnen und auswerten', description: 'Wirkungsabschätzungen durchführen und Ergebnisse für Prozesse oder Modelle auswerten.', slug: 'user-guide/lcia' },
-      { title: 'Prüfen und zusammenarbeiten', description: 'Daten zur Prüfung einreichen, Rückmeldungen bearbeiten und in Team-Datenräumen arbeiten.', slug: 'user-guide/data-review' },
+      { title: 'Eine Ökobilanz durchführen', description: 'Von Ziel und Umfang über Sachbilanz, Produktsystem und LCIA zu Interpretation und Bericht.', anchor: 'journey-lca-study' },
+      { title: 'Wiederverwendbare LCA-Daten erzeugen', description: 'Von Quellenbelegen über TIDAS-Ausdruck, Validierung und Prüfung zu Veröffentlichung und Austausch.', anchor: 'journey-data-production' },
     ],
     technicalLabel: 'Für Entwicklung und Betrieb',
     integrationAction: 'MCP, CLI und OpenAPI anbinden',
@@ -131,20 +125,18 @@ const copy: Record<Language, HomeCopy> = {
   },
   fr: {
     eyebrow: 'TianGong LCA · Plateforme ouverte d’analyse du cycle de vie',
-    title: 'Trouvez des données, construisez des modèles et réalisez une ACV',
+    title: 'Relier données, modèles et preuves d’impact vérifiables',
     description:
-      'TianGong LCA réunit données normalisées, modélisation de procédés, évaluation des impacts et revue en équipe dans un même espace de travail. Suivez la documentation par tâche, de la recherche de données à l’interprétation des résultats.',
-    primary: 'Effectuer les premières étapes',
-    secondary: 'Parcourir les guides',
-    pathsEyebrow: 'Guides par tâche',
-    pathsTitle: 'Commencez par la tâche à accomplir',
-    pathsDescription: 'Choisissez une tâche pour accéder directement aux étapes, aux repères d’interface et aux contrôles de résultat.',
-    openGuide: 'Ouvrir le guide',
+      'TianGong LCA relie données normalisées, modélisation, preuves de calcul ACVI et revue en équipe. La plateforme soutient l’étude sans remplacer les choix d’objectif et de champ, l’interprétation experte ni la responsabilité du rapport final.',
+    primary: 'Démarrage rapide en 10–15 minutes',
+    secondary: 'Ouvrir la carte documentaire',
+    pathsEyebrow: 'Deux parcours utilisateurs',
+    pathsTitle: 'Menez-vous une étude ou produisez-vous des données ?',
+    pathsDescription: 'L’accueil aide seulement à choisir une direction ; la carte documentaire porte les étapes, limites et destinations détaillées.',
+    openGuide: 'Voir le parcours complet',
     paths: [
-      { title: 'Trouver et utiliser des données', description: 'Recherchez dans les espaces de données, examinez les jeux de données et référencez ou copiez les enregistrements utiles.', slug: 'user-guide/data' },
-      { title: 'Créer des données et des modèles', description: 'Créez des flux et des procédés, reliez les échanges et préparez un modèle calculable.', slug: 'user-guide/create-my-data' },
-      { title: 'Calculer et interpréter l’ACVI', description: 'Lancez l’évaluation des impacts et interprétez les résultats d’un procédé ou d’un modèle.', slug: 'user-guide/lcia' },
-      { title: 'Réviser et collaborer', description: 'Soumettez des données à révision, traitez les retours et travaillez dans les espaces d’équipe.', slug: 'user-guide/data-review' },
+      { title: 'Mener une étude ACV', description: 'De l’objectif et du champ à l’interprétation et au rapport via inventaire, système de produit et ACVI.', anchor: 'journey-lca-study' },
+      { title: 'Produire des données ACV réutilisables', description: 'Des preuves sources à la publication et l’échange via TIDAS, validation et revue.', anchor: 'journey-data-production' },
     ],
     technicalLabel: 'Pour les équipes techniques',
     integrationAction: 'Connecter MCP, la CLI et OpenAPI',
@@ -201,7 +193,7 @@ export function DocsHome({ lang }: { lang: string }) {
                 </Link>
                 <Link
                   className={`${buttonVariants({ variant: 'outline' })} min-h-12 min-w-[11.5rem] justify-between rounded-[2px] border-fd-border bg-transparent px-4 py-3 text-sm font-medium transition-colors duration-100 max-[40rem]:w-full`}
-                  href={`/${language}/docs/user-guide/`}
+                  href={`/${language}/docs/`}
                 >
                   {content.secondary}
                 </Link>
@@ -221,13 +213,13 @@ export function DocsHome({ lang }: { lang: string }) {
               </h2>
               <p className="m-0 text-base leading-[1.65] text-fd-muted-foreground">{content.pathsDescription}</p>
             </div>
-            <Cards className="grid-cols-4 gap-3 max-[68rem]:grid-cols-2 max-[40rem]:grid-cols-1">
+            <Cards className="grid-cols-2 gap-3 max-[40rem]:grid-cols-1">
               {content.paths.map((path) => (
                 <Card
                   className="grid min-h-56 content-start gap-2.5 rounded-[2px] border-fd-border bg-fd-card p-5 text-inherit transition-colors duration-100 hover:border-fd-primary hover:bg-fd-accent max-[40rem]:min-h-48 [&>div:last-child]:self-end [&_h3]:m-0 [&_h3]:text-lg [&_h3]:leading-[1.35] [&_h3]:font-semibold [&_h3]:tracking-[-0.02em] [&_p]:m-0! [&_p]:text-sm [&_p]:leading-[1.6] [&_p]:text-fd-muted-foreground"
                   description={path.description}
-                  href={`/${language}/docs/${path.slug}/`}
-                  key={path.slug}
+                  href={`/${language}/docs/#${path.anchor}`}
+                  key={path.anchor}
                   title={path.title}
                 >
                   <span className="inline-flex items-center gap-2 text-xs font-medium text-fd-primary">
