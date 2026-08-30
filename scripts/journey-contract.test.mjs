@@ -50,6 +50,7 @@ test('beginner entry copy uses task language and explains LCA terms in context',
   assert.match(home, /What do you want to do\?/u);
   assert.match(home, /Was möchten Sie tun\?/u);
   assert.match(home, /Que souhaitez-vous faire \?/u);
+  assert.doesNotMatch(home, /className="block whitespace-nowrap" data-title-line/u);
   assert.match(portal, /按 TIDAS 格式整理数据/u);
   assert.match(portal, /Organise data in the TIDAS format/u);
   assert.match(portal, /Daten im TIDAS-Format strukturieren/u);

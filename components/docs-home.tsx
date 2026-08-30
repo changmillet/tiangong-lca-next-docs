@@ -174,7 +174,7 @@ export function DocsHome({ lang }: { lang: string }) {
               <p className="docs-eyebrow">{content.eyebrow}</p>
               <h1 className="m-0 max-w-[14ch] text-[clamp(2.5rem,4.2vw,4rem)] leading-[1.08] font-[560] tracking-[-0.045em] text-balance max-[40rem]:max-w-full max-[40rem]:text-[clamp(2.2rem,10vw,2.8rem)] max-[40rem]:tracking-[-0.04em]" data-controlled-title>
                 {Array.isArray(content.title)
-                  ? content.title.map((line) => <span className="block whitespace-nowrap" data-title-line key={line}>{line}</span>)
+                  ? content.title.map((line) => <span className="block" data-title-line key={line}>{line}</span>)
                   : content.title}
               </h1>
               <p className="mt-6 mb-0 max-w-[39rem] text-[clamp(1rem,1.35vw,1.125rem)] leading-[1.7] text-fd-muted-foreground">
