@@ -47,7 +47,7 @@ const copy: Record<Language, PortalCopy> = {
     eyebrow: '文档导航',
     title: '常见任务指南',
     description:
-      '以下任务路径汇总相关的方法说明、平台操作与详细文档。首次使用可先阅读“快速开始”；具体界面功能见“用户指南”。',
+      '以下内容按常见任务分类，汇总相关的方法说明、平台操作和详细文档。首次使用可先阅读“快速开始”；具体界面功能见“用户指南”。',
     boundaryLabels: {
       method: '方法要求',
       platform: '平台操作',
@@ -98,7 +98,7 @@ const copy: Record<Language, PortalCopy> = {
     eyebrow: 'Documentation guide',
     title: 'Guides for common tasks',
     description:
-      'The task paths below bring together the relevant methodology, platform actions, and detailed documentation. New users can begin with Quick Start; the User Guide explains individual screens.',
+      'The guidance below is organized by common task and brings together relevant methodology, platform actions, and detailed documentation. New users can begin with Quick Start; the User Guide explains individual screens.',
     boundaryLabels: { method: 'Method choices', platform: 'Platform action', specification: 'TIDAS data format', shared: 'Platform action + professional judgement' },
     tasks: [
       {
@@ -137,7 +137,7 @@ const copy: Record<Language, PortalCopy> = {
   },
   de: {
     eyebrow: 'Dokumentationsübersicht', title: 'Anleitungen für häufige Aufgaben',
-    description: 'Die folgenden Aufgabenpfade bündeln die zugehörigen methodischen Hinweise, Aktionen in der Plattform und Detaildokumente. Für die erste Nutzung empfiehlt sich der Schnellstart; einzelne Ansichten erklärt das Benutzerhandbuch.',
+    description: 'Die folgenden Hinweise sind nach häufigen Aufgaben gegliedert und bündeln methodische Erläuterungen, Aktionen in der Plattform und weiterführende Dokumentation. Für die erste Nutzung empfiehlt sich der Schnellstart; einzelne Ansichten erklärt das Benutzerhandbuch.',
     boundaryLabels: { method: 'Methodische Festlegung', platform: 'Aktion in der Plattform', specification: 'TIDAS-Datenformat', shared: 'Plattform + fachliche Beurteilung' },
     tasks: [
       {
@@ -176,7 +176,7 @@ const copy: Record<Language, PortalCopy> = {
   },
   fr: {
     eyebrow: 'Guide de la documentation', title: 'Guides pour les tâches courantes',
-    description: 'Les tâches ci-dessous regroupent les indications méthodologiques, les opérations dans la plateforme et la documentation détaillée. Les nouveaux utilisateurs peuvent commencer par le démarrage rapide ; le guide utilisateur décrit les différents écrans.',
+    description: 'Les indications ci-dessous sont organisées par tâche courante et regroupent les explications méthodologiques, les opérations dans la plateforme et la documentation détaillée. Les nouveaux utilisateurs peuvent commencer par le démarrage rapide ; le guide utilisateur décrit les différents écrans.',
     boundaryLabels: { method: 'Choix méthodologique', platform: 'Action dans la plateforme', specification: 'Format de données TIDAS', shared: 'Plateforme + jugement professionnel' },
     tasks: [
       {

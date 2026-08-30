@@ -28,6 +28,7 @@ test('docs hub uses formal task-navigation headings in every locale', () => {
   assert.match(source, /eyebrow: 'Dokumentationsübersicht', title: 'Anleitungen für häufige Aufgaben'/u);
   assert.match(source, /eyebrow: 'Guide de la documentation', title: 'Guides pour les tâches courantes'/u);
   assert.doesNotMatch(source, /你想完成什么？按步骤查看说明|What do you want to do\? Follow the steps|Was möchten Sie tun\? Folgen Sie den Schritten|Que souhaitez-vous faire \? Suivez les étapes/u);
+  assert.doesNotMatch(source, /任务路径|task paths|Aufgabenpfade/u);
 });
 
 test('beginner entry copy uses task language and explains LCA terms in context', () => {
