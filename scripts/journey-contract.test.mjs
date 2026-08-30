@@ -20,6 +20,16 @@ test('docs hub exposes both task paths and sends beginners to locale-aligned TID
   }
 });
 
+test('docs hub uses formal task-navigation headings in every locale', () => {
+  const source = read('components/docs-portal.tsx');
+
+  assert.match(source, /eyebrow: '文档导航',\n    title: '常见任务指南'/u);
+  assert.match(source, /eyebrow: 'Documentation guide',\n    title: 'Guides for common tasks'/u);
+  assert.match(source, /eyebrow: 'Dokumentationsübersicht', title: 'Anleitungen für häufige Aufgaben'/u);
+  assert.match(source, /eyebrow: 'Guide de la documentation', title: 'Guides pour les tâches courantes'/u);
+  assert.doesNotMatch(source, /你想完成什么？按步骤查看说明|What do you want to do\? Follow the steps|Was möchten Sie tun\? Folgen Sie den Schritten|Que souhaitez-vous faire \? Suivez les étapes/u);
+});
+
 test('beginner entry copy uses task language and explains LCA terms in context', () => {
   const home = read('components/docs-home.tsx');
   const portal = read('components/docs-portal.tsx');
