@@ -6,18 +6,17 @@ import test from 'node:test';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 
-test('docs hub exposes both task paths and locale-aligned TIDAS deep links', () => {
+test('docs hub exposes both task paths and sends beginners to locale-aligned TIDAS overviews', () => {
   const source = read('components/docs-portal.tsx');
 
   assert.match(source, /data-docs-portal-map-v2="two-lca-journeys"/);
   assert.match(source, /'lca-study'/);
   assert.match(source, /'data-production'/);
-  assert.match(source, /core-modules\/schema\/tidas-schema-intro/);
-  assert.match(source, /core-modules\/schema\/tidas-schema-validation/);
+  assert.doesNotMatch(source, /core-modules\/schema\/tidas-schema-(?:intro|validation)/);
 
   for (const language of ['zh', 'en', 'de', 'fr']) {
-    assert.match(source, new RegExp(`tidasHref\\('${language}', 'core-modules/schema/tidas-schema-intro'\\)`));
-    assert.match(source, new RegExp(`tidasHref\\('${language}', 'core-modules/schema/tidas-schema-validation'\\)`));
+    assert.match(source, new RegExp(`tidasHref\\('${language}', 'core-modules'\\)`));
+    assert.match(source, new RegExp(`tidasHref\\('${language}', 'tool'\\)`));
   }
 });
 
@@ -41,6 +40,10 @@ test('beginner entry copy uses task language and explains LCA terms in context',
     read('content/docs/quick-start/demonstrations.en.mdx'),
     read('content/docs/quick-start/demonstrations.de.mdx'),
     read('content/docs/quick-start/demonstrations.fr.mdx'),
+    read('content/docs/user-guide/overview.mdx'),
+    read('content/docs/user-guide/overview.en.mdx'),
+    read('content/docs/user-guide/overview.de.mdx'),
+    read('content/docs/user-guide/overview.fr.mdx'),
   ].join('\n');
 
   assert.match(home, /你现在想完成什么？/u);
@@ -56,8 +59,27 @@ test('beginner entry copy uses task language and explains LCA terms in context',
 
   assert.doesNotMatch(
     entryCopy,
-    /先选旅程|两条用户旅程|TIDAS 表达|样例语境|书面观察路线|因子证据|检查定量基础|可解释的 LCIA 证据|数据生产旅程|失败恢复|路线不分叉|Two user journeys|Choose a journey|TIDAS expression|Written observation route|factor evidence|Failure recovery|route does not branch|Zwei Nutzerreisen|Reise wählen|TIDAS-Ausdruck|Schriftliche Beobachtungsroute|Faktornachweise|Deux parcours utilisateurs|Choisissez un parcours|Expression TIDAS|Parcours d'observation écrit|preuves des facteurs/u,
+    /先选旅程|两条用户旅程|TIDAS 表达|样例语境|书面观察路线|因子证据|检查定量基础|可解释的 LCIA 证据|数据生产旅程|失败恢复|路线不分叉|Two user journeys|Choose a journey|Recommended journey|data-production journey|TIDAS expression|Written observation route|factor evidence|Failure recovery|route does not branch|Zwei Nutzerreisen|Reise wählen|Datenproduktionsreise|TIDAS-Ausdruck|Schriftliche Beobachtungsroute|Faktornachweise|Deux parcours utilisateurs|Choisissez un parcours|Parcours recommandé|parcours étude|Expression TIDAS|Parcours d'observation écrit|preuves des facteurs/u,
   );
+
+  const glossaryLinks = {
+    zh: '[术语与缩写](/zh/docs/overview/glossary/)',
+    en: '[Terms and abbreviations](/en/docs/overview/glossary/)',
+    de: '[Begriffe und Abkürzungen](/de/docs/overview/glossary/)',
+    fr: '[Termes et abréviations](/fr/docs/overview/glossary/)',
+  };
+  for (const [language, link] of Object.entries(glossaryLinks)) {
+    const suffix = language === 'zh' ? '' : `.${language}`;
+    assert.match(read(`content/docs/user-guide/overview${suffix}.mdx`), new RegExp(link.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u'));
+  }
+});
+
+test('resource page uses locale-aligned TIDAS documentation links', () => {
+  for (const language of ['zh', 'en', 'de', 'fr']) {
+    const suffix = language === 'zh' ? '' : `.${language}`;
+    const source = read(`content/docs/overview/resources-and-support${suffix}.mdx`);
+    assert.match(source, new RegExp(`https://tidas\\.tiangong\\.earth/${language}/docs/`, 'u'));
+  }
 });
 
 test('all locales publish one central glossary that separates kinds of assurance', () => {

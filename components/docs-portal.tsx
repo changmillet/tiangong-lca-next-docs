@@ -77,8 +77,8 @@ const copy: Record<Language, PortalCopy> = {
         ariaLabel: '整理并发布 LCA 数据的五个步骤：记录来源和适用范围、按 TIDAS 格式整理数据、检查文件结构和引用、提交评审并发布、导入导出与复用。',
         steps: [
           { code: '01', title: '记录来源和适用范围', description: '记录原始资料、地区、年份、技术、假设和数据质量说明。', href: docsHref('zh', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: '按 TIDAS 格式整理数据', description: '用统一字段记录过程、流、单位和来源，并正确连接它们。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: '检查文件结构和引用', description: '检查必填内容、字段类型和引用是否完整；通过结构检查不等于方法正确。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '02', title: '按 TIDAS 格式整理数据', description: '先了解过程、流、单位和来源怎样按统一结构整理；需要逐字段说明时再进入详细规范。', href: tidasHref('zh', 'core-modules'), boundary: 'specification' },
+          { code: '03', title: '检查文件结构和引用', description: '了解工具怎样检查必填内容和引用，以及结构检查不能代替哪些专业判断。', href: tidasHref('zh', 'tool'), boundary: 'specification' },
           { code: '04', title: '提交评审并发布', description: '在平台提交，回应意见；是否通过由评审管理员决定。', href: docsHref('zh', 'user-guide/data-review'), boundary: 'platform' },
           { code: '05', title: '导入、导出与复用', description: '用 TIDAS ZIP 文件导入或导出数据，并查看处理进度。', href: docsHref('zh', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
@@ -119,8 +119,8 @@ const copy: Record<Language, PortalCopy> = {
         ariaLabel: 'Five steps for organising and publishing LCA data: record sources and intended use, organise data in the TIDAS format, check file structure and references, submit for review and publication, import export and reuse.',
         steps: [
           { code: '01', title: 'Record sources and intended use', description: 'Record original sources, region, year, technology, assumptions, and a data-quality description.', href: docsHref('en', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Organise data in the TIDAS format', description: 'Use consistent fields for processes, flows, units, and sources, and link them correctly.', href: tidasHref('en', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Check file structure and references', description: 'Check required content, field types, and references. Passing a structure check does not prove the method is correct.', href: tidasHref('en', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '02', title: 'Organise data in the TIDAS format', description: 'First learn how processes, flows, units, and sources fit into one shared structure; open the field-level specification only when needed.', href: tidasHref('en', 'core-modules'), boundary: 'specification' },
+          { code: '03', title: 'Check file structure and references', description: 'Learn what the tools check and which professional judgements still require a person.', href: tidasHref('en', 'tool'), boundary: 'specification' },
           { code: '04', title: 'Submit for review and publication', description: 'Submit in the platform and respond to comments; the review administrator makes the final decision.', href: docsHref('en', 'user-guide/data-review'), boundary: 'platform' },
           { code: '05', title: 'Import, export, and reuse', description: 'Use TIDAS ZIP files to import or export data and view processing progress.', href: docsHref('en', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
@@ -158,8 +158,8 @@ const copy: Record<Language, PortalCopy> = {
         ariaLabel: 'Fünf Schritte zum Strukturieren und Veröffentlichen von LCA-Daten: Quellen und Anwendungsbereich festhalten, Daten im TIDAS-Format strukturieren, Dateistruktur und Verweise prüfen, zur Prüfung und Veröffentlichung einreichen, importieren exportieren und wiederverwenden.',
         steps: [
           { code: '01', title: 'Quellen und Anwendungsbereich festhalten', description: 'Originalquellen, Region, Jahr, Technologie, Annahmen und Datenqualität beschreiben.', href: docsHref('de', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Daten im TIDAS-Format strukturieren', description: 'Prozesse, Flüsse, Einheiten und Quellen in einheitlichen Feldern erfassen und richtig verknüpfen.', href: tidasHref('de', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Dateistruktur und Verweise prüfen', description: 'Pflichtinhalte, Feldtypen und Verweise prüfen. Eine bestandene Strukturprüfung belegt keine korrekte Methode.', href: tidasHref('de', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '02', title: 'Daten im TIDAS-Format strukturieren', description: 'Zuerst verstehen, wie Prozesse, Flüsse, Einheiten und Quellen in einer gemeinsamen Struktur zusammengehören; Feldregeln erst bei Bedarf öffnen.', href: tidasHref('de', 'core-modules'), boundary: 'specification' },
+          { code: '03', title: 'Dateistruktur und Verweise prüfen', description: 'Erfahren, was die Werkzeuge prüfen und welche fachlichen Beurteilungen weiterhin Menschen treffen müssen.', href: tidasHref('de', 'tool'), boundary: 'specification' },
           { code: '04', title: 'Zur Prüfung und Veröffentlichung einreichen', description: 'In der Plattform einreichen und Kommentare beantworten; die Prüfadministration entscheidet abschließend.', href: docsHref('de', 'user-guide/data-review'), boundary: 'platform' },
           { code: '05', title: 'Importieren, exportieren und wiederverwenden', description: 'Daten mit TIDAS-ZIP-Dateien importieren oder exportieren und den Fortschritt ansehen.', href: docsHref('de', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
@@ -197,8 +197,8 @@ const copy: Record<Language, PortalCopy> = {
         ariaLabel: 'Cinq étapes pour structurer et publier des données ACV : consigner les sources et le domaine d’utilisation, structurer les données au format TIDAS, contrôler la structure du fichier et les références, soumettre pour revue et publication, importer exporter et réutiliser.',
         steps: [
           { code: '01', title: 'Consigner les sources et le domaine d’utilisation', description: 'Décrire les sources d’origine, la région, l’année, la technologie, les hypothèses et la qualité des données.', href: docsHref('fr', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Structurer les données au format TIDAS', description: 'Utiliser des champs communs pour les procédés, flux, unités et sources, puis les relier correctement.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Contrôler la structure et les références', description: 'Contrôler le contenu requis, les types de champs et les références. Réussir ce contrôle de structure ne prouve pas que la méthode est correcte.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '02', title: 'Structurer les données au format TIDAS', description: 'Comprendre d’abord comment procédés, flux, unités et sources s’organisent dans une structure commune ; consulter les règles de champ au besoin.', href: tidasHref('fr', 'core-modules'), boundary: 'specification' },
+          { code: '03', title: 'Contrôler la structure et les références', description: 'Comprendre ce que les outils contrôlent et quels jugements professionnels restent humains.', href: tidasHref('fr', 'tool'), boundary: 'specification' },
           { code: '04', title: 'Soumettre pour revue et publication', description: 'Soumettre dans la plateforme et répondre aux commentaires ; l’administrateur de revue prend la décision finale.', href: docsHref('fr', 'user-guide/data-review'), boundary: 'platform' },
           { code: '05', title: 'Importer, exporter et réutiliser', description: 'Importer ou exporter les données avec des fichiers TIDAS ZIP et consulter l’avancement du traitement.', href: docsHref('fr', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],

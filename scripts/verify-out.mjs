@@ -191,8 +191,8 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
     errors.push(`${lang} docs root omits one of the two LCA journeys`);
     continue;
   }
-  for (const tidasTarget of ['tidas-schema-intro', 'tidas-schema-validation']) {
-    const href = `https://tidas.tiangong.earth/${lang}/docs/core-modules/schema/${tidasTarget}/`;
+  for (const tidasTarget of ['core-modules', 'tool']) {
+    const href = `https://tidas.tiangong.earth/${lang}/docs/${tidasTarget}/`;
     if (!html.includes(`href="${href}"`)) {
       errors.push(`${lang} docs root omits locale-aligned TIDAS target ${href}`);
     }

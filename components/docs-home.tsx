@@ -15,8 +15,7 @@ interface HomePath {
 
 interface HomeCopy {
   eyebrow: string;
-  title: string;
-  titleLines?: readonly [string, string];
+  title: string | readonly [string, string];
   description: string;
   primary: string;
   secondary: string;
@@ -34,8 +33,7 @@ interface HomeCopy {
 const copy: Record<Language, HomeCopy> = {
   zh: {
     eyebrow: 'TianGong LCA · 开源生命周期评价平台',
-    title: '查找数据、建立模型并计算产品的环境影响',
-    titleLines: ['查找数据、建立模型', '计算产品的环境影响'],
+    title: ['查找数据、建立模型并', '计算产品的环境影响'],
     description:
       'TianGong LCA 是一个生命周期评价（LCA）平台。你可以查找过程数据，把生产环节连接成产品系统，并计算气候变化等潜在环境影响。平台帮助组织计算和评审；研究目的、系统边界和最终结论仍需由使用者确定。',
     primary: '完成 10–15 分钟快速开始',
@@ -175,8 +173,8 @@ export function DocsHome({ lang }: { lang: string }) {
             <div className="min-w-0 max-w-[38rem] max-[68rem]:max-w-[48rem]" data-hero-copy>
               <p className="docs-eyebrow">{content.eyebrow}</p>
               <h1 className="m-0 max-w-[14ch] text-[clamp(2.5rem,4.2vw,4rem)] leading-[1.08] font-[560] tracking-[-0.045em] text-balance max-[40rem]:max-w-full max-[40rem]:text-[clamp(2.2rem,10vw,2.8rem)] max-[40rem]:tracking-[-0.04em]" data-controlled-title>
-                {content.titleLines
-                  ? content.titleLines.map((line) => <span className="block whitespace-nowrap" data-title-line key={line}>{line}</span>)
+                {Array.isArray(content.title)
+                  ? content.title.map((line) => <span className="block whitespace-nowrap" data-title-line key={line}>{line}</span>)
                   : content.title}
               </h1>
               <p className="mt-6 mb-0 max-w-[39rem] text-[clamp(1rem,1.35vw,1.125rem)] leading-[1.7] text-fd-muted-foreground">
