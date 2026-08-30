@@ -1,7 +1,7 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-08-30"
-lastReviewedCommit: "7c8086dbd261b2ed09811c94e2e9d3273fe8ebf0"
+lastReviewedCommit: "344e4a67dfd5de3b79e61128f42a70f522ec1770"
 reviewNote: "Reviewed for PR #160 follow-up: beginner task copy and the localized ILCD-grounded glossary remain covered by the existing public-content and site-structure rules."
 lastReviewedNote: "No routing, ownership, coverage, locale, screenshot, or validation rule change is required; the glossary is governed under content/docs/** and its entry components and tests under the existing site-structure rule."
 # Review note, 2026-08-30: plain-language task navigation, first-use copy, and glossary assurance boundaries are covered across components, locale families, content contracts, and output validation.

@@ -37,7 +37,7 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: 7c8086dbd261b2ed09811c94e2e9d3273fe8ebf0
+lastReviewedCommit: 344e4a67dfd5de3b79e61128f42a70f522ec1770
 lastReviewedNote: "Reviewed for PR #160 follow-up: beginner-facing task copy and the four-locale ILCD-grounded glossary change public explanation, not routes, runtime, ownership, or compatibility markers."
 related:
   - .docpact/config.yaml

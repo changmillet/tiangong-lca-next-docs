@@ -32,7 +32,7 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-08-30
-lastReviewedCommit: bf67951ec243cad8ed37255330a8ca22e3821a53
+lastReviewedCommit: 344e4a67dfd5de3b79e61128f42a70f522ec1770
 lastReviewedNote: "Reviewed for PR #160 follow-up: browser proof now covers mobile title wrapping and localized TIDAS overview entry targets; toolchain and publication validation are unchanged."
 related:
   - AGENTS.md
