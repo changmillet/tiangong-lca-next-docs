@@ -3,7 +3,7 @@ import Link from 'next/link';
 type Language = 'zh' | 'en' | 'de' | 'fr';
 type Boundary = 'method' | 'platform' | 'specification' | 'shared';
 
-interface JourneyStep {
+interface TaskStep {
   code: string;
   title: string;
   description: string;
@@ -11,12 +11,12 @@ interface JourneyStep {
   boundary: Boundary;
 }
 
-interface Journey {
+interface TaskPath {
   code: string;
   title: string;
   description: string;
   ariaLabel: string;
-  steps: [JourneyStep, JourneyStep, JourneyStep, JourneyStep, JourneyStep];
+  steps: [TaskStep, TaskStep, TaskStep, TaskStep, TaskStep];
 }
 
 interface PortalLink {
@@ -31,7 +31,7 @@ interface PortalCopy {
   title: string;
   description: string;
   boundaryLabels: Record<Boundary, string>;
-  journeys: [Journey, Journey];
+  tasks: [TaskPath, TaskPath];
   referenceEyebrow: string;
   referenceTitle: string;
   referenceDescription: string;
@@ -44,173 +44,173 @@ const docsHref = (language: Language, slug: string) => `/${language}/docs/${slug
 
 const copy: Record<Language, PortalCopy> = {
   zh: {
-    eyebrow: '文档路线图',
-    title: '先选旅程，再按阶段找证据',
+    eyebrow: '按任务查文档',
+    title: '你想完成什么？按步骤查看说明',
     description:
-      '这里是文档枢纽：两条旅程说明“接下来读什么”，快速开始负责第一次实操，用户指南负责具体界面。标签同时标明工作发生在平台内、平台外，还是属于方法背景。',
+      '选择最接近当前工作的任务。每一步会告诉你要做什么、在哪里完成，并链接到详细说明。快速开始适合第一次使用；用户指南解释具体界面。',
     boundaryLabels: {
-      method: '方法背景',
-      platform: '平台内',
-      specification: 'TIDAS 规范',
-      shared: '平台内 + 平台外',
+      method: '方法要求',
+      platform: '平台操作',
+      specification: 'TIDAS 数据格式',
+      shared: '平台操作 + 人工判断',
     },
-    journeys: [
+    tasks: [
       {
-        code: 'JOURNEY 01',
-        title: '开展一项 LCA 研究',
+        code: '任务 01',
+        title: '分析一个产品的环境影响',
         description:
-          '以研究问题为主线。平台承载数据、产品系统和计算证据；目标与范围、结果解释和报告仍由研究者依据适用方法与项目语境完成。',
-        ariaLabel: 'LCA 研究旅程：目标与范围、清单与数据、产品系统、LCIA、解释与报告。',
+          '先说明为什么计算、计算什么和计算到哪里，再准备数据、建立产品系统、计算并解释结果。平台提供数据和计算工具，方法选择与结论仍由研究者负责。',
+        ariaLabel: '分析产品环境影响的五个步骤：确定目的与范围、收集并检查数据、建立产品系统、计算环境影响、解释结果并报告。',
         steps: [
-          { code: '01', title: '目标与范围', description: '定义预期用途、功能单位、系统边界和质量要求。', href: docsHref('zh', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: '清单与数据', description: '检索数据空间，检查来源、代表性和可用范围。', href: docsHref('zh', 'user-guide/data'), boundary: 'platform' },
-          { code: '03', title: '产品系统', description: '连接过程与交换，核对参考流和定量关系。', href: docsHref('zh', 'user-guide/create-my-data'), boundary: 'platform' },
-          { code: '04', title: 'LCIA', description: '选择方法，查看因子证据、覆盖完整性与结果。', href: docsHref('zh', 'user-guide/lcia'), boundary: 'platform' },
-          { code: '05', title: '解释与报告', description: '用平台证据分析贡献；结论、敏感性与报告由研究者负责。', href: docsHref('zh', 'user-guide/process-analysis'), boundary: 'shared' },
+          { code: '01', title: '确定目的与范围', description: '说明为什么开展研究、结果给谁用，并确定功能单位和系统边界。', href: docsHref('zh', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: '收集并检查数据', description: '查找过程数据，查看来源以及技术、地区和时间代表性。', href: docsHref('zh', 'user-guide/data'), boundary: 'platform' },
+          { code: '03', title: '建立产品系统', description: '连接生产过程及其投入产出，核对基准流和数量关系。', href: docsHref('zh', 'user-guide/create-my-data'), boundary: 'platform' },
+          { code: '04', title: '计算环境影响', description: '选择生命周期影响评价（LCIA）方法，查看结果并检查缺失因子。', href: docsHref('zh', 'user-guide/lcia'), boundary: 'platform' },
+          { code: '05', title: '解释结果并报告', description: '分析主要贡献和敏感性，说明局限，形成结论和报告。', href: docsHref('zh', 'user-guide/process-analysis'), boundary: 'shared' },
         ],
       },
       {
-        code: 'JOURNEY 02',
-        title: '生产可复用的 LCA 数据',
+        code: '任务 02',
+        title: '整理并发布一份 LCA 数据',
         description:
-          '以可追溯数据资产为主线。从外部证据到 TIDAS 表达、校验和平台评审，最后形成可发布、复用与交换的数据包。',
-        ariaLabel: 'LCA 数据生产旅程：证据、TIDAS 表达、校验、评审与发布、复用与交换。',
+          '把一项生产或服务活动的来源、投入、产出和适用范围按统一方式记录，检查后提交评审，让其他人能够查找、理解和复用。',
+        ariaLabel: '整理并发布 LCA 数据的五个步骤：记录来源和适用范围、按 TIDAS 格式整理数据、检查文件结构和引用、提交评审并发布、导入导出与复用。',
         steps: [
-          { code: '01', title: '证据', description: '保留来源、边界、假设、代理依据和数据质量判断。', href: docsHref('zh', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'TIDAS 表达', description: '按 TIDAS 数据集结构表达字段、引用和定量关系。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: '校验', description: '用 TIDAS Schema 检查结构与约束；修复后再提交。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
-          { code: '04', title: '评审与发布', description: '平台内提交审核、处理建议，由审核管理员作最终决定。', href: docsHref('zh', 'user-guide/data-review'), boundary: 'platform' },
-          { code: '05', title: '复用与交换', description: '通过 TIDAS ZIP 导入、导出并跟踪后台任务。', href: docsHref('zh', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
+          { code: '01', title: '记录来源和适用范围', description: '记录原始资料、地区、年份、技术、假设和数据质量说明。', href: docsHref('zh', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: '按 TIDAS 格式整理数据', description: '用统一字段记录过程、流、单位和来源，并正确连接它们。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
+          { code: '03', title: '检查文件结构和引用', description: '检查必填内容、字段类型和引用是否完整；通过结构检查不等于方法正确。', href: tidasHref('zh', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '04', title: '提交评审并发布', description: '在平台提交，回应意见；是否通过由评审管理员决定。', href: docsHref('zh', 'user-guide/data-review'), boundary: 'platform' },
+          { code: '05', title: '导入、导出与复用', description: '用 TIDAS ZIP 文件导入或导出数据，并查看处理进度。', href: docsHref('zh', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
       },
     ],
-    referenceEyebrow: '按需查阅',
-    referenceTitle: '从路线进入具体参考',
-    referenceDescription: '首次实操、界面操作、系统连接和部署说明各自保持独立职责。',
+    referenceEyebrow: '进一步了解',
+    referenceTitle: '需要时查看这些说明',
+    referenceDescription: '第一次操作、专业术语、具体界面和系统连接分别有独立说明。',
     references: [
-      { code: 'START', title: '10–15 分钟快速开始', description: '用一条固定样例路线完成首次实操。', href: docsHref('zh', 'quick-start') },
-      { code: 'GUIDE', title: '用户指南', description: '按数据、建模、分析、评审与权限查界面操作。', href: docsHref('zh', 'user-guide') },
-      { code: 'CONNECT', title: '集成与扩展', description: 'MCP、CLI、OpenAPI 与外部工具入口。', href: docsHref('zh', 'integration') },
-      { code: 'OPERATE', title: '部署与开发', description: '私有化部署、开发环境与文档同步。', href: docsHref('zh', 'deploy-and-dev') },
+      { code: '开始', title: '10–15 分钟快速开始', description: '按五个步骤查看一个公开过程的环境影响结果。', href: docsHref('zh', 'quick-start') },
+      { code: '术语', title: '术语与缩写', description: '集中解释 LCA、功能单位、系统边界、LCI、LCIA、评审和数据质量。', href: docsHref('zh', 'overview/glossary') },
+      { code: '指南', title: '用户指南', description: '按数据、建模、分析、评审与权限查界面操作。', href: docsHref('zh', 'user-guide') },
+      { code: '连接', title: '集成与扩展', description: 'MCP、CLI、OpenAPI 与外部工具入口。', href: docsHref('zh', 'integration') },
     ],
   },
   en: {
-    eyebrow: 'Documentation map',
-    title: 'Choose a journey, then follow the evidence',
+    eyebrow: 'Find docs by task',
+    title: 'What do you want to do? Follow the steps',
     description:
-      'This page is the documentation hub: the two journeys tell you what to read next, Quick Start owns the first hands-on session, and the User Guide owns interface detail. Labels show whether work happens in the platform, outside it, or in methodology guidance.',
-    boundaryLabels: { method: 'Method context', platform: 'In platform', specification: 'TIDAS specification', shared: 'In + outside platform' },
-    journeys: [
+      'Choose the task closest to your work. Each step says what to do, where it happens, and where to find details. Quick Start is for first use; the User Guide explains individual screens.',
+    boundaryLabels: { method: 'Method choices', platform: 'Platform action', specification: 'TIDAS data format', shared: 'Platform action + professional judgement' },
+    tasks: [
       {
-        code: 'JOURNEY 01', title: 'Conduct an LCA study',
-        description: 'Follow the study question. The platform holds data, product systems, and calculation evidence; practitioners remain responsible for goal and scope, interpretation, and reporting under the applicable method and study context.',
-        ariaLabel: 'LCA study journey: goal and scope, inventory and data, product system, LCIA, interpretation and reporting.',
+        code: 'TASK 01', title: 'Assess a product’s environmental impacts',
+        description: 'Start by defining why you are calculating, what is included, and where the study stops. Then prepare data, build a product system, calculate impacts, and interpret the results. The platform supplies data and calculation tools; practitioners remain responsible for method choices and conclusions.',
+        ariaLabel: 'Five steps for assessing a product: define goal and scope, collect and check data, build the product system, calculate environmental impacts, interpret and report.',
         steps: [
-          { code: '01', title: 'Goal and scope', description: 'Define intended use, functional unit, system boundary, and quality needs.', href: docsHref('en', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Inventory and data', description: 'Search data spaces and assess provenance, representativeness, and permitted use.', href: docsHref('en', 'user-guide/data'), boundary: 'platform' },
-          { code: '03', title: 'Product system', description: 'Connect processes and exchanges; check reference flows and quantities.', href: docsHref('en', 'user-guide/create-my-data'), boundary: 'platform' },
-          { code: '04', title: 'LCIA', description: 'Choose a method and inspect factor evidence, coverage, and results.', href: docsHref('en', 'user-guide/lcia'), boundary: 'platform' },
-          { code: '05', title: 'Interpret and report', description: 'Use platform evidence for contribution analysis; own conclusions, sensitivity, and reporting.', href: docsHref('en', 'user-guide/process-analysis'), boundary: 'shared' },
+          { code: '01', title: 'Define goal and scope', description: 'State why the study is being done and who will use it; define the functional unit and system boundary.', href: docsHref('en', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Collect and check data', description: 'Find process data and check its sources and technological, geographical, and time representativeness.', href: docsHref('en', 'user-guide/data'), boundary: 'platform' },
+          { code: '03', title: 'Build the product system', description: 'Connect processes and their inputs and outputs; check reference flows and quantities.', href: docsHref('en', 'user-guide/create-my-data'), boundary: 'platform' },
+          { code: '04', title: 'Calculate environmental impacts', description: 'Choose a life cycle impact assessment (LCIA) method, inspect the results, and check for missing factors.', href: docsHref('en', 'user-guide/lcia'), boundary: 'platform' },
+          { code: '05', title: 'Interpret and report', description: 'Analyse major contributions and sensitivity, state limitations, and form conclusions and a report.', href: docsHref('en', 'user-guide/process-analysis'), boundary: 'shared' },
         ],
       },
       {
-        code: 'JOURNEY 02', title: 'Produce reusable LCA data',
-        description: 'Follow the data asset from external evidence through TIDAS expression, validation, and platform review to publication, reuse, and exchange.',
-        ariaLabel: 'LCA data-production journey: evidence, TIDAS expression, validation, review and publication, reuse and exchange.',
+        code: 'TASK 02', title: 'Organise and publish LCA data',
+        description: 'Record the sources, inputs, outputs, and intended use of a production or service activity in a consistent form. Check it and submit it for review so others can find, understand, and reuse it.',
+        ariaLabel: 'Five steps for organising and publishing LCA data: record sources and intended use, organise data in the TIDAS format, check file structure and references, submit for review and publication, import export and reuse.',
         steps: [
-          { code: '01', title: 'Evidence', description: 'Retain sources, boundaries, assumptions, proxy rationale, and quality judgments.', href: docsHref('en', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'TIDAS expression', description: 'Express fields, references, and quantities using TIDAS dataset structures.', href: tidasHref('en', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Validate', description: 'Check structure and constraints with the TIDAS Schema; repair before submission.', href: tidasHref('en', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
-          { code: '04', title: 'Review and publish', description: 'Submit in the platform, respond to advice, and await the review admin’s final decision.', href: docsHref('en', 'user-guide/data-review'), boundary: 'platform' },
-          { code: '05', title: 'Reuse and exchange', description: 'Import and export TIDAS ZIP packages and follow background tasks.', href: docsHref('en', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
+          { code: '01', title: 'Record sources and intended use', description: 'Record original sources, region, year, technology, assumptions, and a data-quality description.', href: docsHref('en', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Organise data in the TIDAS format', description: 'Use consistent fields for processes, flows, units, and sources, and link them correctly.', href: tidasHref('en', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
+          { code: '03', title: 'Check file structure and references', description: 'Check required content, field types, and references. Passing a structure check does not prove the method is correct.', href: tidasHref('en', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '04', title: 'Submit for review and publication', description: 'Submit in the platform and respond to comments; the review administrator makes the final decision.', href: docsHref('en', 'user-guide/data-review'), boundary: 'platform' },
+          { code: '05', title: 'Import, export, and reuse', description: 'Use TIDAS ZIP files to import or export data and view processing progress.', href: docsHref('en', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
       },
     ],
-    referenceEyebrow: 'Use as needed', referenceTitle: 'Open the detailed reference',
-    referenceDescription: 'First use, interface operations, integrations, and deployment each have one clear home.',
+    referenceEyebrow: 'Learn more', referenceTitle: 'Open these guides when needed',
+    referenceDescription: 'First use, terminology, individual screens, and system connections each have a dedicated guide.',
     references: [
-      { code: 'START', title: '10–15 minute Quick Start', description: 'Complete one fixed sample route in your first session.', href: docsHref('en', 'quick-start') },
+      { code: 'START', title: '10–15 minute Quick Start', description: 'Follow five steps to view the environmental-impact results of one open process.', href: docsHref('en', 'quick-start') },
+      { code: 'TERMS', title: 'Terms and abbreviations', description: 'Definitions for LCA, functional unit, system boundary, LCI, LCIA, review, and data quality.', href: docsHref('en', 'overview/glossary') },
       { code: 'GUIDE', title: 'User Guide', description: 'Find interface guidance by data, modelling, analysis, review, and access.', href: docsHref('en', 'user-guide') },
       { code: 'CONNECT', title: 'Integrations and extensions', description: 'MCP, CLI, OpenAPI, and external tool entry points.', href: docsHref('en', 'integration') },
-      { code: 'OPERATE', title: 'Deployment and development', description: 'Self-hosting, development setup, and docs synchronisation.', href: docsHref('en', 'deploy-and-dev') },
     ],
   },
   de: {
-    eyebrow: 'Dokumentationskarte', title: 'Reise wählen und den Nachweisen folgen',
-    description: 'Diese Seite ist der Dokumentations-Hub: Zwei Reisen zeigen den nächsten Leseschritt, der Schnellstart führt durch die erste praktische Sitzung und das Benutzerhandbuch erklärt die Oberfläche. Kennzeichnungen trennen Plattform, externe Arbeit und Methodenhintergrund.',
-    boundaryLabels: { method: 'Methodenkontext', platform: 'In der Plattform', specification: 'TIDAS-Spezifikation', shared: 'In + außerhalb der Plattform' },
-    journeys: [
+    eyebrow: 'Dokumente nach Aufgabe', title: 'Was möchten Sie tun? Folgen Sie den Schritten',
+    description: 'Wählen Sie die Aufgabe, die Ihrer Arbeit am nächsten kommt. Jeder Schritt erklärt, was zu tun ist, wo es geschieht und wo Details stehen. Der Schnellstart ist für die erste Nutzung; das Benutzerhandbuch erklärt einzelne Ansichten.',
+    boundaryLabels: { method: 'Methodische Festlegung', platform: 'Aktion in der Plattform', specification: 'TIDAS-Datenformat', shared: 'Plattform + fachliche Beurteilung' },
+    tasks: [
       {
-        code: 'REISE 01', title: 'Eine Ökobilanz durchführen',
-        description: 'Folgen Sie der Untersuchungsfrage. Die Plattform verwaltet Daten, Produktsysteme und Berechnungsnachweise; Ziel und Umfang, Interpretation und Bericht bleiben unter der anwendbaren Methode in Verantwortung der Fachperson.',
-        ariaLabel: 'Ökobilanz-Reise: Ziel und Umfang, Sachbilanz und Daten, Produktsystem, LCIA, Interpretation und Bericht.',
+        code: 'AUFGABE 01', title: 'Umweltwirkungen eines Produkts untersuchen',
+        description: 'Legen Sie zuerst fest, warum gerechnet wird, was einbezogen wird und wo die Untersuchung endet. Danach bereiten Sie Daten vor, erstellen das Produktsystem, berechnen Wirkungen und werten die Ergebnisse aus. Die Plattform stellt Daten und Rechenwerkzeuge bereit; Methodenwahl und Schlussfolgerungen bleiben in fachlicher Verantwortung.',
+        ariaLabel: 'Fünf Schritte zur Untersuchung eines Produkts: Ziel und Untersuchungsrahmen festlegen, Daten sammeln und prüfen, Produktsystem erstellen, Umweltwirkungen berechnen, Ergebnisse auswerten und berichten.',
         steps: [
-          { code: '01', title: 'Ziel und Umfang', description: 'Zweck, funktionelle Einheit, Systemgrenze und Qualitätsbedarf festlegen.', href: docsHref('de', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Sachbilanz und Daten', description: 'Datenräume durchsuchen; Herkunft, Repräsentativität und Nutzung prüfen.', href: docsHref('de', 'user-guide/data'), boundary: 'platform' },
-          { code: '03', title: 'Produktsystem', description: 'Prozesse und Austausche verbinden; Referenzflüsse und Mengen prüfen.', href: docsHref('de', 'user-guide/create-my-data'), boundary: 'platform' },
-          { code: '04', title: 'LCIA', description: 'Methode wählen und Faktornachweise, Abdeckung und Ergebnisse prüfen.', href: docsHref('de', 'user-guide/lcia'), boundary: 'platform' },
-          { code: '05', title: 'Interpretieren und berichten', description: 'Plattformnachweise analysieren; Schlussfolgerung, Sensitivität und Bericht verantworten.', href: docsHref('de', 'user-guide/process-analysis'), boundary: 'shared' },
+          { code: '01', title: 'Ziel und Untersuchungsrahmen festlegen', description: 'Zweck und Zielgruppe nennen sowie funktionelle Einheit und Systemgrenze bestimmen.', href: docsHref('de', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Daten sammeln und prüfen', description: 'Prozessdaten finden und Quellen sowie technische, geografische und zeitliche Repräsentativität prüfen.', href: docsHref('de', 'user-guide/data'), boundary: 'platform' },
+          { code: '03', title: 'Produktsystem erstellen', description: 'Prozesse mit ihren Inputs und Outputs verbinden; Referenzflüsse und Mengen prüfen.', href: docsHref('de', 'user-guide/create-my-data'), boundary: 'platform' },
+          { code: '04', title: 'Umweltwirkungen berechnen', description: 'Eine Methode der Wirkungsabschätzung (LCIA) wählen, Ergebnisse ansehen und fehlende Faktoren prüfen.', href: docsHref('de', 'user-guide/lcia'), boundary: 'platform' },
+          { code: '05', title: 'Auswerten und berichten', description: 'Wesentliche Beiträge und Sensitivität untersuchen, Grenzen benennen und Schlussfolgerungen berichten.', href: docsHref('de', 'user-guide/process-analysis'), boundary: 'shared' },
         ],
       },
       {
-        code: 'REISE 02', title: 'Wiederverwendbare LCA-Daten erzeugen',
-        description: 'Folgen Sie dem Datenobjekt von externen Nachweisen über TIDAS-Ausdruck, Validierung und Plattformprüfung bis zu Veröffentlichung, Wiederverwendung und Austausch.',
-        ariaLabel: 'LCA-Datenproduktionsreise: Nachweise, TIDAS-Ausdruck, Validierung, Prüfung und Veröffentlichung, Wiederverwendung und Austausch.',
+        code: 'AUFGABE 02', title: 'LCA-Daten strukturieren und veröffentlichen',
+        description: 'Erfassen Sie Quellen, Inputs, Outputs und den Anwendungsbereich einer Produktions- oder Dienstleistungsaktivität einheitlich. Prüfen Sie die Daten und reichen Sie sie zur fachlichen Prüfung ein, damit andere sie finden, verstehen und wiederverwenden können.',
+        ariaLabel: 'Fünf Schritte zum Strukturieren und Veröffentlichen von LCA-Daten: Quellen und Anwendungsbereich festhalten, Daten im TIDAS-Format strukturieren, Dateistruktur und Verweise prüfen, zur Prüfung und Veröffentlichung einreichen, importieren exportieren und wiederverwenden.',
         steps: [
-          { code: '01', title: 'Nachweise', description: 'Quellen, Grenzen, Annahmen, Proxy-Begründung und Qualitätsurteile festhalten.', href: docsHref('de', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'TIDAS-Ausdruck', description: 'Felder, Referenzen und Mengen in TIDAS-Datensatzstrukturen ausdrücken.', href: tidasHref('de', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Validieren', description: 'Struktur und Regeln mit dem TIDAS-Schema prüfen; Fehler vor Einreichung beheben.', href: tidasHref('de', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
-          { code: '04', title: 'Prüfen und veröffentlichen', description: 'In der Plattform einreichen, Hinweise bearbeiten und Admin-Entscheidung abwarten.', href: docsHref('de', 'user-guide/data-review'), boundary: 'platform' },
-          { code: '05', title: 'Wiederverwenden und austauschen', description: 'TIDAS-ZIP-Pakete importieren/exportieren und Hintergrundaufgaben verfolgen.', href: docsHref('de', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
+          { code: '01', title: 'Quellen und Anwendungsbereich festhalten', description: 'Originalquellen, Region, Jahr, Technologie, Annahmen und Datenqualität beschreiben.', href: docsHref('de', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Daten im TIDAS-Format strukturieren', description: 'Prozesse, Flüsse, Einheiten und Quellen in einheitlichen Feldern erfassen und richtig verknüpfen.', href: tidasHref('de', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
+          { code: '03', title: 'Dateistruktur und Verweise prüfen', description: 'Pflichtinhalte, Feldtypen und Verweise prüfen. Eine bestandene Strukturprüfung belegt keine korrekte Methode.', href: tidasHref('de', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '04', title: 'Zur Prüfung und Veröffentlichung einreichen', description: 'In der Plattform einreichen und Kommentare beantworten; die Prüfadministration entscheidet abschließend.', href: docsHref('de', 'user-guide/data-review'), boundary: 'platform' },
+          { code: '05', title: 'Importieren, exportieren und wiederverwenden', description: 'Daten mit TIDAS-ZIP-Dateien importieren oder exportieren und den Fortschritt ansehen.', href: docsHref('de', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
       },
     ],
-    referenceEyebrow: 'Bei Bedarf', referenceTitle: 'Detaillierte Referenz öffnen',
-    referenceDescription: 'Erste Nutzung, Oberfläche, Integration und Betrieb haben jeweils einen klaren Ort.',
+    referenceEyebrow: 'Mehr erfahren', referenceTitle: 'Diese Anleitungen bei Bedarf öffnen',
+    referenceDescription: 'Erste Nutzung, Fachbegriffe, einzelne Ansichten und Systemanbindungen sind getrennt erklärt.',
     references: [
-      { code: 'START', title: 'Schnellstart in 10–15 Minuten', description: 'Eine feste Beispielroute in der ersten Sitzung abschließen.', href: docsHref('de', 'quick-start') },
+      { code: 'START', title: 'Schnellstart in 10–15 Minuten', description: 'In fünf Schritten die Umweltwirkungsergebnisse eines offenen Prozesses ansehen.', href: docsHref('de', 'quick-start') },
+      { code: 'BEGRIFFE', title: 'Begriffe und Abkürzungen', description: 'Erklärungen zu LCA, funktioneller Einheit, Systemgrenze, LCI, LCIA, Prüfung und Datenqualität.', href: docsHref('de', 'overview/glossary') },
       { code: 'GUIDE', title: 'Benutzerhandbuch', description: 'Oberflächenhinweise nach Daten, Modellierung, Analyse, Prüfung und Zugriff.', href: docsHref('de', 'user-guide') },
       { code: 'CONNECT', title: 'Integrationen und Erweiterungen', description: 'Einstiege für MCP, CLI, OpenAPI und externe Werkzeuge.', href: docsHref('de', 'integration') },
-      { code: 'OPERATE', title: 'Bereitstellung und Entwicklung', description: 'Self-Hosting, Entwicklungsumgebung und Docs-Synchronisation.', href: docsHref('de', 'deploy-and-dev') },
     ],
   },
   fr: {
-    eyebrow: 'Carte documentaire', title: 'Choisissez un parcours, puis suivez les preuves',
-    description: 'Cette page est le hub documentaire : les deux parcours indiquent quoi lire ensuite, le démarrage rapide couvre la première session pratique et le guide utilisateur détaille l’interface. Les libellés distinguent plateforme, travail externe et contexte méthodologique.',
-    boundaryLabels: { method: 'Contexte méthodologique', platform: 'Dans la plateforme', specification: 'Spécification TIDAS', shared: 'Dans + hors plateforme' },
-    journeys: [
+    eyebrow: 'Documentation par tâche', title: 'Que souhaitez-vous faire ? Suivez les étapes',
+    description: 'Choisissez la tâche la plus proche de votre travail. Chaque étape indique quoi faire, où le faire et où trouver les détails. Le démarrage rapide convient à une première utilisation ; le guide utilisateur explique les écrans.',
+    boundaryLabels: { method: 'Choix méthodologique', platform: 'Action dans la plateforme', specification: 'Format de données TIDAS', shared: 'Plateforme + jugement professionnel' },
+    tasks: [
       {
-        code: 'PARCOURS 01', title: 'Mener une étude ACV',
-        description: 'Suivez la question d’étude. La plateforme porte les données, systèmes de produit et preuves de calcul ; l’objectif et le champ, l’interprétation et le rapport restent sous la responsabilité du praticien selon la méthode applicable.',
-        ariaLabel: 'Parcours d’étude ACV : objectif et champ, inventaire et données, système de produit, ACVI, interprétation et rapport.',
+        code: 'TÂCHE 01', title: 'Évaluer les impacts environnementaux d’un produit',
+        description: 'Commencez par préciser pourquoi vous calculez, ce qui est inclus et où s’arrête l’étude. Préparez ensuite les données, construisez le système de produit, calculez les impacts et interprétez les résultats. La plateforme fournit les données et les outils de calcul ; les choix méthodologiques et les conclusions restent sous la responsabilité du praticien.',
+        ariaLabel: 'Cinq étapes pour évaluer un produit : définir les objectifs et le champ, collecter et contrôler les données, construire le système de produit, calculer les impacts environnementaux, interpréter et rédiger le rapport.',
         steps: [
-          { code: '01', title: 'Objectif et champ', description: 'Définir usage prévu, unité fonctionnelle, frontière et besoins qualité.', href: docsHref('fr', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Inventaire et données', description: 'Rechercher les espaces et évaluer origine, représentativité et usage permis.', href: docsHref('fr', 'user-guide/data'), boundary: 'platform' },
-          { code: '03', title: 'Système de produit', description: 'Relier procédés et échanges ; vérifier flux de référence et quantités.', href: docsHref('fr', 'user-guide/create-my-data'), boundary: 'platform' },
-          { code: '04', title: 'ACVI', description: 'Choisir une méthode et examiner preuves des facteurs, couverture et résultats.', href: docsHref('fr', 'user-guide/lcia'), boundary: 'platform' },
-          { code: '05', title: 'Interpréter et rapporter', description: 'Analyser les preuves ; assumer conclusions, sensibilité et rapport.', href: docsHref('fr', 'user-guide/process-analysis'), boundary: 'shared' },
+          { code: '01', title: 'Définir les objectifs et le champ', description: 'Préciser pourquoi l’étude est menée et pour qui ; définir l’unité fonctionnelle et la frontière du système.', href: docsHref('fr', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Collecter et contrôler les données', description: 'Trouver des données de procédé et contrôler leurs sources ainsi que leur représentativité technologique, géographique et temporelle.', href: docsHref('fr', 'user-guide/data'), boundary: 'platform' },
+          { code: '03', title: 'Construire le système de produit', description: 'Relier les procédés et leurs entrées et sorties ; vérifier les flux de référence et les quantités.', href: docsHref('fr', 'user-guide/create-my-data'), boundary: 'platform' },
+          { code: '04', title: 'Calculer les impacts environnementaux', description: 'Choisir une méthode d’évaluation de l’impact du cycle de vie (ACVI), lire les résultats et rechercher les facteurs manquants.', href: docsHref('fr', 'user-guide/lcia'), boundary: 'platform' },
+          { code: '05', title: 'Interpréter et rendre compte', description: 'Analyser les contributions principales et la sensibilité, indiquer les limites et formuler les conclusions.', href: docsHref('fr', 'user-guide/process-analysis'), boundary: 'shared' },
         ],
       },
       {
-        code: 'PARCOURS 02', title: 'Produire des données ACV réutilisables',
-        description: 'Suivez l’actif de données depuis les preuves externes jusqu’à l’expression TIDAS, la validation et la revue dans la plateforme, puis la publication, la réutilisation et l’échange.',
-        ariaLabel: 'Parcours de production de données ACV : preuves, expression TIDAS, validation, revue et publication, réutilisation et échange.',
+        code: 'TÂCHE 02', title: 'Structurer et publier des données ACV',
+        description: 'Consignez de manière cohérente les sources, les entrées, les sorties et le domaine d’utilisation d’une activité de production ou de service. Contrôlez les données puis soumettez-les à la revue pour que d’autres puissent les trouver, les comprendre et les réutiliser.',
+        ariaLabel: 'Cinq étapes pour structurer et publier des données ACV : consigner les sources et le domaine d’utilisation, structurer les données au format TIDAS, contrôler la structure du fichier et les références, soumettre pour revue et publication, importer exporter et réutiliser.',
         steps: [
-          { code: '01', title: 'Preuves', description: 'Conserver sources, limites, hypothèses, justification des proxies et qualité.', href: docsHref('fr', 'data-collection/data-collection-instructions'), boundary: 'method' },
-          { code: '02', title: 'Expression TIDAS', description: 'Exprimer champs, références et quantités dans les structures TIDAS.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
-          { code: '03', title: 'Valider', description: 'Contrôler structure et contraintes avec le Schema TIDAS ; corriger avant envoi.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
-          { code: '04', title: 'Réviser et publier', description: 'Soumettre, répondre aux avis et attendre la décision finale de l’admin.', href: docsHref('fr', 'user-guide/data-review'), boundary: 'platform' },
-          { code: '05', title: 'Réutiliser et échanger', description: 'Importer/exporter des paquets TIDAS ZIP et suivre les tâches de fond.', href: docsHref('fr', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
+          { code: '01', title: 'Consigner les sources et le domaine d’utilisation', description: 'Décrire les sources d’origine, la région, l’année, la technologie, les hypothèses et la qualité des données.', href: docsHref('fr', 'data-collection/data-collection-instructions'), boundary: 'method' },
+          { code: '02', title: 'Structurer les données au format TIDAS', description: 'Utiliser des champs communs pour les procédés, flux, unités et sources, puis les relier correctement.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-intro'), boundary: 'specification' },
+          { code: '03', title: 'Contrôler la structure et les références', description: 'Contrôler le contenu requis, les types de champs et les références. Réussir ce contrôle de structure ne prouve pas que la méthode est correcte.', href: tidasHref('fr', 'core-modules/schema/tidas-schema-validation'), boundary: 'specification' },
+          { code: '04', title: 'Soumettre pour revue et publication', description: 'Soumettre dans la plateforme et répondre aux commentaires ; l’administrateur de revue prend la décision finale.', href: docsHref('fr', 'user-guide/data-review'), boundary: 'platform' },
+          { code: '05', title: 'Importer, exporter et réutiliser', description: 'Importer ou exporter les données avec des fichiers TIDAS ZIP et consulter l’avancement du traitement.', href: docsHref('fr', 'user-guide/tidas-zip-workflows'), boundary: 'platform' },
         ],
       },
     ],
-    referenceEyebrow: 'Selon le besoin', referenceTitle: 'Ouvrir la référence détaillée',
-    referenceDescription: 'Première utilisation, interface, intégrations et déploiement ont chacun un rôle clair.',
+    referenceEyebrow: 'Pour aller plus loin', referenceTitle: 'Ouvrir ces guides selon le besoin',
+    referenceDescription: 'La première utilisation, les termes, les écrans et les connexions système sont expliqués séparément.',
     references: [
-      { code: 'START', title: 'Démarrage rapide en 10–15 minutes', description: 'Suivre un parcours exemple fixe lors de la première session.', href: docsHref('fr', 'quick-start') },
+      { code: 'DÉBUT', title: 'Démarrage rapide en 10–15 minutes', description: 'Suivre cinq étapes pour voir les résultats environnementaux d’un procédé ouvert.', href: docsHref('fr', 'quick-start') },
+      { code: 'TERMES', title: 'Termes et abréviations', description: 'Définitions de l’ACV, de l’unité fonctionnelle, de la frontière, de l’ICV, de l’ACVI, de la revue et de la qualité des données.', href: docsHref('fr', 'overview/glossary') },
       { code: 'GUIDE', title: 'Guide utilisateur', description: 'Trouver l’interface par données, modélisation, analyse, revue et accès.', href: docsHref('fr', 'user-guide') },
       { code: 'CONNECT', title: 'Intégrations et extensions', description: 'Entrées MCP, CLI, OpenAPI et outils externes.', href: docsHref('fr', 'integration') },
-      { code: 'OPERATE', title: 'Déploiement et développement', description: 'Auto-hébergement, environnement et synchronisation des docs.', href: docsHref('fr', 'deploy-and-dev') },
     ],
   },
 };
@@ -223,7 +223,7 @@ function Arrow() {
   );
 }
 
-function JourneyLink({ href, children, className }: { href: string; children: React.ReactNode; className: string }) {
+function TaskLink({ href, children, className }: { href: string; children: React.ReactNode; className: string }) {
   const external = href.startsWith('https://');
   return <Link className={className} href={href} {...(external ? { rel: 'noreferrer', target: '_blank' } : {})}>{children}</Link>;
 }
@@ -240,24 +240,24 @@ export function DocsPortal({ lang }: { lang: string }) {
           <h2 className="m-0 text-2xl leading-tight font-semibold tracking-[-0.025em]" id="docs-portal-journeys">{content.title}</h2>
           <p className="m-0 text-sm leading-6 text-fd-muted-foreground">{content.description}</p>
         </div>
-        {content.journeys.map((journey, journeyIndex) => (
-          <article className="rounded-[2px] border border-fd-border bg-fd-muted/25 p-5 max-[40rem]:p-4" data-docs-journey={journeyIndex === 0 ? 'lca-study' : 'data-production'} id={journeyIndex === 0 ? 'journey-lca-study' : 'journey-data-production'} key={journey.code}>
+        {content.tasks.map((task, taskIndex) => (
+          <article className="rounded-[2px] border border-fd-border bg-fd-muted/25 p-5 max-[40rem]:p-4" data-docs-journey={taskIndex === 0 ? 'lca-study' : 'data-production'} id={taskIndex === 0 ? 'journey-lca-study' : 'journey-data-production'} key={task.code}>
             <div className="mb-5 grid max-w-[48rem] gap-2">
-              <p className="m-0 text-xs font-semibold tracking-[0.08em] text-fd-primary uppercase">{journey.code}</p>
-              <h3 className="m-0 text-xl leading-tight font-semibold tracking-[-0.02em]">{journey.title}</h3>
-              <p className="m-0 text-sm leading-6 text-fd-muted-foreground">{journey.description}</p>
+              <p className="m-0 text-xs font-semibold tracking-[0.08em] text-fd-primary uppercase">{task.code}</p>
+              <h3 className="m-0 text-xl leading-tight font-semibold tracking-[-0.02em]">{task.title}</h3>
+              <p className="m-0 text-sm leading-6 text-fd-muted-foreground">{task.description}</p>
             </div>
-            <ol aria-label={journey.ariaLabel} className="m-0 grid list-none grid-cols-5 gap-[2px] overflow-hidden rounded-[2px] border-2 border-fd-border bg-fd-border p-0 max-[58rem]:grid-cols-1">
-              {journey.steps.map((step) => (
+            <ol aria-label={task.ariaLabel} className="m-0 grid list-none grid-cols-5 gap-[2px] overflow-hidden rounded-[2px] border-2 border-fd-border bg-fd-border p-0 max-[58rem]:grid-cols-1">
+              {task.steps.map((step) => (
                 <li className="m-0 min-w-0 bg-fd-background p-0" key={step.code}>
-                  <JourneyLink className="group grid min-h-48 content-between gap-5 p-3.5 text-fd-foreground no-underline transition-colors duration-100 hover:bg-fd-accent max-[58rem]:min-h-0" href={step.href}>
+                  <TaskLink className="group grid min-h-48 content-between gap-5 p-3.5 text-fd-foreground no-underline transition-colors duration-100 hover:bg-fd-accent max-[58rem]:min-h-0" href={step.href}>
                     <span className="flex items-center justify-between gap-2 text-xs font-semibold text-fd-primary">{step.code}<Arrow /></span>
                     <span className="grid gap-1.5">
                       <span className="w-fit rounded-[2px] border border-fd-border px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-[0.04em] text-fd-muted-foreground uppercase">{content.boundaryLabels[step.boundary]}</span>
                       <strong className="text-sm leading-snug font-semibold">{step.title}</strong>
                       <span className="text-xs leading-5 text-fd-muted-foreground">{step.description}</span>
                     </span>
-                  </JourneyLink>
+                  </TaskLink>
                 </li>
               ))}
             </ol>
@@ -273,10 +273,10 @@ export function DocsPortal({ lang }: { lang: string }) {
         </div>
         <div className="grid grid-cols-2 gap-[2px] overflow-hidden rounded-[2px] border-2 border-fd-border bg-fd-border max-[40rem]:grid-cols-1">
           {content.references.map((item) => (
-            <JourneyLink className="group grid min-h-28 content-between gap-4 bg-fd-background p-4 text-fd-foreground no-underline transition-colors duration-100 hover:bg-fd-accent" href={item.href} key={item.code}>
+            <TaskLink className="group grid min-h-28 content-between gap-4 bg-fd-background p-4 text-fd-foreground no-underline transition-colors duration-100 hover:bg-fd-accent" href={item.href} key={item.code}>
               <span className="flex items-center justify-between gap-3 text-xs font-semibold tracking-[0.05em] text-fd-primary uppercase">{item.code}<Arrow /></span>
               <span className="grid gap-1"><strong className="text-sm font-semibold">{item.title}</strong><span className="text-xs leading-5 text-fd-muted-foreground">{item.description}</span></span>
-            </JourneyLink>
+            </TaskLink>
           ))}
         </div>
       </section>

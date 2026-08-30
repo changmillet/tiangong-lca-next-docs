@@ -6,7 +6,7 @@ import test from 'node:test';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const read = (relativePath) => fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 
-test('docs hub exposes both journeys and locale-aligned TIDAS deep links', () => {
+test('docs hub exposes both task paths and locale-aligned TIDAS deep links', () => {
   const source = read('components/docs-portal.tsx');
 
   assert.match(source, /data-docs-portal-map-v2="two-lca-journeys"/);
@@ -19,6 +19,74 @@ test('docs hub exposes both journeys and locale-aligned TIDAS deep links', () =>
     assert.match(source, new RegExp(`tidasHref\\('${language}', 'core-modules/schema/tidas-schema-intro'\\)`));
     assert.match(source, new RegExp(`tidasHref\\('${language}', 'core-modules/schema/tidas-schema-validation'\\)`));
   }
+});
+
+test('beginner entry copy uses task language and explains LCA terms in context', () => {
+  const home = read('components/docs-home.tsx');
+  const portal = read('components/docs-portal.tsx');
+  const quickStart = read('components/quick-start-guide.tsx');
+  const entryCopy = [
+    home,
+    portal,
+    quickStart,
+    read('content/docs/index.mdx'),
+    read('content/docs/index.en.mdx'),
+    read('content/docs/index.de.mdx'),
+    read('content/docs/index.fr.mdx'),
+    read('content/docs/quick-start/index.mdx'),
+    read('content/docs/quick-start/index.en.mdx'),
+    read('content/docs/quick-start/index.de.mdx'),
+    read('content/docs/quick-start/index.fr.mdx'),
+    read('content/docs/quick-start/demonstrations.mdx'),
+    read('content/docs/quick-start/demonstrations.en.mdx'),
+    read('content/docs/quick-start/demonstrations.de.mdx'),
+    read('content/docs/quick-start/demonstrations.fr.mdx'),
+  ].join('\n');
+
+  assert.match(home, /你现在想完成什么？/u);
+  assert.match(home, /What do you want to do\?/u);
+  assert.match(home, /Was möchten Sie tun\?/u);
+  assert.match(home, /Que souhaitez-vous faire \?/u);
+  assert.match(portal, /按 TIDAS 格式整理数据/u);
+  assert.match(portal, /Organise data in the TIDAS format/u);
+  assert.match(portal, /Daten im TIDAS-Format strukturieren/u);
+  assert.match(portal, /Structurer les données au format TIDAS/u);
+  assert.match(quickStart, /生命周期影响评价（LCIA）/u);
+  assert.match(quickStart, /life cycle impact assessment \(LCIA\)/u);
+
+  assert.doesNotMatch(
+    entryCopy,
+    /先选旅程|两条用户旅程|TIDAS 表达|样例语境|书面观察路线|因子证据|检查定量基础|可解释的 LCIA 证据|数据生产旅程|失败恢复|路线不分叉|Two user journeys|Choose a journey|TIDAS expression|Written observation route|factor evidence|Failure recovery|route does not branch|Zwei Nutzerreisen|Reise wählen|TIDAS-Ausdruck|Schriftliche Beobachtungsroute|Faktornachweise|Deux parcours utilisateurs|Choisissez un parcours|Expression TIDAS|Parcours d'observation écrit|preuves des facteurs/u,
+  );
+});
+
+test('all locales publish one central glossary that separates kinds of assurance', () => {
+  const variants = [
+    ['zh', 'content/docs/overview/glossary.mdx', 'content/docs/overview/meta.json'],
+    ['en', 'content/docs/overview/glossary.en.mdx', 'content/docs/overview/meta.en.json'],
+    ['de', 'content/docs/overview/glossary.de.mdx', 'content/docs/overview/meta.de.json'],
+    ['fr', 'content/docs/overview/glossary.fr.mdx', 'content/docs/overview/meta.fr.json'],
+  ];
+  const routes = JSON.parse(read('manifests/p0b/site-routes.json')).htmlRoutes;
+
+  for (const [language, glossaryPath, metaPath] of variants) {
+    const glossary = read(glossaryPath);
+    const meta = JSON.parse(read(metaPath));
+
+    assert.ok(meta.pages.includes('glossary'), `${metaPath} must include glossary`);
+    assert.ok(routes.some(({ route }) => route === `/${language}/docs/overview/glossary/`), `${language} glossary must be in the static route contract`);
+    assert.match(glossary, /ILCD General Guide/u, glossaryPath);
+    assert.match(glossary, /publications\.jrc\.ec\.europa\.eu/u, glossaryPath);
+    assert.match(glossary, /TIDAS/u, glossaryPath);
+    assert.match(glossary, /LCI/u, glossaryPath);
+    assert.match(glossary, /LCIA|ACVI/u, glossaryPath);
+    assert.match(glossary, /structure check|Structure check|结构检查|Strukturprüfung|contrôle de structure/u, glossaryPath);
+    assert.match(glossary, /review|Review|评审|Prüfung|revue/u, glossaryPath);
+    assert.match(glossary, /data quality|Data quality|数据质量|Datenqualität|qualité des données/u, glossaryPath);
+    assert.match(glossary, /compliance|Compliance|合规|Konformität|conformité/u, glossaryPath);
+  }
+
+  assert.match(read('components/docs-portal.tsx'), /docsHref\('(zh|en|de|fr)', 'overview\/glossary'\)/u);
 });
 
 test('quick start is a fixed golden path with prerequisites, sample, completion, and recovery', () => {
