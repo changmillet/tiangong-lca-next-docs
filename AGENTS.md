@@ -37,8 +37,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 9f69ae5a4f9b74ddfe55892070efc32a1211ccbc
-lastReviewedNote: "Reviewed for docs-impact Issue #938: public content updates cover German app-locale header guidance and verified Calculation Bundle downloads without changing site ownership, routing, or validation contracts."
+lastReviewedCommit: ab890e0785d2dac251aafe301d889f854e864e91
+lastReviewedNote: "Reviewed for Issue #180: all CLI locales use the verified 0.1.8 zero-config Production bootstrap, complete custom/headless boundaries, and executable first-login examples; MCP and site ownership remain unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -92,6 +92,7 @@ This repository does not own shipped product behavior, route truth, API semantic
 - Markdown lint uses the exact local `markdownlint-cli2` dependency through `pnpm exec`. Active repository automation has no npm/npx fallback, and every external GitHub Action is pinned to a reviewed executable commit rather than a tag object or moving tag.
 - Public AI retrieval is derived at build time through `/llms.txt` and `/search-records.json`; internal governance files remain excluded by `context7.json`.
 - The four CLI, remote LCA MCP, account-profile, and TIDAS-import locale families share one OAuth contract: human browser authorization, exact registered clients/callbacks, PKCE, client-local refresh rotation, direct Supabase access JWTs, downstream `auth.uid()` plus `client_id` authorization, local/connected-app revoke distinction, explicit headless limits, and no broker/Redis session, password/code/token/API-key handoff to AI. Codex uses the top-level callback base and listener port plus its deterministic MCP-server callback ID; its resulting redirect must equal the Supabase registration.
+- Official Production CLI onboarding starts with pinned published CLI 0.1.8 and no public environment setup. The CLI owns the public URL/key/client/callback profile; docs and Skills must not copy its values. Only complete custom environments may override it; a headless token always requires an explicit destination/key. CLI defaults do not change remote MCP registrations or local publish approval gates.
 - Reconciliation has two trust boundaries: production validates indexability and then enters the GitHub production environment for Algolia/Context7 mutation; preview validates `noindex`/robots plus production-canonical policy in a separate job path that cannot access those mutation steps.
 
 ## Required commands

@@ -32,8 +32,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 9f69ae5a4f9b74ddfe55892070efc32a1211ccbc
-lastReviewedNote: "Reviewed for docs-impact Issue #938: the four-locale public content edits remain covered by lint, typecheck, tests, static build, placement, visual-evidence, and Docpact gates."
+lastReviewedCommit: ab890e0785d2dac251aafe301d889f854e864e91
+lastReviewedNote: "Reviewed for Issue #180: pinned zero-config first-login examples, exact CLI callback, and explicit headless mode are checked across four locales alongside unchanged OAuth safety and static-site gates."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -57,6 +57,7 @@ DEPLOY_ENV=ci CANONICAL_ORIGIN=http://localhost:3000 NEXT_PUBLIC_SEARCH_MODE=sta
 ## Proof by change type
 
 - Public content: update all four locale variants; run lint and the complete build.
+- CLI first-install onboarding: the first executable `auth login` example must pin verified 0.1.8, precede custom templates, and contain no required public env assignments. Every locale retains the exact CLI loopback callback, explicit headless destination/key/mode, private sessions, and revocation limits. `scripts/oauth-doc-contract.test.mjs` rejects missing/unpinned login examples; release evidence must separately prove the real published CLI and installed Skills.
 - LCA authentication content: run `scripts/oauth-doc-contract.test.mjs`; prove CLI/MCP/account/OpenAPI locale families contain OAuth/PKCE/revoke/headless facts, every remote MCP locale contains direct Supabase access JWT/JWKS, client-local refresh, Claude Code, Codex, Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. Every Codex example must use top-level `mcp_oauth_callback_url` and `mcp_oauth_callback_port`, a per-server public `oauth.client_id`, and the MCP `oauth_resource` before `codex mcp login`; the documented base plus deterministic server callback ID must equal the registered Supabase redirect. Command-only setup with an unspecified callback is forbidden. Also prove no locale contains the retired broker architecture, LCA API-key assignment, demo, or manual bearer setup; reject the executable zh/en/de/fr forbidden-generation fixtures and six forbidden credential screenshots. Then run lint, links, and the complete build.
 - Toolchain, package manager, environment checker, or CI actions: run a clean frozen install, `pnpm test:env`, `pnpm test:toolchain`, lint, typecheck, and the complete static build. Node must satisfy `>=24.18.0 <25`; EdgeOne must use `24.18.0` plus direct `pnpm install --frozen-lockfile`, local `.nvmrc` must select major `24`, reviewed GitHub workflows remain on `24.19.0`, pnpm stays exactly `11.24.0`, TypeScript exactly `7.0.2`, and markdownlint exactly local `0.23.2`; external actions must use reviewed executable commit SHAs.
 - Links, anchors, navigation, or assets: run link unit tests and the complete build. `check:links` must report zero missing pages, fragments, or local assets, zero path-relative document links, zero source-locale mismatches, and identical normalized internal-document target sets across the four variants of each page.

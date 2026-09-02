@@ -1,9 +1,9 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-09-02"
-lastReviewedCommit: "9f69ae5a4f9b74ddfe55892070efc32a1211ccbc"
-reviewNote: "Reviewed for docs-impact Issue #938: existing public-content rules cover the four-locale key-functions, LCIA, and process-analysis edits."
-lastReviewedNote: "Reviewed for docs-impact Issue #938: German app-locale header guidance and verified Calculation Bundle download wording need no routing, ownership, or validation rule change."
+lastReviewedCommit: "ab890e0785d2dac251aafe301d889f854e864e91"
+reviewNote: "Reviewed for Issue #180: existing public-content and site-test rules cover four-locale CLI 0.1.8 first-login instructions and their executable documentation guard."
+lastReviewedNote: "Reviewed for Issue #180: CLI-owned Production defaults, complete custom/headless boundaries, and pinned first-login examples require no routing, ownership, or site-runtime change."
 
 catalog:
   repos:
