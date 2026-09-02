@@ -90,6 +90,8 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
 ```
 
+`2>` 把错误信息写入 `process-errors.txt`。若退出码非零或 JSON 不符合预期，先打开这个错误文件；分享前先脱敏。JSON 是紧凑输出，编辑器的“格式化 JSON”功能可帮助逐层查看字段。
+
 `>` 把 JSON 结果保存到当前文件夹。用文本编辑器打开 `processes.json`。`--state-code 100` 限定公开记录；`--limit 3` 最多读取 3 条；排序先按 `modified_at` 降序，再用 `id` 和 `version` 稳定排序。未传 `--order` 时，CLI 的默认值是 `id.asc,version.asc`，不是按名称或修改时间。
 
 ## 5. 看懂结果
@@ -122,7 +124,7 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-cod
 | `login-required` | 本人重新执行登录，再运行 `auth doctor-auth --json` |
 | 浏览器已登录，终端仍等待 | 确认回调在同一台电脑、端口未被占用；见[登录与账号安全](/zh/docs/integration/cli/authentication/) |
 | `401` / `403` | 检查在线身份；仍失败时联系管理员核对客户端/数据权限，不要换用高权限密钥 |
-| 文件为空或不是预期 JSON | 先检查终端错误和退出码；文件被创建不等于请求成功 |
+| 文件为空或不是预期 JSON | `process-errors.txt` 中的错误和上一条命令的退出码是排查依据；文件被创建不等于成功 |
 
 接下来：[查询与读取数据](/zh/docs/integration/cli/queries/)会带你检索流，并按 ID 读取完整过程。
 

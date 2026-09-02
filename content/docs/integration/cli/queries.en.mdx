@@ -37,6 +37,8 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./fl
 
 ## Distinguish no matches from a failed request
 
+Each result uses `id` and `version` for identity; the full flow is under `json.flowDataSet`. Within it, find the name at `flowInformation.dataSetInformation.name.baseName`; language text uses `@xml:lang` and `#text`. Use only fields actually returned.
+
 A successful nonempty result is `{ "data": [...] }`. No matches may be represented as `[]` or `{ "data": [] }`. An empty array alone is not a failure, and retrieval order is not proof that a record fits your study.
 
 Check the exit code before interpreting JSON. If nothing matches, retain the original request and try a more precise name or chemical identifier, or relax `filter` step by step. For `400`, check `query` and JSON syntax. For `401`/`403`, check identity and permissions. `500` means a server-side search failure, not “the database contains no such data.”
@@ -45,13 +47,13 @@ Before choosing a candidate, check its flow type, name, classification, geograph
 
 ## Retrieve one complete process by ID
 
-Open `processes.json` from the previous tutorial. Select one item in `rows` and copy its `id` and `version`. Replace `PROCESS_ID` and `DATASET_VERSION` below; these words are not real identifiers. If the list is empty, check filters and access first rather than inventing an ID.
+Open `processes.json` from the previous tutorial. Select one item in `rows` and copy its `id` and `version`. Replace `PROCESS_ID` and `DATASET_VERSION` below; these words are not real identifiers.
+
+If the public list succeeds but is empty, your first-query task is still complete. Skip this section’s `process get` until a real `id`/`version` is available and do the flow-search exercise above instead. Do not repeatedly sign in or invent IDs.
 
 ```bash
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
 ```
-
-If the public list succeeds but is empty, your first-query task is still complete. Skip this section’s `process get` until a real `id`/`version` is available and do the flow-search exercise above instead. Do not repeatedly sign in or invent IDs.
 
 `status: resolved_remote_process` confirms a retrieved process. `requested_version` records your request, `resolved_version` is what was actually returned, `resolution` explains the lookup, and `process` contains the full data. An unavailable or missing requested version can fall back to the latest accessible version. For an exact citation, verify that the requested and resolved versions match; exit code `0` is not enough.
 

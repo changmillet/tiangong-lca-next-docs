@@ -37,6 +37,8 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./fl
 
 ## Keine Treffer oder fehlgeschlagener Aufruf?
 
+Jeder Treffer wird durch `id` und `version` identifiziert; der vollständige Fluss steht unter `json.flowDataSet`. Darin steht der Name unter `flowInformation.dataSetInformation.name.baseName`; Sprachtexte verwenden `@xml:lang` und `#text`. Nur tatsächlich gelieferte Felder verwenden.
+
 Bei Erfolg mit Treffern lautet die Form `{ "data": [...] }`. Ohne Treffer sind `[]` oder `{ "data": [] }` möglich. Eine leere Liste allein ist kein Fehler; die Trefferreihenfolge beweist auch nicht die Eignung für Ihre Untersuchung.
 
 Prüfen Sie vor dem JSON den Exit-Code. Ohne Treffer bewahren Sie die ursprüngliche Anfrage auf und versuchen einen genaueren Namen oder Stoffidentifikator oder lockern `filter` schrittweise. Bei `400` prüfen Sie `query` und die JSON-Syntax; bei `401`/`403` Identität und Rechte. `500` ist ein serverseitiger Suchfehler, nicht der Nachweis fehlender Daten.
@@ -45,13 +47,13 @@ Prüfen Sie vor der Auswahl Flusstyp, Name, Klassifikation, Region und Einheit/F
 
 ## Einen vollständigen Prozess per ID lesen
 
-Öffnen Sie `processes.json` aus dem vorigen Tutorial. Wählen Sie einen Eintrag aus `rows` und kopieren Sie `id` und `version`. Ersetzen Sie unten `PROCESS_ID` und `DATASET_VERSION`; diese Wörter sind keine gültigen Identifikatoren. Ist die Liste leer, prüfen Sie zuerst Filter und Rechte, statt eine ID zu erfinden.
+Öffnen Sie `processes.json` aus dem vorigen Tutorial. Wählen Sie einen Eintrag aus `rows` und kopieren Sie `id` und `version`. Ersetzen Sie unten `PROCESS_ID` und `DATASET_VERSION`; diese Wörter sind keine gültigen Identifikatoren.
+
+Ist die öffentliche Liste erfolgreich, aber leer, ist die erste Abfrage dennoch abgeschlossen. Ohne echte `id`/`version` diesen `process get` überspringen und stattdessen die Flusssuche oben durchführen. Nicht wiederholt anmelden und keine IDs erfinden.
 
 ```bash
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
 ```
-
-Ist die öffentliche Liste erfolgreich, aber leer, ist die erste Abfrage dennoch abgeschlossen. Ohne echte `id`/`version` diesen `process get` überspringen und stattdessen die Flusssuche oben durchführen. Nicht wiederholt anmelden und keine IDs erfinden.
 
 `status: resolved_remote_process` bestätigt den Abruf. `requested_version` ist die angefragte, `resolved_version` die tatsächlich gelesene Version; `resolution` erläutert die Auflösung, `process` enthält die Daten. Fehlt die angefragte Version oder ist sie unzugänglich, kann die neueste erreichbare Version zurückgegeben werden. Für exakte Referenzen müssen beide Versionen übereinstimmen; Exit-Code `0` reicht nicht aus.
 

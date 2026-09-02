@@ -37,6 +37,8 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./fl
 
 ## 区分“没找到”和“调用失败”
 
+结果的每条记录用 `id` 和 `version` 标识；完整流内容在 `json.flowDataSet` 中。名称可从其中的 `flowInformation.dataSetInformation.name.baseName` 查看，语言文本使用 `@xml:lang` 和 `#text`。只使用响应实际给出的字段。
+
 成功且有匹配时返回 `{ "data": [...] }`；无匹配时可能返回 `[]` 或 `{ "data": [] }`。不要仅凭数组为空判断失败，也不要把检索顺序当成适用性证明。
 
 先检查退出码，再看 JSON。没有匹配时，保留原请求作为记录，尝试更具体的名称、化学物质信息，或逐步放宽 `filter`。出现 `400` 时检查 `query` 和 JSON；`401`/`403` 先做身份与权限检查；`500` 是服务端检索失败，不能当作“数据库无此数据”。
@@ -45,13 +47,13 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./fl
 
 ## 按 ID 读取一个完整过程
 
-打开上一步教程的 `processes.json`，从 `rows` 中选一条记录，复制它的 `id` 和 `version`。在下面的命令中分别替换 `PROCESS_ID` 和 `DATASET_VERSION`；这两个词不是可直接查询的真实值。若列表为空，先回到教程排查筛选和权限，不要编造 ID。
+打开上一步教程的 `processes.json`，从 `rows` 中选一条记录，复制它的 `id` 和 `version`。在下面的命令中分别替换 `PROCESS_ID` 和 `DATASET_VERSION`；这两个词不是可直接查询的真实值。
+
+如果公开列表成功但为空，第一次查询任务仍已完成；没有真实 `id`/`version` 时跳过本节的 `process get`，先完成上面的流检索。不要反复重新登录，也不要编造 ID。
 
 ```bash
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
 ```
-
-如果公开列表成功但为空，第一次查询任务仍已完成；没有真实 `id`/`version` 时跳过本节的 `process get`，先完成上面的流检索。不要反复重新登录，也不要编造 ID。
 
 `status: resolved_remote_process` 表示已读到过程。`requested_version` 是你的请求，`resolved_version` 是实际读到的版本，`resolution` 说明解析方式，`process` 是完整数据。若请求版本不可访问或不存在，命令可能回退到最新可访问版本；需要精确引用时，必须确认两个版本一致，不能仅以退出码 `0` 为准。
 

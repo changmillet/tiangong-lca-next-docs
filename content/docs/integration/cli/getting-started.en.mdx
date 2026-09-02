@@ -90,6 +90,8 @@ In the same terminal, run:
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
 ```
 
+`2>` writes errors to `process-errors.txt`. If the exit code is nonzero or the JSON is unexpected, open that file first and redact it before sharing. JSON output is compact; an editor’s JSON-formatting action can make nested fields easier to read.
+
 `>` saves the JSON response in your working folder. Open `processes.json` in a text editor. `--state-code 100` selects public records; `--limit 3` returns at most 3. Ordering is descending `modified_at`, then stable `id` and `version` tie-breakers. Without `--order`, the CLI defaults to `id.asc,version.asc`, not name or modification time.
 
 ## 5. Read the result
@@ -122,7 +124,7 @@ You have completed the task when the exit code is `0`, `status` is `listed_remot
 | `login-required` | Sign in yourself, then run `auth doctor-auth --json` |
 | Browser sign-in finishes but the terminal keeps waiting | Check that the callback is on the same computer and the port is available; see [Sign-in and account safety](/en/docs/integration/cli/authentication/) |
 | `401` / `403` | Check live identity; if it still fails, ask an administrator to check client/data permissions, not to provide a privileged key |
-| Output file is empty or not the expected JSON | Check the terminal error and exit code; creating a file does not prove a successful request |
+| Output file is empty or not the expected JSON | `process-errors.txt` and the preceding exit code explain failures; a created file does not prove success |
 
 Next: [Query and retrieve data](/en/docs/integration/cli/queries/) explains flow search and retrieving a full process by ID.
 

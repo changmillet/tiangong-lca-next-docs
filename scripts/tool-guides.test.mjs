@@ -105,3 +105,20 @@ test('substantive tool-guide entries remain available to public search and AI di
   assert.doesNotMatch(verifier, /const expectedCounts = \{ zh: 38|llmsEntries !== 152|sitemapCount !== 197/u);
   assert.match(verifier, /tool.guide|toolGuide/iu);
 });
+
+test('reader recovery explains immediate exit checks, stderr, and the installed content checkpoint', () => {
+  for (const locale of locales) {
+    const first = read(page('cli', 'getting-started', locale.suffix));
+    assert.ok(first.includes('echo $?'));
+    assert.ok(first.includes('$LASTEXITCODE'));
+    assert.match(first, /process-errors\.txt/u);
+    assert.match(first, /https:\/\/lca\.tiangong\.earth\//u);
+    const skills = read(page('skills', 'getting-started', locale.suffix));
+    assert.match(skills, /skills\.flow-hybrid-search\.computedHash/u);
+    assert.match(skills, /3f682fcb97616cf20b97ee7f70120616e58f9ff2bf65bead54d9728d94da4c59/u);
+    const native = read(page('tidas', 'first-package', locale.suffix));
+    assert.match(native, /mkdir tidas-practice\ncd tidas-practice/u);
+    assert.ok(native.includes('$LASTEXITCODE'));
+    assert.doesNotMatch(read(page('cli', 'publishing', locale.suffix)), /tiangong-lca review --help/u);
+  }
+});

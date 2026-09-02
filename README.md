@@ -28,9 +28,9 @@ checkPaths:
   - context7.json
   - crowdin.yml
   - .github/workflows/**
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: 07f09a3ffa0bec1a5ffafd10257d77dd043cd4d4
-lastReviewedNote: "Reviewed for Issue #161: local Node 24 selection, the bounded runtime contract, EdgeOne 24.18.0, and reviewed CI Node 24.19.0 are documented without dependency or site drift."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 84b058cc22427bcc9caf241871c82b89fa6ed3ec
+lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -51,6 +51,14 @@ Public documentation for the [TianGong LCA](https://lca.tiangong.earth) platform
 - `/{lang}/docs/**` — locale documentation
 
 Source files use dot-locale names: `page.mdx`, `page.en.mdx`, `page.de.mdx`, and `page.fr.mdx`. Missing translations do not fall back to another language.
+
+## Public tool guides
+
+- [CLI user guide](https://docs.tiangong.earth/en/docs/integration/cli/): install, sign in, query, and understand results before advanced operations.
+- [Agent Skills guide](https://docs.tiangong.earth/en/docs/integration/skills/): install one standalone skill, execute a read-only task, and check prerequisites and permissions.
+- [Local tidas tools](https://docs.tiangong.earth/en/docs/integration/tidas/): native installation, local validation, conversion, and reports without platform sign-in.
+
+These are four-language guides with separate tutorials and references. `lib/public-doc-inventory.mjs` derives complete publication coverage from sources, so new chapters must appear in navigation, static/production search, llms, sitemap, and HTML without editing frozen page totals. Maintainer validation is separate from reader-facing CLI installation.
 
 ## Development
 

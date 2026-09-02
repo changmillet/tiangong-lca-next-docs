@@ -90,6 +90,8 @@ Dans le même terminal, exécutez :
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
 ```
 
+`2>` enregistre les erreurs dans `process-errors.txt`. Si le code est non nul ou le JSON inattendu, ouvrez d’abord ce fichier et retirez les données sensibles avant partage. La sortie JSON est compacte ; le formatage JSON d’un éditeur facilite la lecture des champs imbriqués.
+
 `>` enregistre la réponse JSON dans votre dossier de travail. Ouvrez `processes.json` dans un éditeur de texte. `--state-code 100` sélectionne les données publiques et `--limit 3` limite la réponse à 3 enregistrements. Le tri est décroissant sur `modified_at`, puis stable sur `id` et `version`. Sans `--order`, le CLI utilise `id.asc,version.asc`, pas le nom ni la date de modification.
 
 ## 5. Comprendre le résultat
@@ -122,7 +124,7 @@ La tâche est terminée si le code de sortie est `0`, si `status` vaut `listed_r
 | `login-required` | Se connecter soi-même, puis lancer `auth doctor-auth --json` |
 | Connexion navigateur terminée, mais terminal en attente | Vérifier le même ordinateur et la disponibilité du port de callback ; voir [Connexion et sécurité du compte](/fr/docs/integration/cli/authentication/) |
 | `401` / `403` | Vérifier l’identité en ligne ; si l’erreur persiste, faire vérifier les droits du client et des données, sans utiliser de clé privilégiée |
-| Fichier vide ou JSON inattendu | Lire l’erreur du terminal et le code de sortie ; un fichier créé ne prouve pas la réussite |
+| Fichier vide ou JSON inattendu | `process-errors.txt` et le code précédent expliquent les erreurs ; un fichier créé ne prouve pas la réussite |
 
 Suite : [Rechercher et récupérer des données](/fr/docs/integration/cli/queries/) présente la recherche de flux et la lecture d’un procédé complet par ID.
 

@@ -37,6 +37,8 @@ pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./fl
 
 ## Distinguer absence de résultat et échec
 
+Chaque résultat est identifié par `id` et `version` ; le flux complet se trouve dans `json.flowDataSet`. Son nom se lit dans `flowInformation.dataSetInformation.name.baseName` ; les textes multilingues utilisent `@xml:lang` et `#text`. N’utilisez que les champs réellement renvoyés.
+
 Une réponse réussie non vide a la forme `{ "data": [...] }`. Sans résultat, la réponse peut être `[]` ou `{ "data": [] }`. Un tableau vide seul n’est pas un échec, et l’ordre des résultats ne prouve pas leur pertinence pour votre étude.
 
 Vérifiez le code de sortie avant le JSON. Sans correspondance, conservez la requête originale puis essayez un nom ou identifiant chimique plus précis, ou assouplissez `filter` progressivement. Pour `400`, vérifiez `query` et la syntaxe JSON ; pour `401`/`403`, l’identité et les droits. `500` indique un échec serveur, pas l’absence de données dans la base.
@@ -45,13 +47,13 @@ Avant de retenir un candidat, vérifiez son type de flux, son nom, sa classifica
 
 ## Lire un procédé complet par ID
 
-Ouvrez `processes.json` du tutoriel précédent. Choisissez un élément de `rows` et copiez son `id` et sa `version`. Remplacez `PROCESS_ID` et `DATASET_VERSION` ci-dessous ; ces mots ne sont pas de vrais identifiants. Si la liste est vide, vérifiez les filtres et les droits plutôt que d’inventer un ID.
+Ouvrez `processes.json` du tutoriel précédent. Choisissez un élément de `rows` et copiez son `id` et sa `version`. Remplacez `PROCESS_ID` et `DATASET_VERSION` ci-dessous ; ces mots ne sont pas de vrais identifiants.
+
+Si la liste publique réussit mais reste vide, la première tâche est néanmoins terminée. Sans vrais `id`/`version`, sautez ce `process get` et faites la recherche de flux ci-dessus. Ne vous reconnectez pas en boucle et n’inventez pas d’ID.
 
 ```bash
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
 ```
-
-Si la liste publique réussit mais reste vide, la première tâche est néanmoins terminée. Sans vrais `id`/`version`, sautez ce `process get` et faites la recherche de flux ci-dessus. Ne vous reconnectez pas en boucle et n’inventez pas d’ID.
 
 `status: resolved_remote_process` confirme la lecture. `requested_version` correspond à la demande, `resolved_version` à la version réellement lue, `resolution` explique la résolution et `process` contient les données. Si la version demandée manque ou n’est pas accessible, la commande peut retourner la dernière version accessible. Pour une référence exacte, vérifiez l’égalité des versions ; le code `0` ne suffit pas.
 

@@ -90,6 +90,8 @@ Führen Sie im selben Terminal aus:
 pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
 ```
 
+`2>` schreibt Fehler nach `process-errors.txt`. Bei Exit-Code ungleich null oder unerwartetem JSON zuerst diese Datei öffnen und vor Weitergabe sensible Angaben entfernen. Die JSON-Ausgabe ist kompakt; die JSON-Formatierung eines Editors erleichtert das Lesen verschachtelter Felder.
+
 `>` speichert die JSON-Antwort im Arbeitsordner. Öffnen Sie `processes.json` in einem Texteditor. `--state-code 100` wählt öffentliche Datensätze; `--limit 3` begrenzt die Antwort auf 3. Sortiert wird nach `modified_at` absteigend, danach stabil nach `id` und `version`. Ohne `--order` gilt `id.asc,version.asc`, nicht Name oder Änderungsdatum.
 
 ## 5. Das Ergebnis verstehen
@@ -122,7 +124,7 @@ Die Aufgabe ist abgeschlossen, wenn der Exit-Code `0` und der Status `listed_rem
 | `login-required` | Selbst anmelden und danach `auth doctor-auth --json` ausführen |
 | Browser-Anmeldung abgeschlossen, Terminal wartet weiter | Gleichen Computer und verfügbaren Callback-Port prüfen; siehe [Anmeldung und Kontosicherheit](/de/docs/integration/cli/authentication/) |
 | `401` / `403` | Live-Identität prüfen; bei weiterem Fehler Client-/Datenrechte durch die Administration prüfen lassen, keinen privilegierten Schlüssel verwenden |
-| Leere Datei oder unerwartetes JSON | Terminalfehler und Exit-Code prüfen; eine angelegte Datei beweist keinen erfolgreichen Aufruf |
+| Leere Datei oder unerwartetes JSON | `process-errors.txt` und der vorherige Exit-Code zeigen Fehler; eine angelegte Datei beweist keinen Erfolg |
 
 Weiter: [Daten suchen und abrufen](/de/docs/integration/cli/queries/) zeigt die Flusssuche und den Abruf eines vollständigen Prozesses per ID.
 
