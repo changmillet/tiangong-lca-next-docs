@@ -1,0 +1,85 @@
+---
+title: "安装一个检索技能"
+description: "在当前项目安装 Flow Hybrid Search，核对文件、运行环境和 CLI 登录。"
+---
+
+本页以 `flow-hybrid-search` 为例。只安装一个项目级技能，便于检查它会做什么；不需要安装整套技能，也不需要服务端密钥。
+
+## 1. 确认运行条件
+
+- 一个支持 Skills 且允许本地命令执行的客户端。本页给出 Codex 与 OpenClaw 两种安装位置；纯聊天网页不能直接执行这些本地脚本。
+- Node.js **精确版本 `24.19.0`**、pnpm **`11.24.0`**。当前技能启动器会检查这两个精确版本；并非任意 Node 24 都能运行。
+- 可用的 Git 和网络，用于安装器获取 Skills 仓库；首次运行还要下载固定版 CLI。
+- TianGong LCA 账号，以及你愿意给 AI 访问的本地项目文件夹。
+
+缺少 Node.js 或 pnpm 时，先按 [CLI 安装说明](/zh/docs/integration/cli/getting-started/)准备。然后在你希望 AI 工作的项目根目录打开终端，确认以下命令可用。
+
+```bash
+node --version
+pnpm --version
+git --version
+```
+
+## 2. 选择你的客户端，只执行一组
+
+Codex：
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent codex --copy --yes
+```
+
+OpenClaw：
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent openclaw --copy --yes
+```
+
+只有同时需要两个客户端时才分别安装。`--skill` 明确选择技能，`--agent` 指定客户端，`--copy` 复制运行所需文件。这里没有启用全局安装；`--yes` 跳过安装器确认，因此执行前先核对命令中的来源和技能名。
+
+## 3. 确认安装到了当前项目
+
+| 客户端 | 本项目的技能目录 |
+| --- | --- |
+| Codex | `.agents/skills/flow-hybrid-search/` |
+| OpenClaw | `skills/flow-hybrid-search/` |
+
+目录中应有 `SKILL.md`、`scripts/run-flow-hybrid-search.mjs`、`scripts/lib/cli-launcher.mjs` 和 `assets/example-request.json`。不要只复制 `SKILL.md`。项目根目录的 `skills-lock.json` 用来记录安装信息，保留它以便核对更新；它不是登录凭据。
+
+可以用下面的命令列出当前项目的安装记录。然后在 AI 客户端打开同一项目，新建会话，明确要求使用 `flow-hybrid-search`。安装记录存在不等于当前会话已经加载技能；若客户端提示找不到，按[故障排查](/zh/docs/integration/skills/troubleshooting/)处理。
+
+```bash
+pnpm dlx skills@1.5.23 list --json
+```
+
+本指南核对的安装内容来自 Skills 提交 `29039bcc07a7b246acc3d4009ee641d3a6878d01`。用此安装器安装后，`skills-lock.json` 中 `skills.flow-hybrid-search.computedHash` 应为下列值。这是安装记录指纹，不是签名；若不同，说明内容已变化，先复核来源与运行条件并跑预检，不要直接沿用本页的已验证结论。
+
+```json
+{
+  "computedHash": "3f682fcb97616cf20b97ee7f70120616e58f9ff2bf65bead54d9728d94da4c59"
+}
+```
+
+### 确认客户端确实读到了技能
+
+在新会话中发送下面的检查请求。应能在客户端的技能/文件读取记录中看到相应 `SKILL.md`，并得到“请求 JSON → 只读流检索结果”的说明。仅仅回答“我可以”不是加载证明。
+
+```text
+先不要执行任何业务命令。请确认你能读取当前项目中 flow-hybrid-search 的 SKILL.md，并报告实际文件路径、它需要的输入和会产生的输出。
+Codex 路径是 .agents/skills/flow-hybrid-search/SKILL.md；OpenClaw 路径是 skills/flow-hybrid-search/SKILL.md。只读取与当前客户端对应的路径。
+```
+
+若没有读取记录或客户端仍找不到技能，显式附上对应的本地 `SKILL.md` 文件，让客户端按文件中的任务说明工作；若它不支持读取项目文件或执行本地命令，改用 CLI 教程，不要声称已完成 Skills 安装验收。
+
+## 4. 由本人完成 CLI 登录
+
+远程检索共用 CLI 的私有本地会话。先查状态；遇到 `login-required` 时，由你本人在可信终端登录并完成浏览器授权，不要把账号密码或 token 发给 AI。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+AI 执行脚本的系统用户和环境应能使用同一登录上下文。官方生产环境不需要 `.env`、公开 client ID 或本地 CLI 源码；自定义环境才需要[完整匹配配置](/zh/docs/integration/cli/authentication/)。Skills 不另存一份 OAuth 会话。
+
+接下来：[完成第一次流检索](/zh/docs/integration/skills/first-task/)。

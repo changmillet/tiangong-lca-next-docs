@@ -1,0 +1,55 @@
+---
+title: "自动化与受控写入"
+description: "把 CLI 接入脚本或 Agent，先预检、再授权写入，最后独立读回验证。"
+---
+
+本页面向已有完整输入文件的操作者，不是首次使用教程。先完成[登录检查](/zh/docs/integration/cli/authentication/)和[本地校验](/zh/docs/integration/cli/data-quality/)。下面的输入文件名是任务产物示例，不是本站下载文件；不要把整段命令当作可直接运行的练习。
+
+本页使用全局安装后的 `tiangong-lca` 短命令；安装方式见[入门页](/zh/docs/integration/cli/getting-started/)。
+
+## 从准备到验证
+
+1. 明确目标账号、数据 ID/版本、允许修改的字段和结果输出目录。
+2. 校验完整输入；有失败行、证据缺口或阻断项时先修正。
+3. 运行适用命令的 `--dry-run`，保存报告；它不是写入，也不是权限或最终结果证明。
+4. 向操作者展示实际修改范围、风险和审批信息；获得明确批准后才进入真实写入。
+5. 写入后使用独立读回验证身份、拥有者、内容和数量。请求被接受、已排队、部分完成均不等于通过验收。
+
+## 草稿预检示例
+
+```bash
+tiangong-lca process save-draft --input ./patched-processes.jsonl --out-dir ./process-save-draft --dry-run --json
+tiangong-lca lifecyclemodel validate-build --run-dir ./lifecyclemodel-run --json
+```
+
+预检生成的 `status`、`counts`、`issues`、`files` 和输出路径是下一步判断依据，不应只依赖终端文本。真正批量写入过程草稿时，应提供 `--target-user-id`，并保留认证、草稿拥有者检查和读回验证；教程不提供可盲目复制的写入批准。
+
+## 写入前的质量检查
+
+面向数据生产流水线时，CLI 还提供了一组适合在写入、发布或人工交接前运行的质量门命令：
+
+```bash
+tiangong-lca process identity-preflight --input ./process-preflight.json --out-dir ./process-preflight --json
+tiangong-lca flow identity-preflight --input ./flow-preflight.json --out-dir ./flow-preflight --json
+tiangong-lca process build-plan validate --input ./process-build-plan.json --out-dir ./process-build-plan --json
+tiangong-lca flow build-plan validate --input ./flow-build-plan.json --out-dir ./flow-build-plan --json
+tiangong-lca publish run --input ./publish-request.json --dry-run --json
+```
+
+- `identity-preflight` 会把目标过程或流与候选数据对比，输出是否可自动复用、需要人工复核或应阻止新建的判定。
+- `build-plan validate` 用于检查过程或流构建计划是否包含身份判定、证据绑定、名称计划、`unit_of_analysis` 决策和必要的参考流 / 流属性信息。
+- `dataset evidence-search plan/run` 用于规划字段级公开证据检索并记录外部搜索结果；CLI 负责查询矩阵、预算、结果归一化和证据声明制品，来源判断仍需由人工或 agent 工作流完成。
+- `publish run --dry-run` 会输出发布规则集的校验结果，适合在真正写入或发布前做流水线拦截。
+
+这些命令会把机器可读报告写入 `--out-dir` 下的 `outputs/` 或 `reports/` 目录。接入自动化时，应优先读取报告中的
+`status`、`blockers`、`issues`、`files` 和具体制品路径。
+
+## 数据与证据边界
+
+写入前仍会拦截 schema-invalid 行，并在输出目录记录 `failures.jsonl` 或校验报告。
+
+`dataset save-draft` 默认阻止把单位组、流属性等仅供引用的基础数据写为账号本地草稿。`--allow-account-local-support` 或 `TIANGONG_ALLOW_ACCOUNT_LOCAL_SUPPORT=1` 只用于明确授权的迁移/修复，不能作为常规绕过方式。
+
+`dataset classification apply --type location` 只在 `target_path` 明确指向 schema 派生的位置字段时允许创建缺失父对象和字段；模糊路径仍会阻断。`dataset evidence-search run` 保存计划、归一化结果、报告和必要的证据声明，但不会代替人工来源判断。
+
+要发布 LCI/LCIA 数据包，阅读[数据发布](/zh/docs/integration/cli/publishing/)；账号清理或修复需遵循[数据维护](/zh/docs/integration/cli/maintenance/)，不要用原始 SQL 或高权限密钥绕过受控流程。

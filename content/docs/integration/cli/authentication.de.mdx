@@ -1,0 +1,65 @@
+---
+title: "Anmeldung und Kontosicherheit"
+description: "Sitzung prüfen, Browser-Callbacks behandeln, abmelden oder Zugriff widerrufen und eigene Umgebungen unterscheiden."
+---
+
+Im Normalfall genügt die Browser-Anmeldung. Für die offizielle Produktionsumgebung brauchen Sie keine `.env`, Client-ID oder Schlüssel einzutragen. Beginnen Sie bei Bedarf mit [Installation und erster Abfrage](/de/docs/integration/cli/getting-started/).
+
+## Status prüfen und anmelden
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+Starten Sie die Anmeldung selbst in einem vertrauenswürdigen Terminal und bestätigen Sie im Browser Anmeldung und Freigabe. Die CLI nutzt Supabase OAuth 2.1 + S256 PKCE, speichert eine private lokale Sitzung und erneuert sie bei Bedarf. Geben Sie Benutzername, Passwort, Autorisierungscode, Access- oder Refresh-Token niemals an KI, Befehlsargumente oder Chats weiter.
+
+| Prüfung | Aussage |
+| --- | --- |
+| `auth status --json` | Lokaler Sitzungszustand: vor Anmeldung `login-required` (Exit `1`), verfügbar `ready` |
+| `auth doctor-auth --json` | Online-Identitätsprüfung, bei Erfolg `passed` |
+| `auth whoami --json` | Maskierte Live-Identität |
+| `doctor --json` | Konfigurationsbereitschaft, keine bestätigte Anmeldung |
+
+## Wenn der Browser-Callback nicht abschließt
+
+Der Standard-Callback lautet `http://127.0.0.1:49191/oauth/callback`. CLI und autorisierender Browser müssen auf demselben Computer laufen; das Terminal bleibt geöffnet. `127.0.0.1` bezeichnet diesen Computer, nicht einen entfernten Server.
+
+Ist der Port belegt, ermitteln Sie zuerst das zuständige Programm. Beenden Sie keine beliebigen Prozesse und ändern Sie den Callback nicht auf eine öffentliche Adresse. Remote-Hosts, Container und SSH benötigen geprüfte Client-/Callback-Konfigurationen und gehören nicht zum normalen Einstieg. Kopieren Sie keine Codes oder Tokens aus dem Browser.
+
+## Abmeldung und Widerruf unterscheiden
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth logout
+```
+
+`auth logout` entfernt nur die aktuelle lokale Sitzung dieses Computers. Um weitere Aktualisierungen zu verhindern, widerrufen Sie TianGong CLI unter [Verbundene Anwendungen](/de/docs/user-guide/account-profile/). Bereits ausgestellte kurzlebige Access-Tokens können bis zum Ablauf gültig bleiben; lokale Abmeldung macht nicht sofort alle Tokens ungültig.
+
+Sitzungsdateien enthalten Zugangsdaten. Niemals in Git aufnehmen, in gemeinsame Ordner synchronisieren oder in Fehlerberichte kopieren. Verwenden Sie je Konto/Projekt/Client eine eigene private `TIANGONG_LCA_SESSION_FILE`; für ein einzelnes Konto ist keine Anpassung nötig. Normale Ausgaben zeigen weder Tokens noch vollständige E-Mail-Adressen oder Sitzungspfade.
+
+## Nur für Dev, Self-Hosting oder eigene Clients
+
+Die folgende Vorlage ist keine Installationsvoraussetzung für Production. Die Administration stellt eine zusammengehörige Supabase-Projekt-URL, einen Publishable Key und einen registrierten öffentlichen Client bereit. `TIANGONG_LCA_OAUTH_CLIENT_ID` ist eine öffentliche Kennung, kein Client Secret.
+
+```bash
+TIANGONG_LCA_API_BASE_URL=https://<your-project>.supabase.co/functions/v1
+TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY=<that-project-publishable-key>
+TIANGONG_LCA_OAUTH_CLIENT_ID=<that-project-registered-public-client-id>
+TIANGONG_LCA_OAUTH_REDIRECT_URI=http://127.0.0.1:49191/oauth/callback
+TIANGONG_LCA_AUTH_MODE=oauth
+TIANGONG_LCA_REGION=us-east-1
+```
+
+- Die URL darf auf Projektwurzel, `/functions/v1` oder `/rest/v1` zeigen.
+- Der Callback muss exakt registriert sein. Eine andere unterstützte feste Loopback-URI muss mit CLI und Registrierung übereinstimmen; Wildcards sind nicht erlaubt.
+- Eigene URL-, Key-, Client- oder Callback-Werte deaktivieren die automatische Production-Ergänzung. Unvollständige Angaben scheitern vor Browser-/Netzwerkzugriff. Production-Keys/Clients nicht mit fremden Projekt-URLs mischen; ebenso bei `--base-url`.
+- Leere Werte und exakte offizielle Production-URL-Aliase können das integrierte Profil nutzen. Es wählt aber für lokale Abläufe nicht automatisch Remote-Publishing: Zielwahl, Identität, `--commit` und Freigaben bleiben erforderlich.
+
+## Grenzen unbeaufsichtigter Automatisierung
+
+Genehmigte Automatisierung muss `TIANGONG_LCA_API_BASE_URL`, den zugehörigen `TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY` und `TIANGONG_LCA_AUTH_MODE=access-token` ausdrücklich setzen, bevor ein vertrauenswürdiger Orchestrator ein kurzlebiges `TIANGONG_LCA_ACCESS_TOKEN` bereitstellt. Ein Token allein wählt niemals Production. Es wird online geprüft, nur im Prozessspeicher gehalten, nicht gespeichert und nicht automatisch erneuert.
+
+Dies ist keine Anleitung zum Kopieren von Tokens an eine KI. Supabase OAuth unterstützt weder Password- noch client-credentials-Grants. Menschliche Passwörter gehören nicht in unbeaufsichtigte Skripte. Ohne geprüfte Bereitstellung von Zugangsdaten interaktiv anmelden oder die Automatisierung anhalten.
+
+Weiter: [Automatisierung und abgesicherte Schreibvorgänge](/de/docs/integration/cli/automation/).

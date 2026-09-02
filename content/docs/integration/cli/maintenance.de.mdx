@@ -1,0 +1,92 @@
+---
+title: "Datenwartung und Reparatur"
+description: "Referenz für autorisierte Verantwortliche: Planung, Freigabe, Ausführung, Wiederherstellung und unabhängige Prüfung."
+---
+
+Wartung kann Daten verändern oder löschen. Diese Referenz nur mit ausdrücklichem Umfang, vorbereiteten Eingaben und Freigabe nutzen. Neue Nutzer beginnen mit [Nur-Lese-Abfragen](/de/docs/integration/cli/getting-started/). Dateinamen und Freigabeplatzhalter stammen aus einem realen Wartungsauftrag und sind keine fertigen Übungseingaben.
+
+Hier wird der global installierte Kurzbefehl `tiangong-lca` verwendet; die Installation steht im [Einstieg](/de/docs/integration/cli/getting-started/).
+
+## Gewöhnliche Wartung: planen, ausführen, prüfen
+
+`tiangong-lca dataset maintenance plan/apply/verify` dient kontrollierter kontobezogener Bereinigung,
+der Reparatur fehlerhafter Importe, dem Zusammenführen von Support-Daten-Aliasen und geschützten
+Neuaufbauten von Prozess-Derivaten. Es läuft als aktuell authentifizierter Nutzer und stützt sich
+auf serverseitige RLS, um sichtbare und schreibbare Zeilen zu begrenzen; behandeln Sie es nicht als
+kontoübergreifendes Admin-Batch-Werkzeug.
+
+```bash
+tiangong-lca dataset maintenance plan --scope ./maintenance-scope.json --operation redo-import --out-dir ./dataset-maintenance --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./derivative-rebuild-scope.json --operation rebuild-derivatives --out-dir ./derivative-rebuild --json
+tiangong-lca dataset maintenance apply --plan ./dataset-maintenance/maintenance-plan.json --commit --approve-plan <sha256> --confirm <current-account-email> --timeout-ms 10000 --json
+tiangong-lca dataset maintenance verify --plan ./dataset-maintenance/maintenance-plan.json --out-dir ./dataset-maintenance/verify --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./alias-scope.json --operation merge-support-aliases --out-dir ./dataset-maintenance --json
+tiangong-lca dataset maintenance flow-identity --help
+```
+
+## Geschützte Produktionsausführung
+
+Verwenden Sie `merge-support-aliases` nur für geschützte owner-draft-Reparaturen von
+Support-Daten-Aliasen. Das normale `apply` ist kein Rückfallpfad für eine versiegelte
+Produktionsausführung: Erstellen Sie zuerst den unveränderlichen Plan, lesen Sie mit
+`freeze-protected` den exakten Produktionsumfang erneut und erzeugen Sie die Freigabeanforderung,
+zeichnen Sie mit `seal-protected-approval` die bytegenaue menschliche Freigabe lokal auf und nutzen
+Sie `run-protected` nur zum Ausführen oder Prüfen einer einzelnen versiegelten Produktionsausführung.
+`verify` bewertet das Ergebnis über einen frischen Readback-Nachweis, nicht nur über den Apply-/Run-
+Bericht. Das Preflight-Timing bleibt an die serverseitige Ablaufzeit gebunden; das CLI toleriert nur
+eine kleine Server-voraus-Uhrabweichung und verlängert keine Freigabe- oder Ausführungsgültigkeit.
+Die Derivatprüfung verbindet Action Evidence aus der Datenbankdomäne mit dem frischen Snapshot;
+vergleichen Sie CLI-kanonisches JSON nicht direkt mit PostgreSQL `jsonb::text`, als wären sie dieselbe
+Hash-Domäne.
+
+## Flussidentität warten und Ausführung wiederaufnehmen
+
+Die Flussidentitätswartung nutzt den eigenen Unterworkflow `dataset maintenance flow-identity`, keinen anderen Wartungs-Runner. Üblich ist: `capture` für produktive Nur-Lese-Zählung und
+eine Datenbankattestierung, `plan` aus Kompatibilitätsrichtlinie, Review-Ledger und Live-Capture,
+`freeze` plus `seal-approval` zur Bindung der exakten Ausführungsbytes, `run` zur seriellen Übergabe
+des nächsten durable ordinal und Finalisierung erst nach fertigen Derivaten, danach `verify` zum
+unabhängigen erneuten Lesen des terminalen Scope, der Quellzeilen, öffentlichen/Support-Zeilen,
+betroffenen Prozesse und owner-draft-Referenzschließung. Bei mehrdeutiger Antwort, verlorenem
+In-Memory-Permit nach Wrapper-Ende oder später fertigen Derivaten fahren Sie nur mit
+`freeze-recovery`, `seal-recovery-approval` und `run-recovery` fort; Prozessschreibvorgänge werden
+nicht automatisch in derselben Ausführung wiederholt.
+
+## Vollständige Seitenabrufe und Parallelität
+
+`--page-size` ist das angeforderte Maximum von `1-5000`; PostgREST kann wegen einer serverseitigen
+Grenze trotzdem kleinere Seiten liefern. Das CLI fordert `Prefer: count=exact` an, validiert die
+exakte Gesamtsumme und den zurückgegebenen Bereich aus jedem `Content-Range` und erhöht den nächsten
+Offset um die tatsächlich zurückgegebenen Zeilen. Ein akzeptierter Scan muss eine strikte
+`id`- / `version`-Sortierung ohne fehlende oder doppelte Identitäten beibehalten und zeichnet je
+Tabelle angeforderte Seitengröße, effektive Seitengröße, Seitenanzahl, gelesene Zeilen, exakte
+Gesamtsumme und aggregierte Entitätszahlen auf.
+
+Dieser Vollständigkeitsnachweis bedeutet, dass das CLI das gefilterte Ergebnis durchlaufen hat,
+während Tabellenmitgliedschaft und Sortierschlüssel stabil blieben. Da der Lesevorgang mehrere HTTP
+Requests umfasst, ist er kein transaktionaler oder MVCC-Snapshot eines einzelnen Zeitpunkts;
+vermeiden Sie parallele Bereinigung, Löschung oder Einfügung für dasselbe Konto während der Wartung.
+`plan` bindet den Vollständigkeitsnachweis in den unveränderlichen Plan-Hash ein, `apply` führt vor
+Annahme der Freigabe oder Schreibvorgängen erneut den vollständigen Kontoscan samt Driftprüfung aus,
+und `verify` nutzt einen frischen vollständigen Readback-Nachweis statt nur dem Apply-Bericht zu
+vertrauen.
+
+## Prozessableitungen abnehmen
+
+`rebuild-derivatives` darf nur einen exakt versionierten aktuellen Nutzerentwurf eines Prozesses
+adressieren. Der Scope muss `action: "rebuild_derivatives"`, `target_mode: "owner_draft"`, den
+erwarteten aktuellen Owner, den erwarteten `state_code: 0` sowie den vollständigen Komponentensatz
+`extracted_md` plus `embedding_ft` deklarieren. Der Vorgang baut nur abgeleitetes Markdown und
+Embeddings neu auf; er ändert weder primäre Prozessnutzlast noch Owner, Status oder `modified_at`
+und kann keine öffentlichen/geteilten Zeilen, fremden Owner, Nicht-Entwürfe, andere Tabellen,
+mehrere Zeilen oder Teil-Komponentensätze adressieren.
+
+Bei `rebuild-derivatives` bedeutet ein erfolgreiches `apply` nur, dass die geschützte Datenbank-RPC
+die Anfrage angenommen und eingereiht hat. Es bedeutet nicht, dass Markdown oder Embedding schon
+fertig erzeugt sind. Das CLI bietet keinen Rückfall auf direkten Edge-Aufruf, `admin embedding-run`,
+Roh-Queue, SQL, service-role-Zugangsdaten oder rohe REST-Mutation; eine Wiederholung desselben Plans
+muss denselben dauerhaften Anfrage-Nachweis zurückgeben. `verify` liest die dauerhafte Anfrage plus
+einen frischen Prozess-Derivat-Snapshot und meldet nur `pending`, `passed` oder `failed`. Es besteht
+nur, wenn beide angeforderten Derivate aktuell sind und die eingefrorenen Primärfeld-Vorbedingungen
+weiterhin passen; behandeln Sie `pending` und `failed` als Nicht-Erfolg.
+
+Jeder Ablauf endet erst erfolgreich, wenn frische Rückleseergebnisse Plan und Endzustand bestätigen. Bei Umfangsänderung, abgelaufener Freigabe, unklarer Antwort oder eingereihten Ableitungen Belege behalten und unterstützte Wiederaufnahme nutzen. Schreibvorgänge nicht automatisch wiederholen.

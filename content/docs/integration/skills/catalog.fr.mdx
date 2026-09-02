@@ -1,0 +1,57 @@
+---
+title: "Catalogue et prérequis des Skills"
+description: "Choisir par tâche et distinguer recherches autonomes, workflows du dépôt complet et exigences Data Foundry."
+---
+
+Choisissez selon vos entrées et le résultat attendu, puis vérifiez prérequis et risques d’écriture. Ces 21 entrées proviennent de la [révision Skills examinée](https://github.com/tiangong-lca/skills/tree/29039bcc07a7b246acc3d4009ee641d3a6878d01). Le catalogue ne promet pas que tout sera prêt après une installation globale de son contenu.
+
+## Trois Skills de recherche installables séparément
+
+Chacun contient lanceur, exemple et références, sans clone Skills/CLI ni Data Foundry. Suivez [l’installation](/fr/docs/integration/skills/getting-started/) en remplaçant seulement le nom après `--skill`. Tous exigent les versions Node.js/pnpm indiquées et une connexion CLI OAuth effectuée par l’utilisateur.
+
+| Skill | Entrée → résultat | Prérequis ou limite |
+| --- | --- | --- |
+| `flow-hybrid-search` | Description de flux et filtres → flux candidats | Lecture distante uniquement |
+| `process-hybrid-search` | Description de procédé et filtres → procédés candidats | Lecture distante uniquement |
+| `lifecyclemodel-hybrid-search` | Description de modèle et filtres → modèles candidats | Lecture distante uniquement |
+
+## Dépôt Skills complet : construction, revue et exploitation
+
+Ces scripts utilisent encore le lanceur partagé du dépôt, parfois des règles ou fichiers d’autres Skills. Copier un dossier isolé ne suffit pas. Le responsable du workflow doit préparer l’arborescence complète, le CLI compatible et les entrées. Ce n’est pas le parcours autonome débutant.
+
+| Skill | Entrée → résultat | Prérequis ou limite |
+| --- | --- | --- |
+| `process-automated-builder` | Flux de référence, preuves et plan → construction locale et préparation de publication | Construction et publication distinctes ; accord requis pour publier |
+| `lifecyclemodel-automated-builder` | Constructions de procédés existantes → modèle de cycle de vie et connexions | Nécessite les dossiers de construction amont |
+| `lifecyclemodel-resulting-process-builder` | Modèle et procédés existants → procédé agrégé et relations | Lecture distante possible ; publication autorisée séparément |
+| `lifecyclemodel-recursive-orchestrator` | Candidats préparés et demande → modèles multiniveaux, graphe et filiation | Dépend d’autres constructeurs et de l’arborescence complète |
+| `lifecycleinventory-review` | Constructions locales ou snapshots figés → rapport qualité d’inventaire | Une revue ne vaut pas autorisation de publication |
+| `flow-governance-review` | Snapshots de flux et plan de réparation → contrôle, réparation et préparation de publication | Certains sous-commandes écrivent ; approuver chaque étape |
+| `process-dedup-review` | Snapshots de doublons groupés → recommandations de conservation/suppression et preuves | Une recommandation n’autorise pas la suppression |
+| `process-scope-statistics` | Périmètre de procédés autorisé → snapshot, statistiques et rapports | Lecture distante ; conserver périmètre et preuves de comptage |
+| `current-account-dataset-review` | Snapshots du compte courant → validation, réparation des références, brouillons et audit | Droits de revue et de réparation distincts |
+| `tiangong-lca-remote-ops` | Maintenance précise de procédés → actualisation des références et vérification après écriture | Écritures distantes possibles, pas une interface admin libre |
+| `lca-publish-executor` | Paquet de publication prêt → simulation, publication et rapports | Écriture réelle après accord explicite |
+| `embedding-ft` | Entrée opérationnelle → investigation ou traitement de tâches d’embedding | Exploitation seulement, hors parcours débutant |
+
+## Skills principalement constitués de consignes
+
+Ils organisent des fonctions CLI existantes. Installer leurs consignes ne prépare ni entrées, ni dépendances, ni droits. Respectez le périmètre de tâche ; la maintenance avancée n’est pas une recherche ordinaire.
+
+| Skill | Entrée → résultat | Prérequis ou limite |
+| --- | --- | --- |
+| `tidas-contract-context` | Type de données et tâche → contexte de schéma, méthode et règles | CLI fonctionnel requis ; prépare la création |
+| `tidas-bilingual-transcreation` | Unités de traduction extraites et preuves → champs chinois/anglais revus | Complément linguistique explicite après import, pas condition d’import/publication |
+| `dataset-rls-maintenance` | Périmètre du compte courant → plan, approbation et vérification | Peut supprimer ou modifier ; risque élevé |
+
+## Production dépendant de Data Foundry
+
+Ces tâches exigent espaces de travail, manifestes ou scripts Foundry. Installer un seul Skill ne suffit pas. Pour convertir localement, commencez par [tidas indépendant](/fr/docs/integration/tidas/).
+
+| Skill | Entrée → résultat | Prérequis ou limite |
+| --- | --- | --- |
+| `external-dataset-curated-import` | Paquet obtenu légitimement et manifeste Foundry → candidats revus | Nécessite Foundry, configuration d’import et Skills associés |
+| `source-evidence-dataset-development` | Documents sources et tâche Foundry → dossier de preuves et candidats | Outils de recherche/documents supplémentaires possibles |
+| `tidas-data-import` | Paquet ou sources → conversion/création et préparation d’import | Nécessite Foundry ; conversion locale possible directement avec tidas |
+
+Terminez une tâche en lecture seule avant d’introduire la production. Avant écriture, lisez [Organiser les tâches en sécurité](/fr/docs/integration/skills/safe-workflows/) ; pour connexion ou scripts, consultez [le dépannage](/fr/docs/integration/skills/troubleshooting/).

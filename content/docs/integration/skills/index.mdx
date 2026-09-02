@@ -1,0 +1,24 @@
+---
+title: "Agent Skills 指南"
+description: "为 AI 安装可重复使用的任务技能，从一次只读检索开始，理解权限、输入和结果。"
+---
+
+Agent Skill 是给 AI 的一组任务说明，可能附带示例、参考资料和运行脚本。它让 AI 按约定的步骤处理任务；它不是模型、数据库、账号，也不保证结果自动正确。
+
+TianGong LCA 的 Skills 负责组织任务；`tiangong-lca` CLI 负责执行平台操作并管理本机登录。你可以自己使用 CLI，也可以让支持 Skills 的 AI 客户端调用它。安装 Skill 不会获得额外权限，不要求先配置 MCP。
+
+## 第一次使用，从一个只读技能开始
+
+1. [安装一个检索技能](/zh/docs/integration/skills/getting-started/)。
+2. [完成第一次流检索并检查结果](/zh/docs/integration/skills/first-task/)。
+3. 再按[技能目录与前置条件](/zh/docs/integration/skills/catalog/)选择其他任务。
+
+入门使用 `flow-hybrid-search`，只读取数据。你将保留请求、预检和实际结果文件，并能分辨“没有匹配”“未登录”和“执行失败”。不需要克隆 Skills、CLI 或 Data Foundry 仓库。
+
+不是目录中的每个技能都能单独复制后运行。三个 hybrid-search 技能有完整的独立运行包；其他技能可能依赖完整仓库、Data Foundry、已有构建产物或额外授权。先看前置条件，再决定是否安装。
+
+不使用 AI 时，请看 [CLI 用户指南](/zh/docs/integration/cli/)；仅处理本地文件包时，请看 [tidas 工具](/zh/docs/integration/tidas/)。
+
+## 按任务阅读
+
+<CategoryDirectory lang="zh" category="integration/skills" />

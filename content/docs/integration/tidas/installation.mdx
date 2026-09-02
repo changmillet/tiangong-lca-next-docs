@@ -1,0 +1,64 @@
+---
+title: "安装与检查 tidas"
+description: "从官方发布下载 tidas 0.2.0，核对平台、校验和与命令路径。"
+---
+
+推荐使用[官方 v0.2.0 发布](https://github.com/tiangong-lca/tidas-tools/releases/tag/v0.2.0)提供的预编译程序。安装脚本会下载对应平台的固定版本归档及 `.sha256`，校验通过后才安装。你可以先下载并检查脚本，再执行。
+
+## macOS 与 Linux
+
+```bash
+curl --proto '=https' --tlsv1.2 -fsSLO https://github.com/tiangong-lca/tidas-tools/releases/download/v0.2.0/install.sh
+sh install.sh --version 0.2.0 --prefix "$HOME/.local"
+"$HOME/.local/bin/tidas" --version
+```
+
+当前终端需要把安装目录加入 `PATH`，才能直接输入 `tidas`：
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+tidas --version
+```
+
+这条 `export` 只影响当前终端。若希望长期使用，将同样的 PATH 设置加入所用 shell 的启动配置；不修改配置时，也可以始终用 `"$HOME/.local/bin/tidas"` 调用。
+
+## Windows PowerShell
+
+```powershell
+Invoke-WebRequest https://github.com/tiangong-lca/tidas-tools/releases/download/v0.2.0/install.ps1 -OutFile install.ps1
+.\install.ps1 -Version 0.2.0
+& "$env:LOCALAPPDATA\Programs\tidas\bin\tidas.exe" --version
+```
+
+安装后在当前 PowerShell 中添加命令路径：
+
+```powershell
+$env:Path = "$env:LOCALAPPDATA\Programs\tidas\bin;$env:Path"
+tidas --version
+```
+
+长期使用时，可通过 Windows 的用户环境变量设置将同一 `bin` 目录加入 `Path`，然后打开新的 PowerShell。若系统策略禁止执行脚本，请按所在组织的安全流程处理，不要为安装而关闭安全策略。
+
+## 选择正确的平台
+
+| 系统 | 架构 | 归档后缀 |
+| --- | --- | --- |
+| Linux | x86_64 | `x86_64-unknown-linux-gnu.tar.gz` |
+| Linux | ARM64 | `aarch64-unknown-linux-gnu.tar.gz` |
+| macOS | Intel | `x86_64-apple-darwin.tar.gz` |
+| macOS | Apple Silicon | `aarch64-apple-darwin.tar.gz` |
+| Windows | x86_64 | `x86_64-pc-windows-msvc.zip` |
+
+Windows ARM64 不在当前预编译支持范围内。不要把 ARM64 和 x86_64 归档混用。发布页还提供 SHA-256、SPDX SBOM、Homebrew formula 和 Winget manifest；后两者的存在不代表已经进入外部软件源。
+
+## 确认安装成功
+
+```bash
+tidas --version
+tidas version --format json
+tidas --help
+```
+
+`tidas --version` 应输出 `tidas 0.2.0`。`tidas version --format json` 输出机器可读版本信息；`tidas --help` 应列出命令。如果仍提示找不到命令，先用安装目录中的完整路径运行，排除 PATH 问题。
+
+接下来：[验证并转换第一个数据包](/zh/docs/integration/tidas/first-package/)。

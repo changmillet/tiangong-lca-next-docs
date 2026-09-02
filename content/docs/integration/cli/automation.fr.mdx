@@ -1,0 +1,57 @@
+---
+title: "Automatisation et écritures contrôlées"
+description: "Utiliser le CLI dans des scripts ou avec des agents : préparation, approbation explicite et relecture indépendante."
+---
+
+Cette page vise les opérateurs disposant d’entrées complètes, pas les débutants. Effectuez d’abord les [contrôles d’identité](/fr/docs/integration/cli/authentication/) et la [validation locale](/fr/docs/integration/cli/data-quality/). Les fichiers ci-dessous représentent des résultats propres à une tâche, pas des téléchargements fournis ici. Ne lancez pas un bloc entier comme exercice.
+
+Cette page utilise la commande courte `tiangong-lca` installée globalement ; voir [le démarrage](/fr/docs/integration/cli/getting-started/) pour l’installation.
+
+## De la préparation à la vérification
+
+1. Définir compte cible, ID/versions, champs modifiables et dossier de sortie.
+2. Valider les entrées complètes ; corriger d’abord lignes en échec, preuves manquantes et blocages.
+3. Utiliser `--dry-run` lorsque la commande le propose, puis garder le rapport. La simulation n’écrit pas et ne prouve ni les droits ni le résultat final.
+4. Présenter à l’opérateur le périmètre réel, les risques et les approbations. Obtenir un accord explicite avant écriture.
+5. Relire indépendamment identité, propriétaire, contenu et nombres. Une demande acceptée, en file ou partiellement terminée n’est pas une tâche validée.
+
+## Simuler une écriture de brouillon
+
+```bash
+tiangong-lca process save-draft --input ./patched-processes.jsonl --out-dir ./process-save-draft --dry-run --json
+tiangong-lca lifecyclemodel validate-build --run-dir ./lifecyclemodel-run --json
+```
+
+Décidez de la suite avec `status`, `counts`, `issues`, `files` et les chemins des fichiers, pas avec le seul texte du terminal. Pour écrire réellement des brouillons de procédés par lots, fournir `--target-user-id` et conserver authentification, contrôle du propriétaire et relecture. Ce guide ne fournit aucune approbation d’écriture à copier aveuglément.
+
+## Contrôles qualité avant écriture
+
+Pour les pipelines de production de données, le CLI fournit aussi des commandes de contrôle qualité
+utiles avant l'écriture, la publication ou la remise à un relecteur :
+
+```bash
+tiangong-lca process identity-preflight --input ./process-preflight.json --out-dir ./process-preflight --json
+tiangong-lca flow identity-preflight --input ./flow-preflight.json --out-dir ./flow-preflight --json
+tiangong-lca process build-plan validate --input ./process-build-plan.json --out-dir ./process-build-plan --json
+tiangong-lca flow build-plan validate --input ./flow-build-plan.json --out-dir ./flow-build-plan --json
+tiangong-lca publish run --input ./publish-request.json --dry-run --json
+```
+
+- `identity-preflight` compare un processus ou un flux cible aux données candidates et indique si l'automatisation peut le réutiliser, doit le router vers une revue manuelle, ou doit bloquer une nouvelle création.
+- `build-plan validate` vérifie qu'un plan de construction de processus ou de flux inclut les décisions d'identité, les liaisons de preuve, les plans de nommage, les décisions `unit_of_analysis` et les champs obligatoires de flux de référence ou de propriété de flux.
+- `dataset evidence-search plan/run` planifie la récupération de preuves publiques au niveau des champs et enregistre les résultats de recherche externes ; le CLI possède la matrice de requêtes, le budget, la normalisation des résultats et les artefacts de déclaration de preuve, tandis que les workflows humains ou d'agents conservent le jugement sur les sources.
+- `publish run --dry-run` rapporte les résultats du ensemble de règles de publication avant une véritable écriture ou publication.
+
+Ces commandes écrivent des rapports lisibles par machine sous `outputs/` ou `reports/` dans le
+`--out-dir` choisi. Pour l'automatisation, lisez des champs tels que `status`, `blockers`,
+`issues`, `files` et les chemins d'artefacts plutôt que de vous fier au texte du terminal.
+
+## Limites des données et des preuves
+
+Les lignes non conformes au schéma restent bloquées avant écriture et sont consignées dans `failures.jsonl` ou le rapport de validation.
+
+`dataset save-draft` bloque par défaut les brouillons locaux de fondations uniquement référentielles, comme les groupes d’unités et propriétés de flux. `--allow-account-local-support` ou `TIANGONG_ALLOW_ACCOUNT_LOCAL_SUPPORT=1` est réservé aux migrations ou réparations explicitement autorisées, pas à un contournement courant.
+
+`dataset classification apply --type location` ne peut créer un parent et un champ manquants que si `target_path` désigne explicitement un champ géographique dérivé du schéma. Les chemins ambigus restent bloqués. `dataset evidence-search run` conserve plans, résultats normalisés, rapports et déclarations de preuve nécessaires, sans remplacer le jugement humain sur les sources.
+
+Pour les paquets LCI/LCIA, consultez [la publication](/fr/docs/integration/cli/publishing/). Pour nettoyer ou réparer un compte, suivez [la maintenance](/fr/docs/integration/cli/maintenance/) ; ne contournez pas les contrôles avec du SQL brut ou des clés privilégiées.

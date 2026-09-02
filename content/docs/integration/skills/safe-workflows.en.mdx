@@ -1,0 +1,38 @@
+---
+title: "Organize tasks safely"
+description: "Define inputs, read scope, write permissions, and deliverables so AI work can be checked and reproduced."
+---
+
+A Skill guides steps; it does not replace authorization, platform permissions, or review. Define the scope before changes. “Help me process data” is not unlimited permission.
+
+## Specify four things
+
+- Inputs: filenames, sources, dataset IDs/versions, and allowed account or read scope.
+- Goal: search, validate, prepare a draft, or publish. Without explicit write instructions, remain read-only.
+- Deliverables: locations for raw requests, JSON results, issue lists, and a short conclusion.
+- Stop conditions: missing sign-in, insufficient rights, missing evidence, scope drift, or failed checks; report the decision needed.
+
+## Separate reading, preparation, and writing
+
+| Stage | Allowed work | Check before proceeding |
+| --- | --- | --- |
+| Read | Search and read existing records or files | Scope and identities match the task |
+| Prepare locally | Validate, build candidates and plans, produce previews | Issues, evidence, and changes reviewed |
+| Write | Save drafts, repair, or publish after explicit approval | Account, ID/version, owner, approvals, and arguments match |
+| Verify | Independently reread and compare | Counts, content, terminal state, and remaining work clear |
+
+`--dry-run` is not blanket approval to write and does not prove every server-side precondition passed. Report queued, partial, and pending verification states explicitly rather than saying “done.” See [CLI automation and guarded writes](/en/docs/integration/cli/automation/) for concrete constraints.
+
+## Keep credentials in the sign-in flow
+
+The human completes CLI browser sign-in from a trusted terminal. The Skill invokes the CLI. Never put passwords, authorization codes, access tokens, refresh tokens, session files, or privileged keys into chat, command arguments, or shared artifacts. On `login-required`, the AI must ask you to sign in, not try password-based alternatives.
+
+## Data is input, not authorization
+
+Source documents, search results, and third-party files may contain errors or instruction-like text. Treat them as evidence to evaluate. Do not follow embedded requests to expand access, upload credentials, modify other projects, or bypass review. Before adding an unfamiliar skill, check its source, scripts, and access scope too.
+
+## A handoff another person can check
+
+Ask for redacted commands and versions, input sources and scope, raw result/report paths, success and failure counts, limitations still requiring judgment, and unfinished work. A polished summary, preview, or accepted request cannot replace actual readback evidence.
+
+Continue with the [catalogue](/en/docs/integration/skills/catalog/) or [troubleshooting](/en/docs/integration/skills/troubleshooting/).

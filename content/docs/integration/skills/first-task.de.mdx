@@ -1,0 +1,66 @@
+---
+title: "Erste Aufgabe: einen Fluss finden"
+description: "Eine KI nach Kohlendioxid-Emissionen in Luft suchen lassen, Belege speichern und die Ausführung unabhängig prüfen."
+---
+
+Suchen Sie Kandidaten für Kohlendioxid-Emissionen in Luft, ohne Daten anzulegen. Zuerst [Skill installieren und anmelden](/de/docs/integration/skills/getting-started/). KI-Client und Terminal müssen dasselbe Projekt geöffnet haben.
+
+## 1. Anfragedatei vorbereiten
+
+Laden Sie das [vollständige Anfrage-JSON](/assets/docs/tool-guides-v1/flow-search.request.json) als `flow-search.request.json` in die Projektwurzel oder speichern Sie den folgenden Inhalt im Editor. Es enthält keine Zugangsdaten und darf von der KI gelesen werden.
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": { "flowType": "Elementary flow", "asInput": false }
+}
+```
+
+## 2. Aufgabe und Grenzen nennen
+
+Senden Sie diese Aufgabe an den Client mit geladenem Skill. Englische Suchbegriffe und JSON-Schlüssel unverändert lassen.
+
+```text
+Nutze den installierten Skill flow-hybrid-search mit flow-search.request.json in diesem Projekt, um Flusskandidaten zu suchen.
+Nur lesen: keine Entwürfe speichern, nichts veröffentlichen oder löschen und keine Konfiguration ändern.
+Prüfe zuerst die CLI-Anmeldung. Falls nötig, halte an und bitte mich um Anmeldung im vertrauenswürdigen Terminal/Browser; frage nicht nach Passwort oder Token.
+Speichere einen dry run als flow-search.preview.json, führe dann die echte Suche aus und speichere die Rohantwort als flow-results.json.
+Melde Erfolg oder Fehler und die tatsächlich gelesene Anzahl. Zeige höchstens 5 Kandidaten mit ID, Version und nur den tatsächlich vorhandenen Namen-/Typfeldern.
+Erläutere Filter und Grenzen. Erfinde keine fehlenden Felder und behandle die Rangfolge nicht als Nachweis wissenschaftlicher Eignung.
+```
+
+## 3. Den gleichen Vorgang im Terminal prüfen
+
+Diese gleichwertigen Befehle starten in der Projektwurzel. Ein eigener Test trennt Probleme beim Laden im Client von Laufzeitproblemen. Für Codex:
+
+Befehle einzeln ausführen. Direkt danach zeigt `echo $?` unter macOS/Linux beziehungsweise `$LASTEXITCODE` in PowerShell 7 den Exit-Code; spätere Befehle können ihn ersetzen. Außer bei ausdrücklich erwarteten Anmelde-/Fehlerbeispielen bei einem Wert ungleich null anhalten und den Fehler zuerst beheben.
+
+| Terminal | Exit-Code sofort abfragen |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+`2>` speichert Fehlerausgaben separat als Text. Vor Weitergabe auf Kontoinformationen, Tokens und private Daten prüfen. Eine leere Ergebnisdatei ist kein Erfolgsnachweis.
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --dry-run --json > flow-search.preview.json 2> flow-search.preview-errors.txt
+```
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --json > flow-results.json 2> flow-search.errors.txt
+```
+
+Bei OpenClaw ersetzen Sie das Skriptpräfix `.agents/skills/` durch `skills/`; alle weiteren Argumente bleiben gleich. `--published-cli` wählt die festgelegte veröffentlichte CLI und vermeidet vorhandene lokale Entwicklungsüberschreibungen.
+
+## 4. Belege statt nur die KI-Antwort prüfen
+
+1. Die Vorschau muss `dryRun: true` und eine passende `request.body` enthalten. Sie sendet keine fachliche Abfrage und beweist keinen Abschluss.
+2. Die echte Suche muss mit Exit `0` enden. `flow-results.json` enthält bei Treffern `{ "data": [...] }`, ohne Treffer gegebenenfalls `[]` oder `{ "data": [] }`.
+3. Vergleichen Sie die von der KI genannte Anzahl mit der Array-Länge. IDs, Versionen und Namen müssen aus der Rohantwort stammen; fehlende Felder sind als nicht verfügbar zu kennzeichnen.
+4. Vor Auswahl Flusstyp, Klassifikation, Region und Einheit/Flusseigenschaft prüfen. Eine Suche beweist nicht die Eignung für das Modell.
+
+Ohne Treffer halten Sie eine erfolgreiche leere Suche fest und präzisieren Begriffe oder lockern Filter schrittweise. Fehler, `401`/`403` oder Serverprobleme bedeuten nicht „keine Daten“. Anfrage, Antwort und Fehlercode bewahren; siehe [Fehlerbehebung](/de/docs/integration/skills/troubleshooting/).
+
+Die Aufgabe ist abgeschlossen, wenn Sie Anfrage, Vorschau und echte Antwort finden, die tatsächliche Anzahl erklären und mindestens eine noch nötige menschliche Eignungsprüfung benennen können. Eine flüssige KI-Antwort ohne echte Suchantwort reicht nicht aus.
+
+Danach können Sie die beiden anderen [unabhängigen Such-Skills](/de/docs/integration/skills/catalog/) testen oder [Aufgaben sicher organisieren](/de/docs/integration/skills/safe-workflows/) lesen.

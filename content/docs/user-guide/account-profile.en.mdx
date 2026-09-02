@@ -32,7 +32,7 @@ After the CLI or remote MCP is authorized in the browser for the first time, it 
 - Confirm the current account and application name on the consent page before allowing access.
 - Revoking an application immediately deletes its Supabase grant and prevents future refreshes.
 - An already issued short-lived access token can remain valid until expiry; sensitive endpoints follow their own online-validation contract.
-- After revocation, the client must start browser authorization again. Run `tiangong-lca auth login` for the CLI or reconnect the MCP host.
+- After revocation, the client must start browser authorization again. Run `pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login` for the CLI or reconnect the MCP host.
 - CLI `auth logout` or a local MCP disconnect removes only local state; it is not account-side revocation.
 
 ## CLI, MCP, and automation

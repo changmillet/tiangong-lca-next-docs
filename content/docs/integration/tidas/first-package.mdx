@@ -1,0 +1,96 @@
+---
+title: "验证并转换第一个数据包"
+description: "用可下载的教学文件完成本地验证、eILCD 转换和往返复验，并理解报告边界。"
+---
+
+你将把一个完整的 Flow JSON 转换为 eILCD XML，再转回 TIDAS 并验证。先完成[安装](/zh/docs/integration/tidas/installation/)，确认 `tidas --version` 为 `tidas 0.2.0`。后面的操作都在同一个新建练习文件夹中进行。
+
+## 1. 下载教学文件
+
+在希望保存练习文件的位置执行下面两条命令。它们适用于 macOS/Linux 和 PowerShell 7；目录已存在时换一个新的名称。此后所有相对路径都以这个练习目录为起点。
+
+```bash
+mkdir tidas-practice
+cd tidas-practice
+```
+
+下载[教学用 Flow JSON](/assets/docs/tool-guides-v1/demo-flow.json)，放到 `sample/flows/demo-flow.json`。`flows` 是数据类型目录，不可把 JSON 随意放在数据包根目录。可以用文件管理器创建目录并保存文件，或使用下面的命令。
+
+macOS / Linux：
+
+```bash
+mkdir -p sample/flows
+curl --proto '=https' --tlsv1.2 -fsSL https://docs.tiangong.earth/assets/docs/tool-guides-v1/demo-flow.json -o sample/flows/demo-flow.json
+```
+
+Windows PowerShell：
+
+```powershell
+New-Item -ItemType Directory -Force sample/flows
+Invoke-WebRequest https://docs.tiangong.earth/assets/docs/tool-guides-v1/demo-flow.json -OutFile sample/flows/demo-flow.json
+```
+
+文件中的 UUID 和引用均为虚构，仅用于演示结构校验和转换。它不是完整的生产依赖包，不应上传平台、发布或用于计算。
+
+## 2. 验证 TIDAS JSON
+
+逐条运行命令。每条结束后，立即在 macOS/Linux 输入 `echo $?`，或在 PowerShell 7 输入 `$LASTEXITCODE` 查看退出码；之后的命令可能覆盖这个值。除本页明确说明的未登录/错误演示外，非零时先停下处理错误，不执行下一步。
+
+| 终端 | 立即查看上一条命令的退出码 |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+```bash
+tidas validate sample --input-format tidas-json --format json
+```
+
+成功时退出码为 `0`，`status` 为 `succeeded`，`exit_class` 为 `success`。查看下列字段，确认实际验证了 1 个文档，而不是验证了一个空目录：
+
+| 字段 | 本例预期 |
+| --- | --- |
+| `summary.validation.document_count` | `1` |
+| `summary.validation.error_count` | `0` |
+| `summary.eilcd_projection_validation.ok` | `true`，eILCD 投影通过 XSD 检查 |
+| `summary.semantic_roundtrip.ok` | `true`，转换后可恢复源数据语义 |
+
+## 3. 转换为 eILCD 并验证输出
+
+请保留输出路径的 `./` 前缀，并使用尚不存在的输出目录；输入与输出不能重叠。结果位于 `converted/data/`，不是 `converted/` 根目录。首次运行会同时带出配套 schema 等资源。
+
+```bash
+tidas convert sample --output ./converted --to ilcd --format json
+```
+
+```bash
+tidas validate converted/data --input-format ilcd-xml --format json
+```
+
+转换报告中的 `summary.conversion.converted_file_count` 应为 `1`。第二条验证命令的 `summary.validation.document_count` 应为 `1`、`error_count` 为 `0`。成功创建文件不等于输出已经通过验证，两条命令都要检查。
+
+## 4. 转回 TIDAS 并再次验证
+
+```bash
+tidas convert converted/data --output ./roundtrip --to tidas --format json
+```
+
+```bash
+tidas validate roundtrip/data --input-format tidas-json --format json
+```
+
+最后一次验证也应为 `succeeded`、文档数 `1`、错误数 `0`。这就完成了一次“输入校验 → 转换 → 输出校验 → 回转复验”。保留 `sample`、`converted`、`roundtrip` 便于比较；再次练习时使用新的输出目录。
+
+重复练习时，最简单的方式是重新创建一个新的外层练习目录，并原样执行教程。若只改输出目录名，必须同步修改之后每一个验证/转换命令中的对应路径，避免验证上次留下的旧文件。
+
+## 如何判断成功和失败
+
+本例成功证明：这份文档符合工具的结构与语义规则、可以产生符合 XSD 的 eILCD 表示，并能恢复源语义。它不证明引用的其他数据真实存在、依赖已经闭合，也不替代科学审查或发布审批。
+
+| 现象 | 如何处理 |
+| --- | --- |
+| 文档数是 `0` | 检查输入路径和 `flows` 子目录，不要把空扫描视为完成任务 |
+| `completed-with-issues`，退出码 `2` | 查看错误路径与诊断，修复源文件再运行 |
+| `failed`，退出码 `74` | 检查文件存在、写入权限及输出路径；`0.2.0` 请使用 `./converted` 这样的明确目录路径 |
+| 输出目录已存在 | 选择新的目录，不要覆盖此前的输入或成果 |
+
+需要保存完整问题清单、导入其他格式或接入脚本时，继续阅读[命令与报告参考](/zh/docs/integration/tidas/reference/)。

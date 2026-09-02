@@ -3,6 +3,8 @@
   "pages": [
     "index",
     "cli",
+    "skills",
+    "tidas",
     "mcp-lca-local",
     "mcp-lca-remote",
     "mcp-kb-remote"

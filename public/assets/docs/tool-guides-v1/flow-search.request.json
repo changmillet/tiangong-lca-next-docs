@@ -1,0 +1,7 @@
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": {
+    "flowType": "Elementary flow",
+    "asInput": false
+  }
+}

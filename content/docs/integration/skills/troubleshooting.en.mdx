@@ -1,0 +1,48 @@
+---
+title: "Troubleshooting and updates"
+description: "Distinguish discovery, runtime, sign-in, and empty-result issues, and safely update or remove one skill."
+---
+
+Check client discovery, local execution, sign-in, then remote responses—in that order. This keeps a local path problem from being mistaken for a platform permission issue.
+
+| Symptom | Check and action |
+| --- | --- |
+| Client cannot find the skill | Open the same project used for installation, list records, start a new session, and name the skill |
+| Missing `run-flow-hybrid-search.mjs` | Run from the project root; Codex uses `.agents/skills/`, OpenClaw uses `skills/` |
+| Missing `scripts/lib/cli-launcher.mjs` | The package is incomplete; reinstall a supported standalone skill, not only its instructions |
+| Node/pnpm rejected | Current launcher needs exactly `24.19.0` / `11.24.0`; check in the client’s actual terminal |
+| Local CLI missing or source build starts | Check development overrides; introductory commands use `--published-cli`, not local source |
+| `login-required` | Sign in yourself; confirm script and terminal use the same OS user and session context |
+| `401` / `403` | Check live identity, then ask an administrator about client/data access; never bypass with privileged keys |
+| `400` | Check nonempty `query`, UTF-8, and complete JSON |
+| `500` or timeout | Retain redacted error and time; investigate service failure, not absence of matches |
+| `[]` or empty `data` | With successful exit, this can be valid no-match output; refine query/filters, do not fabricate candidates |
+
+## Check installation and identity only
+
+```bash
+pnpm dlx skills@1.5.23 list --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+## Keep an update record
+
+Installer and Skill versions differ: `skills@1.5.23` pins the installer, while `tiangong-lca/skills` can change upstream. Keep `skills-lock.json`, current files, and verified results. Before updating, check for local modifications and preserve needed changes in version control or a backup.
+
+```bash
+pnpm dlx skills@1.5.23 update flow-hybrid-search --project --yes
+```
+
+Update only this skill in the current project, not unrelated skills. Afterward, recheck prerequisites and run a preview and a read-only task before production use.
+
+## Remove a skill you no longer use
+
+The following removes only the named skill for Codex in the current project. For OpenClaw, use `--agent openclaw` instead; check the target first. Removing a Skill does not revoke platform sign-in; see [account safety](/en/docs/integration/cli/authentication/).
+
+```bash
+pnpm dlx skills@1.5.23 remove flow-hybrid-search --agent codex --yes
+```
+
+## What to include in a bug report
+
+Include client, OS, Node/pnpm/CLI/installer versions, skill name, redacted command, exit/error codes, and a minimal nonsensitive request. Do not attach sessions, codes, tokens, full emails, or private packages. Report skill problems in [Skills issues](https://github.com/tiangong-lca/skills/issues) and CLI runtime problems in [CLI issues](https://github.com/tiangong-lca/tiangong-cli/issues).

@@ -1,0 +1,58 @@
+---
+title: "校验本地数据与理解报告"
+description: "用完整示例执行本地校验，定位错误，并理解校验、预检和写入之间的区别。"
+---
+
+本页不访问平台，也不需要登录。你会验证一份教学用 Flow JSON，并得到可以在编辑器中阅读的报告。
+
+## 1. 准备完整输入
+
+下载[教学用 Flow JSON](/assets/docs/tool-guides-v1/demo-flow.json)，保存为当前练习文件夹中的 `demo-flow.json`。它的 UUID 和引用都是虚构的，只用于学习，不能发布或用于 LCA 计算。
+
+CLI 接受单个 JSON 对象、JSON 数组、带 `rows` 数组的对象，以及每行一个完整对象的 JSONL 文件。本例是一个带 `flowDataSet` 根字段的完整 JSON 文档；不要把搜索结果的摘要直接当成完整数据集。
+
+## 2. 执行校验
+
+逐条运行命令。每条结束后，立即在 macOS/Linux 输入 `echo $?`，或在 PowerShell 7 输入 `$LASTEXITCODE` 查看退出码；之后的命令可能覆盖这个值。除本页明确说明的未登录/错误演示外，非零时先停下处理错误，不执行下一步。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./demo-flow.json --type flow --out-dir ./flow-validation --json
+```
+
+命令退出码应为 `0`。打开 `flow-validation/outputs/validation-report.json`；报告关键字段应为：
+
+```json
+{
+  "status": "completed",
+  "counts": { "total": 1, "valid": 1, "invalid": 0 }
+}
+```
+
+## 3. 根据报告处理数据
+
+| 结果 | 下一步 |
+| --- | --- |
+| `counts.valid: 1`、`counts.invalid: 0` | 本例符合 CLI 的结构校验；继续阅读它的内容和引用边界 |
+| `completed_with_failures` | 查看 `rows[].issues` 的 `path`、`code`、`message`，修正后重新校验 |
+| 无法读取或解析输入 | 核对文件位置、UTF-8 编码及 JSON 语法，再运行 |
+| `outputs/invalid-rows.jsonl` 有内容 | 保留失败记录，不能把它们当作成功记录继续写入 |
+
+`outputs/valid-rows.jsonl` 是通过校验的行，`outputs/invalid-rows.jsonl` 是失败行。每行一个 JSON 对象，不是一个外层数组；两份文件可能为空。
+
+## 4. 练习定位一个错误
+
+另存一份为 `broken-flow.json`，在文本编辑器中删除 `flowDataSet.flowInformation.dataSetInformation.name.baseName` 字段，然后用下面命令验证。保留原始 `demo-flow.json` 不变。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./broken-flow.json --type flow --out-dir ./broken-validation --json
+```
+
+这次应为非零退出码、`completed_with_failures` 且 `counts.invalid: 1`。在报告中定位 `baseName` 相关的 `path`，恢复字段后再验证。不要只看终端里是否生成了文件。
+
+## 校验通过能证明什么
+
+CLI 在写入前使用 TIDAS SDK 校验结构；快速校验失败时会进一步生成更具体的错误路径。它不替代数据来源审查、方法学判断、引用完整性检查、科学质量评价或发布授权。本例引用是虚构的，即使结构通过，也不是可用的生产数据。
+
+分类路径可以在自然分类深度结束；不要补空层级。重复级别、过深路径和非法值仍会被阻止。数据含导入占位标记、本地路径或缺失声明时，应先修复来源内容，不要为通过校验而删掉真实问题。
+
+本地数据包的 eILCD 可转换性和往返验证属于独立的 [tidas 教程](/zh/docs/integration/tidas/first-package/)。准备进行草稿写入时，先阅读[自动化与受控写入](/zh/docs/integration/cli/automation/)。

@@ -24,7 +24,7 @@ interface PortalCopy {
   exploreEyebrow: string;
   exploreTitle: string;
   exploreDescription: string;
-  explore: [PortalLink, PortalLink, PortalLink, PortalLink];
+  explore: [PortalLink, PortalLink, PortalLink, PortalLink, PortalLink, PortalLink];
 }
 
 const copy: Record<Language, PortalCopy> = {
@@ -52,10 +52,12 @@ const copy: Record<Language, PortalCopy> = {
     ],
     exploreEyebrow: '继续深入',
     exploreTitle: '按专业主题浏览',
-    exploreDescription: '面向数据生产、系统集成和私有化部署的参考资料。',
+    exploreDescription: '命令行、AI 技能和本地文件工具各有独立入门指南，也可继续查阅方法、接口与部署。',
     explore: [
       { code: 'METHOD', title: '数据收集与建模方法', description: '规范、案例与质量检查', slug: 'data-collection' },
-      { code: 'CONNECT', title: '集成与扩展', description: 'MCP、CLI 与外部工具', slug: 'integration' },
+      { code: 'CLI', title: 'CLI 用户指南', description: '安装、登录并完成第一次查询', slug: 'integration/cli' },
+      { code: 'SKILLS', title: 'Agent Skills 指南', description: '安装一个技能，让 AI 完成可核对的任务', slug: 'integration/skills' },
+      { code: 'TIDAS', title: '本地 tidas 工具', description: '无需登录，验证与转换本地数据包', slug: 'integration/tidas' },
       { code: 'API', title: 'OpenAPI', description: '接口约定与调用示例', slug: 'openapi' },
       { code: 'OPERATE', title: '部署与开发', description: '私有化部署和开发环境', slug: 'deploy-and-dev' },
     ],
@@ -84,10 +86,12 @@ const copy: Record<Language, PortalCopy> = {
     ],
     exploreEyebrow: 'Explore further',
     exploreTitle: 'Browse by technical subject',
-    exploreDescription: 'References for data production, system integration, and self-hosted operation.',
+    exploreDescription: 'Separate first-task guides for command-line, AI, and local-file tools, alongside methodology, API, and deployment references.',
     explore: [
       { code: 'METHOD', title: 'Data collection and modelling', description: 'Rules, cases, and quality checks', slug: 'data-collection' },
-      { code: 'CONNECT', title: 'Integrations and extensions', description: 'MCP, CLI, and external tools', slug: 'integration' },
+      { code: 'CLI', title: 'CLI user guide', description: 'Install, sign in, and run your first query', slug: 'integration/cli' },
+      { code: 'SKILLS', title: 'Agent Skills guide', description: 'Install one skill and verify an AI-led task', slug: 'integration/skills' },
+      { code: 'TIDAS', title: 'Local tidas tools', description: 'Validate and convert packages without sign-in', slug: 'integration/tidas' },
       { code: 'API', title: 'OpenAPI', description: 'Interface conventions and examples', slug: 'openapi' },
       { code: 'OPERATE', title: 'Deployment and development', description: 'Self-hosting and development setup', slug: 'deploy-and-dev' },
     ],
@@ -116,10 +120,12 @@ const copy: Record<Language, PortalCopy> = {
     ],
     exploreEyebrow: 'Weiterführende Themen',
     exploreTitle: 'Nach Fachthema durchsuchen',
-    exploreDescription: 'Referenzen für Datenproduktion, Systemintegration und eigenen Betrieb.',
+    exploreDescription: 'Eigene Einstiege für Kommandozeile, KI und lokale Dateien sowie Referenzen zu Methoden, API und Betrieb.',
     explore: [
       { code: 'METHOD', title: 'Datensammlung und Modellierung', description: 'Regeln, Fälle und Qualitätsprüfungen', slug: 'data-collection' },
-      { code: 'CONNECT', title: 'Integrationen und Erweiterungen', description: 'MCP, CLI und externe Werkzeuge', slug: 'integration' },
+      { code: 'CLI', title: 'CLI-Benutzerhandbuch', description: 'Installieren, anmelden und erstmals abfragen', slug: 'integration/cli' },
+      { code: 'SKILLS', title: 'Agent-Skills-Handbuch', description: 'Einen Skill installieren und KI-Ergebnisse prüfen', slug: 'integration/skills' },
+      { code: 'TIDAS', title: 'Lokale tidas-Werkzeuge', description: 'Pakete ohne Anmeldung prüfen und konvertieren', slug: 'integration/tidas' },
       { code: 'API', title: 'OpenAPI', description: 'Schnittstellenregeln und Beispiele', slug: 'openapi' },
       { code: 'OPERATE', title: 'Bereitstellung und Entwicklung', description: 'Self-Hosting und Entwicklungsumgebung', slug: 'deploy-and-dev' },
     ],
@@ -148,10 +154,12 @@ const copy: Record<Language, PortalCopy> = {
     ],
     exploreEyebrow: 'Pour aller plus loin',
     exploreTitle: 'Parcourir par sujet technique',
-    exploreDescription: 'Références pour la production de données, l’intégration de systèmes et l’auto-hébergement.',
+    exploreDescription: 'Des parcours distincts pour commandes, IA et fichiers locaux, avec des références de méthode, API et déploiement.',
     explore: [
       { code: 'METHOD', title: 'Collecte et modélisation', description: 'Règles, cas et contrôles qualité', slug: 'data-collection' },
-      { code: 'CONNECT', title: 'Intégrations et extensions', description: 'MCP, CLI et outils externes', slug: 'integration' },
+      { code: 'CLI', title: 'Guide utilisateur CLI', description: 'Installer, se connecter et lancer une requête', slug: 'integration/cli' },
+      { code: 'SKILLS', title: 'Guide Agent Skills', description: 'Installer un Skill et vérifier une tâche IA', slug: 'integration/skills' },
+      { code: 'TIDAS', title: 'Outils tidas locaux', description: 'Valider et convertir sans connexion', slug: 'integration/tidas' },
       { code: 'API', title: 'OpenAPI', description: 'Conventions d’interface et exemples', slug: 'openapi' },
       { code: 'OPERATE', title: 'Déploiement et développement', description: 'Auto-hébergement et environnement', slug: 'deploy-and-dev' },
     ],

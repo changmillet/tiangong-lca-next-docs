@@ -1,0 +1,48 @@
+---
+title: "故障排查与更新"
+description: "区分技能未加载、运行环境错误、登录问题和空结果，并安全更新或移除单个技能。"
+---
+
+按“客户端发现 → 本地运行 → 登录 → 远程响应”的顺序检查。这样不会把一个本地路径问题误当成平台权限问题。
+
+| 现象 | 检查和处理 |
+| --- | --- |
+| 客户端不知道这个技能 | 确认打开的是安装时的同一项目，列出安装记录，新开会话并明确技能名 |
+| 找不到 `run-flow-hybrid-search.mjs` | 从项目根执行；Codex 用 `.agents/skills/`，OpenClaw 用 `skills/` |
+| 缺少 `scripts/lib/cli-launcher.mjs` | 安装包不完整；重新安装被支持的独立技能，不要只复制说明文件 |
+| Node/pnpm 版本被拒绝 | 当前启动器要求精确 `24.19.0` / `11.24.0`，在客户端实际终端核对 |
+| 提示缺少本地 CLI 或正在构建源码 | 检查开发覆盖；入门命令使用 `--published-cli`，不需要本地源码 |
+| `login-required` | 本人登录；检查 AI 脚本与终端是否使用同一系统用户和登录上下文 |
+| `401` / `403` | 执行在线身份检查；仍失败时请管理员核对客户端/数据权限，不使用高权限密钥绕过 |
+| `400` | 检查非空 `query`、UTF-8 与完整 JSON |
+| `500` 或超时 | 保存脱敏错误与时间，按服务故障排查；不是无匹配证明 |
+| `[]` 或空 `data` | 退出码成功时可为正常空结果；调整查询/筛选，不伪造候选 |
+
+## 只检查安装和身份
+
+```bash
+pnpm dlx skills@1.5.23 list --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+## 更新时保留可追溯记录
+
+安装器版本和 Skill 内容版本是两回事：`skills@1.5.23` 固定的是安装器，`tiangong-lca/skills` 内容可能随上游更新。保留 `skills-lock.json`、当前技能文件和已验证的结果；更新前确认有无本地修改，并把需要保留的修改保存到版本控制或备份中。
+
+```bash
+pnpm dlx skills@1.5.23 update flow-hybrid-search --project --yes
+```
+
+只更新当前项目的这个技能，不批量更新其他技能。更新后重新核对运行条件，跑一次预检和只读任务，再交给生产工作流使用。
+
+## 移除不再使用的技能
+
+下面只移除 Codex 当前项目中的指定技能。若你要移除 OpenClaw 安装，改为 `--agent openclaw`；执行前确认目标。移除 Skill 不会替你撤销平台登录，登录撤销方法见[账号安全](/zh/docs/integration/cli/authentication/)。
+
+```bash
+pnpm dlx skills@1.5.23 remove flow-hybrid-search --agent codex --yes
+```
+
+## 提交问题时带什么
+
+提供客户端、操作系统、Node/pnpm/CLI/安装器版本、技能名、脱敏命令、退出码和错误码，以及不含敏感数据的最小请求。不要附上会话文件、授权码、token、完整邮箱或私有数据包。可在 [Skills 问题页](https://github.com/tiangong-lca/skills/issues)反馈技能问题；CLI 运行问题可在 [CLI 问题页](https://github.com/tiangong-lca/tiangong-cli/issues)反馈。

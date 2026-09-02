@@ -1,0 +1,136 @@
+---
+title: "安装、登录与第一次查询"
+description: "在终端登录 TianGong LCA，读取 3 条公开过程，并理解返回结果。"
+---
+
+完成本页后，你会在当前文件夹得到 `processes.json`：最多 3 条按最近修改时间排列的公开过程。这是一次只读查询，不会改变平台数据。
+
+## 1. 准备终端和账号
+
+先打开 [TianGong LCA 正式站点](https://lca.tiangong.earth/)；没有账号时按注册入口和页面提示操作。Windows 示例使用 PowerShell 7，避免旧版 PowerShell 将 `>` 输出保存成不适合后续 JSON 处理的编码。
+
+准备一个可以登录 TianGong LCA 的账号；没有账号时先完成[注册与登录](/zh/docs/quick-start/first-login/)。终端可以使用 macOS/Linux 的 shell 或 Windows PowerShell。
+
+安装 [Node.js](https://nodejs.org/download/release/v24.19.0/) `24.19.0` 和 [pnpm](https://pnpm.io/installation) `11.24.0`。安装后重新打开终端，确认下面两个命令分别输出 `v24.19.0` 和 `11.24.0`。CLI 支持 Node.js `>=24.19.0 <25`，但固定为 `24.19.0` 也能满足后续 Skills 教程。
+
+```bash
+node --version
+pnpm --version
+```
+
+新建一个空的练习文件夹，并在其中打开终端。后面的 `--input` 和输出文件路径都相对于这个文件夹。
+
+### 还没有对应版本时
+
+在 [Node.js 24.19.0 下载页](https://nodejs.org/download/release/v24.19.0/)中，macOS 选择 `node-v24.19.0.pkg`，Windows 选择与你电脑架构匹配的 `x64.msi` 或 `arm64.msi`，打开安装包完成安装。Linux 选择对应架构的 `.tar.xz`，解压后将其中的 `bin` 加入 PATH；已有版本管理器时可用它切换到 `24.19.0`，不要覆盖组织管理的环境。
+
+缺少 pnpm 时，以下是[官方独立安装方式](https://pnpm.io/installation)的固定版本写法。先下载并检查脚本，按当前平台执行一组；已有 pnpm 则可用 `pnpm self-update 11.24.0`。安装后按提示更新 PATH 或重新打开终端，再核对版本。
+
+macOS Apple Silicon / Linux：
+
+```bash
+curl --proto '=https' --tlsv1.2 -fsSL https://get.pnpm.io/install.sh -o install-pnpm.sh
+env PNPM_VERSION=11.24.0 sh install-pnpm.sh
+```
+
+Windows PowerShell 7：
+
+```powershell
+Invoke-WebRequest https://get.pnpm.io/install.ps1 -OutFile install-pnpm.ps1
+$env:PNPM_VERSION = "11.24.0"
+.\install-pnpm.ps1
+```
+
+注意：pnpm 11 的独立安装脚本不支持 Intel macOS。该平台请按官方安装说明选择使用系统 Node.js 的安装方式，再确认版本为 `11.24.0`；不要反复运行上面的独立脚本。受管理电脑应由管理员准备匹配的工具链。
+
+在希望保存练习文件的位置执行下面两条命令。它们适用于 macOS/Linux 和 PowerShell 7；目录已存在时换一个新的名称。此后所有相对路径都以这个练习目录为起点。
+
+```bash
+mkdir cli-practice
+cd cli-practice
+```
+
+## 2. 运行固定版本
+
+下面的命令会下载并运行 CLI `0.1.8`，以后复用本地缓存，不需要全局安装或项目源码。首次下载需要网络。官方生产环境已带有公开连接配置，不需要准备 `.env`、client ID 或 API Key。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+```
+
+第一次看到 `"status":"login-required"` 和退出码 `1` 是正常的：CLI 已可运行，但还没有登录。不要为此填写环境变量。
+
+逐条运行命令。每条结束后，立即在 macOS/Linux 输入 `echo $?`，或在 PowerShell 7 输入 `$LASTEXITCODE` 查看退出码；之后的命令可能覆盖这个值。除本页明确说明的未登录/错误演示外，非零时先停下处理错误，不执行下一步。
+
+| 终端 | 立即查看上一条命令的退出码 |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+## 3. 在浏览器中登录
+
+由你本人在可信终端执行以下命令。在打开的浏览器中登录并确认 TianGong CLI 授权，然后回到终端；不要关闭等待回调的终端窗口。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+`auth status` 的 `ready` 表示本地会话可用；`auth doctor-auth` 的 `passed` 表示已通过在线身份检查。仅运行 `doctor` 不能证明已登录。不要把密码、授权码或 token 复制给 AI。
+
+## 4. 读取最近修改的公开过程
+
+在同一个终端运行：
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
+```
+
+`>` 把 JSON 结果保存到当前文件夹。用文本编辑器打开 `processes.json`。`--state-code 100` 限定公开记录；`--limit 3` 最多读取 3 条；排序先按 `modified_at` 降序，再用 `id` 和 `version` 稳定排序。未传 `--order` 时，CLI 的默认值是 `id.asc,version.asc`，不是按名称或修改时间。
+
+## 5. 看懂结果
+
+一次成功响应包含以下字段；这里省略了完整过程内容，展示的是字段节选，不是固定的数据数量：
+
+```json
+{
+  "status": "listed_remote_processes",
+  "count": 0,
+  "rows": []
+}
+```
+
+| 字段 | 如何理解 |
+| --- | --- |
+| `status` | `listed_remote_processes` 表示列表查询成功 |
+| `count` | 本次返回的记录数，不是数据库总量 |
+| `rows` | 记录数组；每条的 `process` 是完整过程数据 |
+| `id` + `version` | 一条数据集记录的身份；引用时一起保留 |
+| `modified_at` | 最近修改时间，不是数据集版本号 |
+
+本页完成的标准：命令退出码为 `0`，`status` 为 `listed_remote_processes`，`count` 与 `rows.length` 相同且不超过 `3`。`count: 0`、`rows: []` 也可能是一次成功的空查询；它不证明整个数据库没有数据。
+
+## 遇到问题时
+
+| 现象 | 下一步 |
+| --- | --- |
+| `node` 或 `pnpm` 找不到，或版本不符 | 按上面的官方安装说明处理，重开终端后核对版本 |
+| `login-required` | 本人重新执行登录，再运行 `auth doctor-auth --json` |
+| 浏览器已登录，终端仍等待 | 确认回调在同一台电脑、端口未被占用；见[登录与账号安全](/zh/docs/integration/cli/authentication/) |
+| `401` / `403` | 检查在线身份；仍失败时联系管理员核对客户端/数据权限，不要换用高权限密钥 |
+| 文件为空或不是预期 JSON | 先检查终端错误和退出码；文件被创建不等于请求成功 |
+
+接下来：[查询与读取数据](/zh/docs/integration/cli/queries/)会带你检索流，并按 ID 读取完整过程。
+
+## 可选：安装常用短命令
+
+想在日常使用时输入短命令，可以全局安装。若 pnpm 提示全局命令目录未配置，运行 `pnpm setup` 并重新打开终端后再安装。后续高级章节使用这种短命令写法。
+
+```bash
+pnpm add --global @tiangong-lca/cli@0.1.8
+tiangong-lca --help
+```

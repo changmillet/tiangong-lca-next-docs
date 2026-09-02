@@ -1,0 +1,66 @@
+---
+title: "第一次任务：查找一个流"
+description: "让 AI 查询大气排放的二氧化碳，保留请求和结果，并独立核对执行是否成功。"
+---
+
+目标是检索“大气排放的二氧化碳”候选流，而不是创建数据。先完成[技能安装和登录](/zh/docs/integration/skills/getting-started/)，并保持 AI 客户端与终端打开同一个项目目录。
+
+## 1. 准备请求文件
+
+下载[完整请求 JSON](/assets/docs/tool-guides-v1/flow-search.request.json)到项目根目录，命名为 `flow-search.request.json`，或用编辑器保存以下内容。此文件没有凭据，可以供 AI 阅读。
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": { "flowType": "Elementary flow", "asInput": false }
+}
+```
+
+## 2. 向 AI 说明任务和边界
+
+把下面这段任务发给已经加载技能的客户端。文件中的英文检索词和 JSON 字段无需翻译。
+
+```text
+请使用已安装的 flow-hybrid-search 技能，根据当前项目的 flow-search.request.json 查找候选流。
+这是只读任务：不要保存草稿、发布、删除数据或更改配置。
+先检查 CLI 登录状态；如果需要登录，暂停并让我在可信终端完成浏览器授权，不要索要密码或 token。
+先运行 dry run，将预检结果保存为 flow-search.preview.json；再执行真实查询，保存原始结果为 flow-results.json。
+告诉我命令是否成功、实际返回多少条；最多展示 5 条候选的 ID、版本以及结果中实际存在的名称/类型信息。
+说明筛选条件与结果的局限，不要补造缺失字段，不要把相关性排序当作科学适用性结论。
+```
+
+## 3. 用终端核对同一操作
+
+下面是从项目根目录执行的等价命令。你可以先自己运行，以区分客户端是否加载技能与脚本是否能够执行。Codex 安装位置：
+
+逐条运行命令。每条结束后，立即在 macOS/Linux 输入 `echo $?`，或在 PowerShell 7 输入 `$LASTEXITCODE` 查看退出码；之后的命令可能覆盖这个值。除本页明确说明的未登录/错误演示外，非零时先停下处理错误，不执行下一步。
+
+| 终端 | 立即查看上一条命令的退出码 |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+命令中的 `2>` 将错误输出另存为文本。分享日志前先确认没有账号信息、token 或私有数据；空结果文件本身不是成功证明。
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --dry-run --json > flow-search.preview.json 2> flow-search.preview-errors.txt
+```
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --json > flow-results.json 2> flow-search.errors.txt
+```
+
+OpenClaw 安装时，将脚本前缀 `.agents/skills/` 换为 `skills/`，其他参数相同。`--published-cli` 明确使用固定的发布版 CLI，避免误用机器上已有的开发目录覆盖。
+
+## 4. 检查结果，而不是只看 AI 的回答
+
+1. 预检文件中应为 `dryRun: true`，`request.body` 与你的请求一致。它不发出业务查询，不是任务已完成的证据。
+2. 真实查询应以退出码 `0` 结束。打开 `flow-results.json`：有匹配时为 `{ "data": [...] }`，无匹配时可为 `[]` 或 `{ "data": [] }`。
+3. 核对 AI 报告的数量与原始数组长度一致；候选的 ID、版本和名称必须来自原始结果，没有的字段应标明未提供。
+4. 选用数据前检查流类型、分类、地区和单位/流属性；只读检索不会自动证明候选可用于你的模型。
+
+没有匹配时，记录本次查询为成功但无结果，再调整词语或逐步放宽筛选。命令失败、`401`/`403` 或服务器错误不能解释成“没有数据”。请保留原始请求、结果和错误码，按[故障排查](/zh/docs/integration/skills/troubleshooting/)处理。
+
+完成标准：你能找到请求、预检和实际结果文件，解释真实返回条数，并指出至少一项仍需人工核对的适用条件。即使 AI 给出流畅回答，缺少实际查询结果也不算完成。
+
+下一步可尝试目录中的另外两个[独立检索技能](/zh/docs/integration/skills/catalog/)，或先阅读[安全地组织任务](/zh/docs/integration/skills/safe-workflows/)。

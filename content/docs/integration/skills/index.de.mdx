@@ -1,0 +1,24 @@
+---
+title: "Agent-Skills-Handbuch"
+description: "Wiederverwendbare KI-Aufgaben installieren, mit einer Nur-Lese-Suche beginnen und Rechte, Eingaben und Ergebnisse verstehen."
+---
+
+Ein Agent Skill enthält Aufgabenanweisungen für eine KI, gegebenenfalls mit Beispielen, Referenzen und ausführbaren Skripten. Er unterstützt einen wiederholbaren Ablauf. Er ist weder Modell, Datenbank noch Konto und garantiert keine korrekten Ergebnisse.
+
+TianGong-LCA-Skills organisieren Aufgaben; die `tiangong-lca`-CLI führt Plattformoperationen aus und verwaltet die lokale Anmeldung. Sie können die CLI selbst oder über einen Skills-fähigen KI-Client nutzen. Eine Skill-Installation erteilt keine zusätzlichen Rechte und setzt keine MCP-Einrichtung voraus.
+
+## Mit einem Nur-Lese-Skill beginnen
+
+1. [Einen Such-Skill installieren](/de/docs/integration/skills/getting-started/).
+2. [Die erste Flusssuche ausführen und prüfen](/de/docs/integration/skills/first-task/).
+3. Weitere Aufgaben im [Skill-Katalog mit Voraussetzungen](/de/docs/integration/skills/catalog/) auswählen.
+
+Der Einstieg nutzt den nur lesenden `flow-hybrid-search`. Sie bewahren Anfrage, Vorschau und echte Antwort auf und unterscheiden keine Treffer, fehlende Anmeldung und Ausführungsfehler. Ein Checkout von Skills, CLI oder Data Foundry ist nicht nötig.
+
+Nicht jeder Katalogeintrag funktioniert durch Kopieren eines einzelnen Ordners. Die drei hybrid-search-Skills enthalten eine vollständige unabhängige Laufzeit. Andere benötigen das gesamte Repository, Data Foundry, vorhandene Build-Ergebnisse oder zusätzliche Freigaben. Voraussetzungen zuerst prüfen.
+
+Ohne KI verwenden Sie das [CLI-Benutzerhandbuch](/de/docs/integration/cli/); für lokale Dateipakete die [tidas-Werkzeuge](/de/docs/integration/tidas/).
+
+## Nach Aufgabe lesen
+
+<CategoryDirectory lang="de" category="integration/skills" />

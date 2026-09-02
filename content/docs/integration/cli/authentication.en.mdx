@@ -1,0 +1,65 @@
+---
+title: "Sign-in and account safety"
+description: "Check session status, handle browser callbacks, sign out or revoke access, and separate normal use from custom configuration."
+---
+
+Normal users only need browser sign-in. Official Production does not ask you to fill in an `.env`, client ID, or key. Start with [installation and your first query](/en/docs/integration/cli/getting-started/) if this is your first visit.
+
+## Check status and sign in
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+Start sign-in yourself in a trusted terminal, then authenticate and consent in the browser. The CLI uses Supabase OAuth 2.1 + S256 PKCE, stores a private session locally, and refreshes it as needed. Never give an AI, command argument, or chat a username, password, authorization code, access token, or refresh token.
+
+| Check | What it proves |
+| --- | --- |
+| `auth status --json` | Local session state: `login-required` (exit `1`) before sign-in, `ready` when available |
+| `auth doctor-auth --json` | Online identity verification; `passed` on success |
+| `auth whoami --json` | Redacted live identity |
+| `doctor --json` | Configuration readiness, not user sign-in |
+
+## If the browser callback does not finish
+
+The default callback is `http://127.0.0.1:49191/oauth/callback`. Run the CLI and authorizing browser on the same computer and keep the terminal running. `127.0.0.1` means that computer, not a remote server.
+
+If the port is busy, identify the owning program first. Do not kill arbitrary processes or change the callback to a public address. Remote hosts, containers, and SSH need reviewed client/callback configuration and are not the normal first-login flow. Do not copy authorization codes or tokens out of the browser.
+
+## Sign-out and revocation are different
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth logout
+```
+
+`auth logout` only removes the current local session from this computer. To stop future refresh, revoke TianGong CLI in your account’s [Connected applications](/en/docs/user-guide/account-profile/). An already issued short-lived access token may remain valid until expiry; local sign-out does not instantly invalidate every token.
+
+Session files contain credentials. Never commit them to Git, sync them to shared folders, or paste them into bug reports. Use a different private `TIANGONG_LCA_SESSION_FILE` for each account/project/client context; normal single-account use needs no override. Normal command output omits tokens, full email addresses, and session paths.
+
+## Dev, self-hosted, or custom clients only
+
+The following is a configuration template, not a Production installation step. Ask the environment administrator for a complete matching Supabase project URL, publishable key, and registered public client. `TIANGONG_LCA_OAUTH_CLIENT_ID` is a public identifier, not a client secret.
+
+```bash
+TIANGONG_LCA_API_BASE_URL=https://<your-project>.supabase.co/functions/v1
+TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY=<that-project-publishable-key>
+TIANGONG_LCA_OAUTH_CLIENT_ID=<that-project-registered-public-client-id>
+TIANGONG_LCA_OAUTH_REDIRECT_URI=http://127.0.0.1:49191/oauth/callback
+TIANGONG_LCA_AUTH_MODE=oauth
+TIANGONG_LCA_REGION=us-east-1
+```
+
+- The URL may be the project root, `/functions/v1`, or `/rest/v1`.
+- Register the callback exactly. Another supported fixed loopback URI must match both CLI configuration and registration; wildcards are unsupported.
+- Any custom URL, key, client, or callback disables automatic Production completion. Incomplete configuration fails before browser/network access. Do not pair Production keys/clients with another project URL; `--base-url` follows the same rule.
+- Blank settings and exact official Production URL aliases can use the built-in profile. That public profile does not automatically select remote publishing for a local workflow: explicit destination, identity, `--commit`, and approval checks still apply.
+
+## Limits of headless automation
+
+Approved automation must explicitly set `TIANGONG_LCA_API_BASE_URL`, that project’s `TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY`, and `TIANGONG_LCA_AUTH_MODE=access-token` before a trusted orchestrator injects a short-lived `TIANGONG_LCA_ACCESS_TOKEN`. A token alone never selects Production. It is verified online, retained only in process memory, neither persisted nor automatically refreshed.
+
+This is not a procedure for copying tokens to an AI. Supabase OAuth provides neither password nor client-credentials grants. Do not put a human password in an unattended script. Without an audited credential-injection mechanism, use interactive sign-in or pause the automation.
+
+Next: [Automation and guarded writes](/en/docs/integration/cli/automation/).

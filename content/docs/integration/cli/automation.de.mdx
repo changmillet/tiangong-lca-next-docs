@@ -1,0 +1,57 @@
+---
+title: "Automatisierung und abgesicherte Schreibvorgänge"
+description: "CLI in Skripten oder mit Agenten nutzen: Vorprüfung, ausdrückliche Freigabe und unabhängiges Rücklesen."
+---
+
+Diese Seite richtet sich an Verantwortliche mit vollständigen Eingabedateien, nicht an Erstnutzer. Führen Sie zuerst [Identitätsprüfungen](/de/docs/integration/cli/authentication/) und [lokale Validierung](/de/docs/integration/cli/data-quality/) durch. Die Dateinamen unten stehen für aufgabenspezifische Ergebnisse, nicht für Downloads. Befehlsblöcke nicht vollständig als Übung ausführen.
+
+Hier wird der global installierte Kurzbefehl `tiangong-lca` verwendet; die Installation steht im [Einstieg](/de/docs/integration/cli/getting-started/).
+
+## Von der Vorbereitung zur Prüfung
+
+1. Zielkonto, Datensatz-IDs/Versionen, erlaubte Feldänderungen und Ausgabeordner festlegen.
+2. Vollständige Eingaben prüfen; fehlerhafte Zeilen, Evidenzlücken und Blockaden zuerst beheben.
+3. Bei unterstützten Befehlen `--dry-run` verwenden und Bericht speichern. Ein Probelauf schreibt nicht und beweist weder Zugriff noch Endergebnis.
+4. Der verantwortlichen Person tatsächlichen Umfang, Risiken und Freigabedetails zeigen. Vor echten Änderungen ausdrückliche Zustimmung einholen.
+5. Identität, Eigentümer, Inhalt und Anzahl unabhängig zurücklesen. Angenommen, eingereiht oder teilweise abgeschlossen bedeutet noch nicht abgenommen.
+
+## Entwurfsschreibvorgang vorprüfen
+
+```bash
+tiangong-lca process save-draft --input ./patched-processes.jsonl --out-dir ./process-save-draft --dry-run --json
+tiangong-lca lifecyclemodel validate-build --run-dir ./lifecyclemodel-run --json
+```
+
+Entscheiden Sie anhand von `status`, `counts`, `issues`, `files` und Ergebnispfaden, nicht allein nach Terminaltext. Für echte Batch-Prozessentwürfe `--target-user-id` angeben und Authentifizierung, Eigentümerprüfung sowie Rücklesen beibehalten. Dieses Handbuch erteilt keine kopierbare Schreibfreigabe.
+
+## Qualitätsprüfungen vor dem Schreiben
+
+Für Datenproduktions-Pipelines stellt das CLI außerdem Qualitäts-Gate-Befehle bereit, die vor dem
+Schreiben von Daten, dem Veröffentlichen oder der Übergabe an einen Prüfer nützlich sind:
+
+```bash
+tiangong-lca process identity-preflight --input ./process-preflight.json --out-dir ./process-preflight --json
+tiangong-lca flow identity-preflight --input ./flow-preflight.json --out-dir ./flow-preflight --json
+tiangong-lca process build-plan validate --input ./process-build-plan.json --out-dir ./process-build-plan --json
+tiangong-lca flow build-plan validate --input ./flow-build-plan.json --out-dir ./flow-build-plan --json
+tiangong-lca publish run --input ./publish-request.json --dry-run --json
+```
+
+- `identity-preflight` vergleicht einen Zielprozess oder -fluss mit Kandidatendaten und meldet, ob die Automatisierung ihn wiederverwenden kann, an die manuelle Prüfung weiterleiten oder eine Neuanlage blockieren sollte.
+- `build-plan validate` prüft, ob ein Prozess- oder Fluss-Bauplan Identitätsentscheidungen, Evidenz-Bindungen, Benennungspläne, `unit_of_analysis`-Entscheidungen sowie die erforderlichen Referenzfluss- oder Flusseigenschaftsfelder enthält.
+- `dataset evidence-search plan/run` plant den feldweisen Abruf öffentlicher Evidenz und zeichnet externe Suchergebnisse auf; das CLI besitzt Abfragematrix, Budget, Ergebnis-Normalisierung und die Artefakte der Evidenzdeklaration, während Menschen- oder Agenten-Workflows weiterhin die Quellenbewertung verantworten.
+- `publish run --dry-run` meldet die Ergebnisse des Veröffentlichungs-Regelwerks vor einem echten Schreib- oder Veröffentlichungsschritt.
+
+Diese Befehle schreiben maschinenlesbare Berichte unter `outputs/` oder `reports/` im gewählten
+`--out-dir`. Lesen Sie für die Automatisierung Felder wie `status`, `blockers`, `issues`, `files`
+und Artefaktpfade, statt sich auf Terminaltext zu verlassen.
+
+## Daten- und Evidenzgrenzen
+
+Schemawidrige Zeilen bleiben vor Schreibvorgängen gesperrt und werden in `failures.jsonl` oder im Prüfbericht erfasst.
+
+`dataset save-draft` sperrt standardmäßig kontolokale Entwürfe rein referenzieller Grunddaten wie Einheitengruppen und Flusseigenschaften. `--allow-account-local-support` oder `TIANGONG_ALLOW_ACCOUNT_LOCAL_SUPPORT=1` nur bei ausdrücklich genehmigter Migration oder Reparatur verwenden, nicht als reguläre Umgehung.
+
+`dataset classification apply --type location` kann fehlende Elternobjekte und Felder nur anlegen, wenn `target_path` eindeutig ein schema-abgeleitetes Standortfeld bezeichnet. Mehrdeutige Pfade bleiben gesperrt. `dataset evidence-search run` speichert Pläne, normalisierte Ergebnisse, Berichte und notwendige Evidenzerklärungen, ersetzt aber keine menschliche Quellenbewertung.
+
+Für LCI/LCIA-Pakete siehe [Datenveröffentlichung](/de/docs/integration/cli/publishing/). Kontobereinigung und Reparatur folgen der [Datenwartung](/de/docs/integration/cli/maintenance/); Schutzmaßnahmen nicht mit direktem SQL oder privilegierten Schlüsseln umgehen.

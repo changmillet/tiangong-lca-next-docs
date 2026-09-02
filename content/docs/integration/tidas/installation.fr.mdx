@@ -1,0 +1,64 @@
+---
+title: "Installer et vérifier tidas"
+description: "Installer tidas 0.2.0 depuis la publication officielle et vérifier plateforme, empreinte et chemin de commande."
+---
+
+Utilisez les exécutables précompilés de la [version officielle v0.2.0](https://github.com/tiangong-lca/tidas-tools/releases/tag/v0.2.0). Les scripts téléchargent l’archive fixe de la plateforme et son `.sha256`, puis installent après vérification. Vous pouvez télécharger et examiner le script avant de l’exécuter.
+
+## macOS et Linux
+
+```bash
+curl --proto '=https' --tlsv1.2 -fsSLO https://github.com/tiangong-lca/tidas-tools/releases/download/v0.2.0/install.sh
+sh install.sh --version 0.2.0 --prefix "$HOME/.local"
+"$HOME/.local/bin/tidas" --version
+```
+
+Ajoutez le dossier d’installation au `PATH` du terminal courant pour appeler directement `tidas` :
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+tidas --version
+```
+
+Cet `export` ne vaut que pour le terminal courant. Pour le conserver, ajoutez le même réglage PATH à la configuration de démarrage du shell. Sinon, utilisez toujours le chemin complet `"$HOME/.local/bin/tidas"`.
+
+## Windows PowerShell
+
+```powershell
+Invoke-WebRequest https://github.com/tiangong-lca/tidas-tools/releases/download/v0.2.0/install.ps1 -OutFile install.ps1
+.\install.ps1 -Version 0.2.0
+& "$env:LOCALAPPDATA\Programs\tidas\bin\tidas.exe" --version
+```
+
+Après installation, ajoutez le chemin dans la session PowerShell courante :
+
+```powershell
+$env:Path = "$env:LOCALAPPDATA\Programs\tidas\bin;$env:Path"
+tidas --version
+```
+
+Pour le conserver, ajoutez ce même dossier `bin` à la variable utilisateur Windows `Path`, puis ouvrez une nouvelle session PowerShell. Si la politique de votre organisation bloque les scripts, suivez sa procédure de sécurité plutôt que de désactiver cette politique.
+
+## Choisir la bonne plateforme
+
+| Système | Architecture | Suffixe de l’archive |
+| --- | --- | --- |
+| Linux | x86_64 | `x86_64-unknown-linux-gnu.tar.gz` |
+| Linux | ARM64 | `aarch64-unknown-linux-gnu.tar.gz` |
+| macOS | Intel | `x86_64-apple-darwin.tar.gz` |
+| macOS | Apple Silicon | `aarch64-apple-darwin.tar.gz` |
+| Windows | x86_64 | `x86_64-pc-windows-msvc.zip` |
+
+Windows ARM64 ne dispose pas d’exécutable précompilé dans cette version. Ne mélangez pas archives ARM64 et x86_64. La publication comprend aussi SHA-256, SBOM SPDX, formule Homebrew et manifestes Winget ; ces deux derniers n’impliquent pas une disponibilité dans des dépôts externes.
+
+## Confirmer l’installation
+
+```bash
+tidas --version
+tidas version --format json
+tidas --help
+```
+
+`tidas --version` doit afficher `tidas 0.2.0`. `tidas version --format json` fournit les détails lisibles par machine, et `tidas --help` les commandes. Si la commande reste introuvable, testez son chemin d’installation complet pour identifier un problème de PATH.
+
+Suite : [Valider et convertir votre premier paquet](/fr/docs/integration/tidas/first-package/).

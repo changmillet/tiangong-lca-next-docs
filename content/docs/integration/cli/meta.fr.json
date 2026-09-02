@@ -1,0 +1,13 @@
+{
+  "title": "Guide utilisateur CLI",
+  "pages": [
+    "index",
+    "getting-started",
+    "queries",
+    "data-quality",
+    "authentication",
+    "automation",
+    "publishing",
+    "maintenance"
+  ]
+}

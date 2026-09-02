@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { toolGuideSections } from '../lib/public-doc-inventory.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const locales = ['', '.en', '.de', '.fr'];
@@ -11,7 +12,11 @@ function read(relativePath) {
   return readFileSync(path.join(root, relativePath), 'utf8');
 }
 
-const cliPages = locales.map((locale) => `content/docs/integration/cli${locale}.mdx`);
+const cliPages = locales.map((locale) => `content/docs/integration/cli/authentication${locale}.mdx`);
+const cliStartPages = locales.map((locale) => `content/docs/integration/cli/getting-started${locale}.mdx`);
+const guidePages = locales.flatMap((locale) => ['cli', 'skills'].flatMap((section) =>
+  toolGuideSections[section].map((slug) => `content/docs/integration/${section}/${slug}${locale}.mdx`),
+));
 const mcpPages = locales.map((locale) => `content/docs/integration/mcp-lca-remote${locale}.mdx`);
 const accountPages = locales.map(
   (locale) => `content/docs/user-guide/account-profile${locale}.mdx`,
@@ -19,7 +24,7 @@ const accountPages = locales.map(
 const importPages = locales.map(
   (locale) => `content/docs/openapi/tidas-package-import${locale}.mdx`,
 );
-const authPages = [...cliPages, ...mcpPages, ...accountPages, ...importPages];
+const authPages = [...guidePages, ...mcpPages, ...accountPages, ...importPages];
 const forbiddenCredentialSetup =
   /TIANGONG_LCA_API_KEY\s*=|USER_API_KEY|oauth\/demo|Generate\s+(?:an?\s+)?API[- ]?Key|生成\s*API[- ]?Key|API[- ]?Key\s*生成|API[- ]?(?:Key|Schlüssel)\s+generieren|G[eé]n[eé]rer\s+(?:une\s+)?cl[eé]\s+API|Authorization.*Bearer XXX|Exchange Authorization Code|Exchange for tokens/iu;
 const forbiddenMcpBroker =
@@ -65,7 +70,7 @@ test('every CLI locale documents browser login, local status, live doctor, and h
 });
 
 test('CLI first-login examples are pinned and do not require public environment placeholders', () => {
-  for (const relativePath of cliPages) {
+  for (const relativePath of cliStartPages) {
     const text = read(relativePath);
     const blocks = [...text.matchAll(/```(?:bash|shell|text)\n([\s\S]*?)```/gu)].map((match) => match[1]);
     const firstLogin = blocks.find((block) => /tiangong-lca auth login/u.test(block));
@@ -73,9 +78,14 @@ test('CLI first-login examples are pinned and do not require public environment 
     assert.match(firstLogin, /@tiangong-lca\/cli@0\.1\.8/u, relativePath);
     assert.doesNotMatch(firstLogin, /TIANGONG_LCA_(?:API_BASE_URL|SUPABASE_PUBLISHABLE_KEY|OAUTH_CLIENT_ID)\s*=/u, relativePath);
     assert.doesNotMatch(text, /@tiangong-lca\/cli@latest/u, relativePath);
+    assert.doesNotMatch(text, /TIANGONG_LCA_(?:API_BASE_URL|SUPABASE_PUBLISHABLE_KEY|OAUTH_CLIENT_ID)\s*=/u, relativePath);
+    assert.match(text, /\/integration\/cli\/authentication\//u, relativePath);
+  }
+  for (const relativePath of cliPages) {
+    const text = read(relativePath);
     assert.match(text, /http:\/\/127\.0\.0\.1:49191\/oauth\/callback/u, relativePath);
     assert.match(text, /TIANGONG_LCA_AUTH_MODE=access-token/u, relativePath);
-    assert.ok(text.indexOf(firstLogin) < text.indexOf('TIANGONG_LCA_API_BASE_URL='), relativePath);
+    assert.ok(text.indexOf('tiangong-lca auth login') < text.indexOf('TIANGONG_LCA_API_BASE_URL='), relativePath);
   }
 });
 

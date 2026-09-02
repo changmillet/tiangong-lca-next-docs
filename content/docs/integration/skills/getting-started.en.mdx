@@ -1,0 +1,85 @@
+---
+title: "Install one search skill"
+description: "Install Flow Hybrid Search in your project and check its files, runtime, and CLI sign-in."
+---
+
+This page uses `flow-hybrid-search`. Install one project-scoped skill so its behavior is easy to inspect. You do not need the full catalogue or a server key.
+
+## 1. Check prerequisites
+
+- A Skills-capable client that can execute local commands. This guide covers Codex and OpenClaw locations; a plain chat webpage cannot run these local scripts.
+- **Exactly Node.js `24.19.0`** and **pnpm `11.24.0`**. The current launcher checks both exact versions; not every Node 24 version works.
+- Git and network access for the installer to retrieve the Skills repository; first execution also downloads the pinned CLI.
+- A TianGong LCA account and a local project folder you allow the AI to access.
+
+If Node.js or pnpm is missing, follow the [CLI setup instructions](/en/docs/integration/cli/getting-started/). Open a terminal at the root of the project where the AI will work and check these commands.
+
+```bash
+node --version
+pnpm --version
+git --version
+```
+
+## 2. Choose your client and run one installation
+
+Codex:
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent codex --copy --yes
+```
+
+OpenClaw:
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent openclaw --copy --yes
+```
+
+Install for both only if you use both. `--skill` selects the named skill, `--agent` selects the client, and `--copy` copies its runtime files. These are project-scoped installations. `--yes` skips installer confirmation, so check the source and skill name before running it.
+
+## 3. Confirm the project installation
+
+| Client | Skill directory in this project |
+| --- | --- |
+| Codex | `.agents/skills/flow-hybrid-search/` |
+| OpenClaw | `skills/flow-hybrid-search/` |
+
+Expect `SKILL.md`, `scripts/run-flow-hybrid-search.mjs`, `scripts/lib/cli-launcher.mjs`, and `assets/example-request.json`. Do not copy only `SKILL.md`. Keep the root `skills-lock.json` installation record for update review; it is not a login credential.
+
+List the project’s installation records with the command below. Then open the same project in the AI client, start a new session, and explicitly ask for `flow-hybrid-search`. An installation record does not prove that the current session loaded the skill; if it is missing, use [troubleshooting](/en/docs/integration/skills/troubleshooting/).
+
+```bash
+pnpm dlx skills@1.5.23 list --json
+```
+
+The installation reviewed here corresponds to Skills commit `29039bcc07a7b246acc3d4009ee641d3a6878d01`. With this installer, `skills.flow-hybrid-search.computedHash` in `skills-lock.json` should match the value below. This is an installation fingerprint, not a signature. If it differs, review the changed source and prerequisites and run a preview before relying on this guide’s verified behavior.
+
+```json
+{
+  "computedHash": "3f682fcb97616cf20b97ee7f70120616e58f9ff2bf65bead54d9728d94da4c59"
+}
+```
+
+### Confirm that the client read the skill
+
+Send this check in a new session. The client’s skill/file-read activity should show the appropriate `SKILL.md`, and the answer should explain “request JSON → read-only flow-search result.” A claim of “I can do that” alone is not loading evidence.
+
+```text
+Do not execute a business command yet. Confirm you can read flow-hybrid-search’s SKILL.md in this project and report the actual path, required inputs, and outputs.
+The Codex path is .agents/skills/flow-hybrid-search/SKILL.md; the OpenClaw path is skills/flow-hybrid-search/SKILL.md. Read only the path for this client.
+```
+
+If there is no read activity or discovery still fails, explicitly attach the appropriate local `SKILL.md` and ask the client to follow it. If the client cannot read project files or run local commands, use the CLI tutorial instead; do not claim Skills acceptance is complete.
+
+## 4. Sign in to the CLI yourself
+
+Remote search uses the CLI’s private local session. Check status first. For `login-required`, sign in yourself from a trusted terminal and complete browser authorization; do not send a password or token to the AI.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+The script’s OS user and environment must be able to use the same sign-in context. Official Production needs no `.env`, public client ID, or local CLI source. Only custom environments need [complete matching configuration](/en/docs/integration/cli/authentication/). Skills do not store a second OAuth session.
+
+Next: [Run your first flow search](/en/docs/integration/skills/first-task/).

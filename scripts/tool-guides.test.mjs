@@ -72,7 +72,7 @@ test('local tidas examples use the published native version and do not require p
     assert.match(install, /install\.ps1 -Version 0\.2\.0/u);
     const tutorial = read(page('tidas', 'first-package', locale.suffix));
     assert.match(tutorial, /tidas validate sample --input-format tidas-json/u);
-    assert.match(tutorial, /tidas convert sample --output converted --to ilcd/u);
+    assert.match(tutorial, /tidas convert sample --output \.\/converted --to ilcd/u);
     assert.match(tutorial, /tidas validate converted\/data --input-format ilcd-xml/u);
     assert.doesNotMatch(tutorial, /auth login|TIDAS_DATABASE_URL|--schema-only/u);
   }

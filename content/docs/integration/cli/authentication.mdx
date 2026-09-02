@@ -1,0 +1,65 @@
+---
+title: "登录与账号安全"
+description: "检查登录状态、处理浏览器回调、退出或撤销授权，并区分普通用户与自定义环境配置。"
+---
+
+普通用户只需要浏览器登录。官方生产环境不要求你填写 `.env`、client ID 或密钥；第一次使用请从[安装与首次查询](/zh/docs/integration/cli/getting-started/)开始。
+
+## 检查状态并登录
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+由你本人在可信终端启动登录，在浏览器中完成登录和授权。CLI 使用 Supabase OAuth 2.1 + S256 PKCE，并在本机保存私有会话；后续按需刷新。不要把用户名、密码、授权码、access token 或 refresh token 交给 AI、命令参数或聊天窗口。
+
+| 检查 | 能证明什么 |
+| --- | --- |
+| `auth status --json` | 本地会话状态；首次未登录为 `login-required`（退出码 `1`），可用为 `ready` |
+| `auth doctor-auth --json` | 在线身份检查；通过时为 `passed` |
+| `auth whoami --json` | 经脱敏的在线身份信息 |
+| `doctor --json` | 配置是否就绪，不代表用户已登录 |
+
+## 浏览器回调没有完成
+
+默认回调是 `http://127.0.0.1:49191/oauth/callback`。CLI 与完成授权的浏览器应在同一台电脑，终端要保持运行。`127.0.0.1` 指当前电脑，不是远程服务器。
+
+如果端口占用，先确认占用程序；不要随意杀进程或把回调改成公网地址。远程主机、容器、SSH 等情形需要经过审核的回调/客户端配置，不属于普通首次登录流程。不要手工从浏览器复制授权码或 token。
+
+## 退出与撤销是两件事
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth logout
+```
+
+`auth logout` 只删除这台电脑上的当前本地会话。要阻止后续刷新，请在账号的[已连接应用](/zh/docs/user-guide/account-profile/)中撤销 TianGong CLI 授权。已签发的短期 access token 可能在过期前仍有效；不能把本地退出描述成所有 token 立即失效。
+
+会话文件包含敏感凭据，不要提交到 Git、同步到共享文件夹或粘贴到问题报告。多个账号/项目/客户端应使用不同的私有 `TIANGONG_LCA_SESSION_FILE`；普通单账号用户不需要改这个配置。正常命令输出不会显示 token、完整邮箱或会话路径。
+
+## 仅用于 Dev、自托管或自定义客户端
+
+以下是配置模板，不是生产用户安装步骤。由环境管理员提供同一 Supabase 项目的完整 URL、publishable key 和已注册公开客户端。`TIANGONG_LCA_OAUTH_CLIENT_ID` 是公开标识，不是 client secret。
+
+```bash
+TIANGONG_LCA_API_BASE_URL=https://<your-project>.supabase.co/functions/v1
+TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY=<that-project-publishable-key>
+TIANGONG_LCA_OAUTH_CLIENT_ID=<that-project-registered-public-client-id>
+TIANGONG_LCA_OAUTH_REDIRECT_URI=http://127.0.0.1:49191/oauth/callback
+TIANGONG_LCA_AUTH_MODE=oauth
+TIANGONG_LCA_REGION=us-east-1
+```
+
+- URL 可为项目根、`/functions/v1` 或 `/rest/v1`。
+- 回调必须精确注册；如改用另一个受支持的固定 loopback URI，CLI 配置和客户端注册必须同时匹配，不支持通配符。
+- 任意自定义 URL、key、client 或 callback 会关闭生产配置自动补齐；不完整配置会在浏览器/网络访问前失败。不要将生产 key/client 与其他项目 URL 混用，`--base-url` 也遵守此规则。
+- 空配置和官方生产 URL 的精确别名可以使用内置配置。内置公开配置不意味着本地发布工作流自动切到远程；显式远程选择、身份、`--commit` 和审批检查仍然有效。
+
+## 无浏览器自动化的边界
+
+经过批准的自动化必须先明确设置目标 `TIANGONG_LCA_API_BASE_URL`、该项目的 `TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY` 和 `TIANGONG_LCA_AUTH_MODE=access-token`，再由受信任的调度器注入短期 `TIANGONG_LCA_ACCESS_TOKEN`。只有 token 不会自动选中生产环境。它会在线验证，只留在进程内存，不持久保存、不自动刷新。
+
+这不是给 AI 复制 token 的操作步骤。Supabase OAuth 不提供 password 或 client-credentials grant；不能把人的账号密码塞进无人值守脚本。尚未具备受审计凭据注入方式时，使用交互式登录或暂停自动化。
+
+下一步：[自动化与受控写入](/zh/docs/integration/cli/automation/)。
