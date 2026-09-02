@@ -138,42 +138,49 @@ Les pipelines doivent inspecter à la fois le code de sortie et les champs JSON 
 
 ## Installer et exécuter `tiangong-lca`
 
-Pour les requêtes distantes, l'écriture de brouillons et les workflows de revue, exécutez une fois
-le dernier paquet publié :
+Utilisez `@tiangong-lca/cli@0.1.8`, qui corrige la première connexion, avec Node.js `>=24.19.0 <25` et pnpm `11.24.0`. La Production officielle ne nécessite ni `.env` ni identifiant client fourni par un administrateur. Vérifiez le statut, puis laissez l'utilisateur lancer la connexion depuis un terminal de confiance :
 
 ```bash
-npm exec --yes --package=@tiangong-lca/cli@latest -- tiangong-lca --help
-npm exec --yes --package=@tiangong-lca/cli@latest -- tiangong-lca doctor
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
 ```
 
 Installation globale :
 
 ```bash
-npm install --global @tiangong-lca/cli
+pnpm add --global @tiangong-lca/cli@0.1.8
 tiangong-lca --help
-tiangong-lca doctor
+tiangong-lca auth login
+tiangong-lca auth doctor-auth --json
 ```
 
 ## Variables d'environnement
 
-Les commandes distantes utilisent l'autorisation navigateur Supabase OAuth 2.1. Configurez l'URL de l'API, la clé publiable et l'identifiant public du client OAuth propre à l'environnement :
+Les commandes distantes utilisent Supabase OAuth 2.1 + S256 PKCE dans le navigateur. Le CLI embarque un profil public Production unique : URL, clé publiable, identifiant du client CLI, callback enregistré et région. Les Skills ne dupliquent pas ce profil. Il s'agit de configuration applicative, pas d'identifiants utilisateur ; aucun client secret n'est requis. Avant la première connexion, `auth status` et `auth doctor-auth` renvoient `login-required` (code 1). `doctor` confirme la configuration, pas la connexion d'un utilisateur.
+
+Seuls Dev, un environnement auto-hébergé ou un client public personnalisé nécessitent la configuration complète suivante. URL, clé et client doivent appartenir au même projet ; ces espaces réservés ne sont pas des prérequis pour la Production officielle :
 
 ```bash
-TIANGONG_LCA_API_BASE_URL=
-TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY=
-TIANGONG_LCA_OAUTH_CLIENT_ID=
+TIANGONG_LCA_API_BASE_URL=https://<your-project>.supabase.co/functions/v1
+TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY=<that-project-publishable-key>
+TIANGONG_LCA_OAUTH_CLIENT_ID=<that-project-registered-public-client-id>
+TIANGONG_LCA_OAUTH_REDIRECT_URI=http://127.0.0.1:49191/oauth/callback
 TIANGONG_LCA_AUTH_MODE=oauth
 TIANGONG_LCA_REGION=us-east-1
 ```
 
 - `TIANGONG_LCA_API_BASE_URL` peut pointer vers la racine du projet, `/functions/v1` ou `/rest/v1`.
-- `TIANGONG_LCA_OAUTH_CLIENT_ID` est un identifiant public, pas un secret ; Dev et Production utilisent des ID différents.
+- `TIANGONG_LCA_OAUTH_CLIENT_ID` est un identifiant public, pas un secret ; utilisez le client public enregistré pour l'environnement personnalisé.
+- Enregistrez exactement `http://127.0.0.1:49191/oauth/callback`, ou configurez explicitement une autre URI loopback fixe prise en charge et enregistrée pour ce client ; les wildcards ne sont pas pris en charge.
+- Les valeurs vides et les alias exacts de l'URL Production officielle peuvent utiliser le profil embarqué. Toute URL, clé, client ou callback personnalisé désactive le complément Production. Une configuration incomplète échoue avant l'accès navigateur/réseau ; les clients/clés Production connus ne peuvent pas être associés à l'URL d'un autre projet. La même règle s'applique à `--base-url`.
+- Le profil embarqué n'active pas l'exécution distante des workflows de publication locaux. La configuration distante explicite, `--commit`, l'identité et les approbations restent inchangés.
 - Exécutez d'abord `tiangong-lca auth status --json`. Si le résultat est `login-required`, l'utilisateur exécute lui-même `tiangong-lca auth login` dans un terminal de confiance, puis se connecte et consent dans le navigateur.
 - Le CLI conserve les jetons d'accès et de rafraîchissement rotatifs dans un fichier de session local privé et les actualise au besoin. Les sorties n'affichent ni jeton, ni adresse e-mail complète, ni chemin de session.
 - Utilisez `tiangong-lca auth whoami --json` pour une identité live expurgée et `tiangong-lca auth doctor-auth --json` avant une écriture sensible au compte.
 - `auth logout` supprime uniquement la session locale. Pour empêcher immédiatement les prochains rafraîchissements, révoquez TianGong CLI dans les applications connectées du compte ; un jeton d'accès court déjà émis peut rester valide jusqu'à son expiration.
 
-Ne donnez jamais à une IA, à un argument de commande ou à un chat un nom d'utilisateur, mot de passe, code d'autorisation ou jeton d'accès/rafraîchissement. Une automatisation headless approuvée ne peut recevoir qu'un `TIANGONG_LCA_ACCESS_TOKEN` court injecté par son orchestrateur ; Supabase OAuth ne propose ni grant password ni client-credentials. Utilisez un `TIANGONG_LCA_SESSION_FILE` privé distinct pour chaque contexte compte/projet/client.
+Ne donnez jamais à une IA, à un argument de commande ou à un chat un nom d'utilisateur, mot de passe, code d'autorisation ou jeton d'accès/rafraîchissement. Une automatisation headless approuvée doit configurer explicitement la destination `TIANGONG_LCA_API_BASE_URL`, sa `TIANGONG_LCA_SUPABASE_PUBLISHABLE_KEY` et `TIANGONG_LCA_AUTH_MODE=access-token` avant que l'orchestrateur injecte un `TIANGONG_LCA_ACCESS_TOKEN` court. Un jeton seul ne sélectionne jamais Production. Il est vérifié en ligne, reste en mémoire du processus et n'est ni persisté ni rafraîchi automatiquement. Supabase OAuth ne propose ni grant password ni client-credentials. Utilisez un `TIANGONG_LCA_SESSION_FILE` privé distinct pour chaque contexte compte/projet/client.
 
 ## Commandes courantes
 

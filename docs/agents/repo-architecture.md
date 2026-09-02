@@ -34,8 +34,8 @@ checkPaths:
   - context7.json
   - .github/workflows/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 9f69ae5a4f9b74ddfe55892070efc32a1211ccbc
-lastReviewedNote: "Reviewed for docs-impact Issue #938: public MDX content updates do not alter locale routing, static export, screenshot asset ownership, or site architecture."
+lastReviewedCommit: ab890e0785d2dac251aafe301d889f854e864e91
+lastReviewedNote: "Reviewed for Issue #180: CLI 0.1.8 owns the public Production bootstrap; four-locale onboarding no longer asks for client-ID provisioning and preserves custom/headless and MCP boundaries."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -93,6 +93,8 @@ All four variants must change together when structure, links, examples, or user-
 Authentication content is cross-page but not a second runtime. `integration/cli*`, `integration/mcp-lca-remote*`, `user-guide/account-profile*`, and `openapi/tidas-package-import*` must describe the same browser OAuth, PKCE, registered-client, connected-app revoke, token-lifetime, headless, and service-identity facts. Remote LCA MCP pages additionally require client-local refresh, direct Supabase access JWT/JWKS verification, independent Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. With DCR disabled and Supabase not advertising authorization-response issuer support, every Codex locale must configure the top-level `mcp_oauth_callback_url` base and matching `mcp_oauth_callback_port` plus per-server `oauth.client_id`; Codex's deterministic callback ID must produce the byte-exact Supabase redirect registration. An unspecified ephemeral callback is not supported. The pages must not describe opaque broker tokens, encrypted server-side Supabase sessions, Redis OAuth state, or local authorization-server endpoints. `scripts/oauth-doc-contract.test.mjs` inventories those exact families and rejects both the broker architecture and LCA user API-key, demo, manual-token, or callback-omission setup. Knowledge Base MCP and server-side GLAD authentication remain independently owned.
 
 Screenshot evidence is stored once under `public/assets/docs/<sha256-prefix>/<semantic-name>.png` and referenced through `/assets/docs/**` by the complete locale family. `scripts/check-screenshots.mjs` validates manifest bindings, references, image metadata, privacy evidence, and add/replace/reuse diff semantics. Replacement creates a new hash path and removes the previous asset only when no current MDX source still references it.
+
+The CLI integration pages pin `@tiangong-lca/cli@0.1.8` and place a public-config-free browser login before any custom environment template. Production URL/key/client/callback/region values belong to the CLI, not to a duplicated docs or Skills configuration. Complete custom project settings and explicitly targeted headless tokens remain separate paths. The guard exercises executable examples and fixed callbacks without changing the remote MCP client-registration contract or site runtime.
 
 ## Build and publication
 
