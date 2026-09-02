@@ -34,7 +34,7 @@ checkPaths:
   - context7.json
   - .github/workflows/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: dec9cc87596cc1d65310b12d7a1dc14a03ee7971
+lastReviewedCommit: 2838a4ef98255db8a0d44ce28740a98f160fb838
 lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
