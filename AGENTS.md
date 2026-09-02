@@ -37,7 +37,7 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 84b058cc22427bcc9caf241871c82b89fa6ed3ec
+lastReviewedCommit: 2c4722059780aecf74187f35a9b1b25a1bd98b46
 lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - .docpact/config.yaml

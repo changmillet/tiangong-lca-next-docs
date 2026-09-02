@@ -122,3 +122,15 @@ test('reader recovery explains immediate exit checks, stderr, and the installed 
     assert.doesNotMatch(read(page('cli', 'publishing', locale.suffix)), /tiangong-lca review --help/u);
   }
 });
+
+test('German and French search and navigation controls do not silently fall back to English', () => {
+  const source = read('lib/layout.shared.tsx');
+  for (const [locale, search, open, copy] of [['de', 'Suchen', 'Suche öffnen', 'Text kopieren'], ['fr', 'Rechercher', 'Ouvrir la recherche', 'Copier le texte']]) {
+    const block = source.match(new RegExp(`    ${locale}: \\{([\\s\\S]*?)\\n    \\}`))?.[1];
+    assert.ok(block, locale);
+    assert.ok(block.includes(`'Search(search trigger)': '${search}'`));
+    assert.ok(block.includes(`'Search(search dialog)': '${search}'`));
+    assert.ok(block.includes(`'Open Search(search trigger)(aria-label)': '${open}'`));
+    assert.ok(block.includes(`'Copy Text(code block)(aria-label)': '${copy}'`));
+  }
+});

@@ -34,7 +34,7 @@ checkPaths:
   - context7.json
   - .github/workflows/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 84b058cc22427bcc9caf241871c82b89fa6ed3ec
+lastReviewedCommit: 2c4722059780aecf74187f35a9b1b25a1bd98b46
 lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
@@ -103,6 +103,8 @@ The CLI integration pages pin `@tiangong-lca/cli@0.1.8` and place a public-confi
 All 18 logical guide pages have complete zh/en/de/fr siblings and ordered locale metadata. Guide indexes have substantive reader content and remain in search/llms; only the existing generic category roots are excluded by `lib/ia.ts`. `DocsPortal` provides direct links to all three guides. Shared tutorial JSON lives under `public/assets/docs/tool-guides-v1/`; synthetic data is explicitly non-production and contains fictional references.
 
 `lib/public-doc-inventory.mjs` derives route and index expectations from MDX filenames plus runtime i18n/category policy, rejects duplicate flat/folder-index URLs, and supplies explicit guide coverage. The build checks the retained minimum route/deny contracts as well as all current source routes, complete search/llms/sitemap sets, static search inclusion, and nested guide directories. Publication counts are not manually maintained.
+
+`lib/layout.shared.tsx` supplies explicit German/French search, sidebar, language, copy, and theme labels where the upstream language package has no preset. Reader-facing navigation and search controls must not silently revert to English while the page content is localized.
 
 ## Build and publication
 
