@@ -1,0 +1,24 @@
+---
+title: "Guide Agent Skills"
+description: "Installer des compétences réutilisables pour une IA, commencer par une recherche en lecture seule et comprendre droits, entrées et résultats."
+---
+
+Un Agent Skill regroupe des consignes de tâche pour une IA, parfois avec exemples, références et scripts exécutables. Il aide l’IA à suivre un déroulement reproductible. Ce n’est ni un modèle, ni une base de données, ni un compte, et il ne garantit pas l’exactitude du résultat.
+
+Les Skills TianGong LCA organisent les tâches ; le CLI `tiangong-lca` exécute les opérations et gère la connexion locale. Utilisez-le vous-même ou via un client IA compatible Skills. Installer un Skill ne donne aucun droit supplémentaire et ne nécessite pas de configuration MCP.
+
+## Commencer par un Skill en lecture seule
+
+1. [Installer un Skill de recherche](/fr/docs/integration/skills/getting-started/).
+2. [Effectuer la première recherche de flux et vérifier le résultat](/fr/docs/integration/skills/first-task/).
+3. Choisir la suite avec le [catalogue et les prérequis](/fr/docs/integration/skills/catalog/).
+
+Le parcours utilise `flow-hybrid-search`, en lecture seule. Vous conserverez requête, simulation et réponse réelle, en distinguant absence de résultat, connexion manquante et échec. Aucun clone des dépôts Skills, CLI ou Data Foundry n’est nécessaire.
+
+Tous les éléments du catalogue ne fonctionnent pas en copiant un seul dossier. Les trois Skills hybrid-search disposent d’un paquet d’exécution autonome complet. D’autres exigent le dépôt entier, Data Foundry, des résultats de construction existants ou des autorisations supplémentaires. Vérifiez les prérequis avant installation.
+
+Sans IA, consultez le [Guide utilisateur CLI](/fr/docs/integration/cli/). Pour les paquets locaux seulement, utilisez les [outils tidas](/fr/docs/integration/tidas/).
+
+## Lire selon la tâche
+
+<CategoryDirectory lang="fr" category="integration/skills" />

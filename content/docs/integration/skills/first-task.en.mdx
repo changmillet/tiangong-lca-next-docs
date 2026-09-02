@@ -1,0 +1,66 @@
+---
+title: "First task: find a flow"
+description: "Ask an AI to search for carbon dioxide emissions to air, retain the evidence, and independently check execution."
+---
+
+Find candidate flows for carbon dioxide emissions to air without creating data. Complete [skill installation and sign-in](/en/docs/integration/skills/getting-started/) first, with the AI client and terminal open in the same project directory.
+
+## 1. Prepare the request file
+
+Download the [complete request JSON](/assets/docs/tool-guides-v1/flow-search.request.json) to the project root as `flow-search.request.json`, or save the following in an editor. It contains no credentials and is safe for the AI to read.
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": { "flowType": "Elementary flow", "asInput": false }
+}
+```
+
+## 2. Give the AI the task and boundaries
+
+Send this task to the client that has loaded the skill. Keep the search terms and JSON keys unchanged.
+
+```text
+Use the installed flow-hybrid-search skill to find candidate flows using flow-search.request.json in this project.
+This is read-only: do not save drafts, publish, delete data, or change configuration.
+Check CLI sign-in first. If login is needed, pause and ask me to authorize in a trusted terminal/browser; do not request a password or token.
+Run a dry run into flow-search.preview.json, then make the real query and save the raw response as flow-results.json.
+Report whether execution succeeded and how many records were actually returned. Show at most 5 candidates with their IDs, versions, and names/types only where present in the response.
+Explain the filters and limitations. Do not invent missing fields or treat relevance order as proof of scientific suitability.
+```
+
+## 3. Check the same operation in a terminal
+
+These equivalent commands run from the project root. You can run them yourself first to separate client skill-loading problems from runtime problems. For a Codex installation:
+
+Run commands one at a time. Immediately afterward, use `echo $?` on macOS/Linux or `$LASTEXITCODE` in PowerShell 7 to read the exit code; later commands can replace it. Except for explicitly expected sign-in/error demonstrations, stop on a nonzero code and resolve the error before continuing.
+
+| Terminal | Read the preceding exit code immediately |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+`2>` saves error output separately as text. Before sharing logs, check for account information, tokens, or private data. An empty result file is not evidence of success.
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --dry-run --json > flow-search.preview.json 2> flow-search.preview-errors.txt
+```
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --json > flow-results.json 2> flow-search.errors.txt
+```
+
+For OpenClaw, replace the script prefix `.agents/skills/` with `skills/`; all other arguments stay the same. `--published-cli` explicitly selects the pinned published CLI and avoids any preexisting local-development override.
+
+## 4. Check the evidence, not just the AI’s answer
+
+1. The preview should contain `dryRun: true` and a `request.body` matching your file. It makes no business query and is not completion evidence.
+2. The real query must exit `0`. Open `flow-results.json`: nonempty results use `{ "data": [...] }`; no matches may use `[]` or `{ "data": [] }`.
+3. Compare the AI’s reported count with the raw array length. IDs, versions, and names must come from that response; missing fields must be identified as unavailable.
+4. Before selecting a record, check flow type, classification, geography, and unit/flow property. Read-only search does not prove that the candidate fits your model.
+
+For no matches, record a successful empty search, then refine terms or relax filters gradually. A failed command, `401`/`403`, or server error does not mean “no data.” Keep request, response, and error code and follow [troubleshooting](/en/docs/integration/skills/troubleshooting/).
+
+You are done when you can locate the request, preview, and actual result, explain the real record count, and name at least one suitability check still requiring human judgment. A fluent AI answer without a real query result is not completion.
+
+Next, try the other two [standalone search skills](/en/docs/integration/skills/catalog/) or read [Organize tasks safely](/en/docs/integration/skills/safe-workflows/).

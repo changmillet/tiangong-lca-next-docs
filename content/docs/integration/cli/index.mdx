@@ -1,0 +1,28 @@
+---
+title: "CLI 用户指南"
+description: "从安装和登录开始，查询平台数据、检查结果，再按需学习校验、自动化与受控写入。"
+---
+
+`tiangong-lca` 是 TianGong LCA 的命令行客户端：在终端中查询平台数据、校验本地数据，并在具备权限时保存草稿或执行发布。你不需要阅读源码，也不需要克隆项目。
+
+第一次使用，请从[安装、登录与第一次查询](/zh/docs/integration/cli/getting-started/)开始。完成后，你会得到最多 3 条公开过程记录，并知道如何判断请求成功、空结果和权限问题。
+
+## 先选对工具
+
+| 你要做什么 | 使用什么 |
+| --- | --- |
+| 自己在终端查询平台或执行明确的操作 | 本指南中的 `tiangong-lca` |
+| 让 AI 按可重复的步骤完成任务 | [Agent Skills 指南](/zh/docs/integration/skills/) |
+| 在本地验证、导入或转换数据包 | [本地 tidas 工具](/zh/docs/integration/tidas/) |
+
+`tidas` 与 `tiangong-lca` 是两个独立命令，安装其中一个不会安装另一个。Skills 提供任务说明和运行脚本，不是新的账号系统；执行平台命令时使用 CLI 的本地登录状态。MCP 是另一种可选接入方式，不是 CLI 的前置条件。
+
+## 本指南使用的版本
+
+示例固定为 `@tiangong-lca/cli@0.1.8`，要求 Node.js `>=24.19.0 <25`、pnpm `11.24.0`。同时使用 Skills 时，请采用其要求的精确 Node.js 版本 `24.19.0`。
+
+入门查询只读，不会创建、修改或删除数据。发布与维护章节面向已有数据和明确授权的操作者；登录成功本身不代表有发布或管理权限。
+
+## 按任务阅读
+
+<CategoryDirectory lang="zh" category="integration/cli" />

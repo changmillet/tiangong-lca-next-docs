@@ -1,0 +1,66 @@
+---
+title: "Première tâche : trouver un flux"
+description: "Faire rechercher des émissions de dioxyde de carbone dans l’air, conserver les preuves et vérifier l’exécution indépendamment."
+---
+
+Recherchez des flux candidats pour des émissions de dioxyde de carbone dans l’air, sans créer de données. Terminez [l’installation et la connexion](/fr/docs/integration/skills/getting-started/), puis ouvrez le même projet dans le client IA et le terminal.
+
+## 1. Préparer le fichier de requête
+
+Téléchargez la [requête JSON complète](/assets/docs/tool-guides-v1/flow-search.request.json) à la racine sous `flow-search.request.json`, ou enregistrez le contenu suivant dans un éditeur. Il ne contient pas d’identifiants sensibles et peut être lu par l’IA.
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": { "flowType": "Elementary flow", "asInput": false }
+}
+```
+
+## 2. Définir tâche et limites pour l’IA
+
+Envoyez cette tâche au client ayant chargé le Skill. Ne traduisez pas les termes de recherche anglais ni les clés JSON.
+
+```text
+Utilise le Skill installé flow-hybrid-search avec flow-search.request.json dans ce projet pour chercher des flux candidats.
+Lecture seule : ne pas enregistrer de brouillon, publier, supprimer ni changer la configuration.
+Vérifie d’abord la connexion CLI. Si elle manque, arrête-toi et demande-moi d’autoriser dans un terminal/navigateur de confiance, sans demander de mot de passe ou de jeton.
+Enregistre un dry run dans flow-search.preview.json, puis lance la requête réelle et garde la réponse brute dans flow-results.json.
+Indique réussite ou échec et nombre réellement renvoyé. Affiche au plus 5 candidats avec ID, version et seulement les noms/types présents dans la réponse.
+Explique filtres et limites. N’invente aucun champ absent et ne présente pas le classement comme une preuve de pertinence scientifique.
+```
+
+## 3. Vérifier la même opération dans un terminal
+
+Ces commandes équivalentes partent de la racine du projet. Les lancer vous-même permet de distinguer chargement dans le client et problème d’exécution. Pour Codex :
+
+Exécutez les commandes une à une. Immédiatement après, `echo $?` sur macOS/Linux ou `$LASTEXITCODE` dans PowerShell 7 donne le code de sortie ; une commande suivante peut le remplacer. Sauf démonstration explicite de connexion manquante ou d’erreur, arrêtez-vous sur un code non nul et corrigez avant de continuer.
+
+| Terminal | Lire immédiatement le code précédent |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+`2>` enregistre séparément les erreurs en texte. Avant partage, vérifiez l’absence de données de compte, jetons ou contenu privé. Un fichier résultat vide ne prouve pas la réussite.
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --dry-run --json > flow-search.preview.json 2> flow-search.preview-errors.txt
+```
+
+```bash
+node .agents/skills/flow-hybrid-search/scripts/run-flow-hybrid-search.mjs --published-cli --input ./flow-search.request.json --json > flow-results.json 2> flow-search.errors.txt
+```
+
+Pour OpenClaw, remplacez le préfixe du script `.agents/skills/` par `skills/`, sans changer les autres arguments. `--published-cli` choisit explicitement le CLI publié fixé et évite une surcharge locale de développement déjà présente.
+
+## 4. Contrôler les preuves, pas seulement la réponse de l’IA
+
+1. La simulation doit contenir `dryRun: true` et une `request.body` identique au fichier. Elle ne lance aucune recherche métier et ne prouve pas la fin de tâche.
+2. La vraie requête doit sortir avec le code `0`. `flow-results.json` contient `{ "data": [...] }` avec des résultats, éventuellement `[]` ou `{ "data": [] }` sans correspondance.
+3. Comparez le nombre annoncé à la longueur du tableau brut. ID, versions et noms doivent venir de cette réponse ; les champs absents doivent être signalés comme indisponibles.
+4. Avant sélection, vérifiez type de flux, classification, géographie et unité/propriété. Une recherche ne prouve pas l’adéquation au modèle.
+
+Sans correspondance, notez une recherche réussie mais vide, puis précisez les termes ou assouplissez les filtres progressivement. Échec de commande, `401`/`403` ou erreur serveur ne signifie pas « aucune donnée ». Gardez requête, réponse et code d’erreur ; suivez [le dépannage](/fr/docs/integration/skills/troubleshooting/).
+
+La tâche est terminée si vous retrouvez requête, simulation et réponse réelle, expliquez le nombre obtenu et identifiez au moins un critère restant à vérifier humainement. Une réponse IA fluide sans résultat réel ne suffit pas.
+
+Ensuite, essayez les deux autres [Skills de recherche autonomes](/fr/docs/integration/skills/catalog/) ou lisez [Organiser les tâches en sécurité](/fr/docs/integration/skills/safe-workflows/).

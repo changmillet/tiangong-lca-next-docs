@@ -1,0 +1,54 @@
+---
+title: "Automation and guarded writes"
+description: "Use the CLI in scripts or agents with preflight, explicit approval, and independent readback."
+---
+
+This page is for operators with complete input files, not a first-use tutorial. Complete [identity checks](/en/docs/integration/cli/authentication/) and [local validation](/en/docs/integration/cli/data-quality/) first. Filenames below represent task-specific artifacts, not downloads provided here. Do not run an entire command block as an exercise.
+
+This page uses the globally installed `tiangong-lca` short command; see [getting started](/en/docs/integration/cli/getting-started/) for installation.
+
+## From preparation to verification
+
+1. Define the target account, dataset IDs/versions, allowed field changes, and output directory.
+2. Validate complete inputs; resolve failed rows, evidence gaps, and blockers first.
+3. Use `--dry-run` where the command supports it and save the report. A dry run is not a write or proof of access or final results.
+4. Present the actual scope, risks, and approval details to the operator. Obtain explicit approval before real writes.
+5. Independently read back identity, owner, content, and counts. Accepted, queued, and partially completed requests are not completed acceptance.
+
+## Preview a draft write
+
+```bash
+tiangong-lca process save-draft --input ./patched-processes.jsonl --out-dir ./process-save-draft --dry-run --json
+tiangong-lca lifecyclemodel validate-build --run-dir ./lifecyclemodel-run --json
+```
+
+Use `status`, `counts`, `issues`, `files`, and artifact paths to decide the next step, not terminal prose alone. For actual batch process-draft writes, provide `--target-user-id` and retain authentication, draft-owner checks, and readback. This guide does not provide a write approval to copy blindly.
+
+## Quality checks before writing
+
+For data-production pipelines, the CLI also provides quality-gate commands that are useful before writing data, publishing data, or handing work to a reviewer:
+
+```bash
+tiangong-lca process identity-preflight --input ./process-preflight.json --out-dir ./process-preflight --json
+tiangong-lca flow identity-preflight --input ./flow-preflight.json --out-dir ./flow-preflight --json
+tiangong-lca process build-plan validate --input ./process-build-plan.json --out-dir ./process-build-plan --json
+tiangong-lca flow build-plan validate --input ./flow-build-plan.json --out-dir ./flow-build-plan --json
+tiangong-lca publish run --input ./publish-request.json --dry-run --json
+```
+
+- `identity-preflight` compares a target process or flow with candidate data and reports whether automation can reuse it, should route it to manual review, or should block new creation.
+- `build-plan validate` checks whether a process or flow build plan includes identity decisions, evidence bindings, naming plans, `unit_of_analysis` decisions, and the required reference-flow or flow-property fields.
+- `dataset evidence-search plan/run` plans field-level public evidence retrieval and records external search results; the CLI owns the query matrix, budget, result normalization, and evidence declaration artifacts, while human or agent workflows still own source judgement.
+- `publish run --dry-run` reports publish ruleset results before a real write or publish step.
+
+These commands write machine-readable reports under `outputs/` or `reports/` in the selected `--out-dir`. For automation, read fields such as `status`, `blockers`, `issues`, `files`, and artifact paths instead of relying on terminal text.
+
+## Data and evidence boundaries
+
+Schema-invalid rows remain blocked before writes and are recorded in `failures.jsonl` or the validation report.
+
+`dataset save-draft` blocks account-local drafts of reference-only foundations such as Unit Groups and Flow Properties by default. `--allow-account-local-support` or `TIANGONG_ALLOW_ACCOUNT_LOCAL_SUPPORT=1` is only for explicitly authorized migration or repair, not a routine bypass.
+
+`dataset classification apply --type location` may create a missing parent and field only when `target_path` explicitly identifies a schema-derived location field. Ambiguous paths remain blocked. `dataset evidence-search run` saves plans, normalized results, reports, and necessary evidence declarations; it does not replace human source judgment.
+
+For LCI/LCIA packages, read [Data publishing](/en/docs/integration/cli/publishing/). For account cleanup and repair, follow [Data maintenance](/en/docs/integration/cli/maintenance/); do not bypass safeguards through raw SQL or privileged keys.

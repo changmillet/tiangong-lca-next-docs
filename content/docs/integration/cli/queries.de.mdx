@@ -1,0 +1,71 @@
+---
+title: "Daten suchen und abrufen"
+description: "Flüsse nach Beschreibung suchen, Prozesse mit ID und Version lesen und leere Ergebnisse sowie Versionsrückfälle verstehen."
+---
+
+Setzen Sie [die erste Abfrage](/de/docs/integration/cli/getting-started/) im selben Terminal, Ordner und mit derselben Anmeldung fort. Alle Befehle lesen nur. Die Beispiele verwenden weiterhin das festgelegte Paket ohne globale Installation.
+
+## Einen Fluss nach Beschreibung suchen
+
+Speichern Sie das vollständige JSON unten in einem Texteditor als `flow-search.request.json` mit UTF-8-Kodierung. Alternativ laden Sie die [Beispielanfrage](/assets/docs/tool-guides-v1/flow-search.request.json) herunter.
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": {
+    "flowType": "Elementary flow",
+    "asInput": false
+  }
+}
+```
+
+`query` beschreibt den gesuchten Fluss, `filter` ist optional. Das Beispiel wählt Elementarflüsse (`Elementary flow`). `asInput: false` aktiviert die Einschränkung für Eingabeflüsse nicht und garantiert keine reinen Ausgabeflüsse; prüfen Sie daher Klassifikation und Verwendung. Der Suchtext weist keine Datenänderung an.
+
+Prüfen Sie zuerst Ziel und Anfrage mit einem Probelauf (dry run), und führen Sie anschließend die echte Suche aus:
+
+Befehle einzeln ausführen. Direkt danach zeigt `echo $?` unter macOS/Linux beziehungsweise `$LASTEXITCODE` in PowerShell 7 den Exit-Code; spätere Befehle können ihn ersetzen. Außer bei ausdrücklich erwarteten Anmelde-/Fehlerbeispielen bei einem Wert ungleich null anhalten und den Fehler zuerst beheben.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --dry-run --json
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --json > flow-results.json
+```
+
+`--dry-run` liefert `dryRun: true` und eine maskierte `request`. Es sendet keine fachliche Abfrage und beweist weder Anmeldung noch Berechtigung. Erst der zweite Befehl ruft die Plattform auf; die Suche kann länger als eine normale Listenabfrage dauern.
+
+## Keine Treffer oder fehlgeschlagener Aufruf?
+
+Jeder Treffer wird durch `id` und `version` identifiziert; der vollständige Fluss steht unter `json.flowDataSet`. Darin steht der Name unter `flowInformation.dataSetInformation.name.baseName`; Sprachtexte verwenden `@xml:lang` und `#text`. Nur tatsächlich gelieferte Felder verwenden.
+
+Bei Erfolg mit Treffern lautet die Form `{ "data": [...] }`. Ohne Treffer sind `[]` oder `{ "data": [] }` möglich. Eine leere Liste allein ist kein Fehler; die Trefferreihenfolge beweist auch nicht die Eignung für Ihre Untersuchung.
+
+Prüfen Sie vor dem JSON den Exit-Code. Ohne Treffer bewahren Sie die ursprüngliche Anfrage auf und versuchen einen genaueren Namen oder Stoffidentifikator oder lockern `filter` schrittweise. Bei `400` prüfen Sie `query` und die JSON-Syntax; bei `401`/`403` Identität und Rechte. `500` ist ein serverseitiger Suchfehler, nicht der Nachweis fehlender Daten.
+
+Prüfen Sie vor der Auswahl Flusstyp, Name, Klassifikation, Region und Einheit/Flusseigenschaft. Bewahren Sie Anfrage und Antwort auf, nennen Sie die tatsächliche Trefferzahl und lassen Sie keine fehlenden Datensätze durch die KI erfinden.
+
+## Einen vollständigen Prozess per ID lesen
+
+Öffnen Sie `processes.json` aus dem vorigen Tutorial. Wählen Sie einen Eintrag aus `rows` und kopieren Sie `id` und `version`. Ersetzen Sie unten `PROCESS_ID` und `DATASET_VERSION`; diese Wörter sind keine gültigen Identifikatoren.
+
+Ist die öffentliche Liste erfolgreich, aber leer, ist die erste Abfrage dennoch abgeschlossen. Ohne echte `id`/`version` diesen `process get` überspringen und stattdessen die Flusssuche oben durchführen. Nicht wiederholt anmelden und keine IDs erfinden.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
+```
+
+`status: resolved_remote_process` bestätigt den Abruf. `requested_version` ist die angefragte, `resolved_version` die tatsächlich gelesene Version; `resolution` erläutert die Auflösung, `process` enthält die Daten. Fehlt die angefragte Version oder ist sie unzugänglich, kann die neueste erreichbare Version zurückgegeben werden. Für exakte Referenzen müssen beide Versionen übereinstimmen; Exit-Code `0` reicht nicht aus.
+
+## Liste, Suche oder Seitenabruf wählen
+
+| Ziel | Befehl |
+| --- | --- |
+| Nach Status, ID oder Eigentümer auflisten | `process list`; Sortierung und Anzahl festlegen |
+| Ähnliche Inhalte natürlichsprachlich finden | `search flow`, `search process`, `search lifecyclemodel` |
+| Bekannten Prozess vollständig lesen | `process get --id … --version …` |
+| Kontrolliert größere Mengen lesen | Vor `--offset`, `--page-size` oder `--all` die Hilfe `process list --help` lesen |
+
+Seitenabrufe umfassen mehrere Anfragen und sind kein transaktionaler Snapshot. Beginnen Sie nicht mit `--all`, sondern prüfen Sie zunächst eine begrenzte Antwort. Standard ist `id.asc,version.asc`; für zuletzt geänderte Einträge verwenden Sie ausdrücklich `--order modified_at.desc,id.asc,version.asc`.
+
+Weiter: [Lokale Daten prüfen und Berichte verstehen](/de/docs/integration/cli/data-quality/) benötigt keine Online-Anmeldung. Für die gleiche Suche durch eine KI nutzen Sie [Ihre erste Skills-Aufgabe](/de/docs/integration/skills/first-task/).

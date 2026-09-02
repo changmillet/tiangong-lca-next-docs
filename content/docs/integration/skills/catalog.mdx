@@ -1,0 +1,57 @@
+---
+title: "技能目录与前置条件"
+description: "按任务选择技能，区分独立检索包、完整仓库工作流和 Data Foundry 专用任务。"
+---
+
+选择技能时，先看“我有什么输入、想得到什么”，再看运行条件和写入风险。这里列出 [Skills 已核对版本](https://github.com/tiangong-lca/skills/tree/29039bcc07a7b246acc3d4009ee641d3a6878d01)中的 21 个技能；目录不是一份“全部安装即可使用”的承诺。
+
+## 可单独安装：三个检索技能
+
+这三个技能附带独立启动器、示例和参考资料，无需 Skills/CLI 源码或 Data Foundry。按[安装指南](/zh/docs/integration/skills/getting-started/)只替换 `--skill` 后的名称。它们都需要指定版本的 Node.js/pnpm，以及本人完成的 CLI OAuth 登录。
+
+| 技能名 | 输入 → 结果 | 前置条件或边界 |
+| --- | --- | --- |
+| `flow-hybrid-search` | 流描述与可选筛选 → 候选流 | 远程只读 |
+| `process-hybrid-search` | 过程描述与可选筛选 → 候选过程 | 远程只读 |
+| `lifecyclemodel-hybrid-search` | 模型描述与可选筛选 → 候选模型 | 远程只读 |
+
+## 需要完整 Skills 仓库：构建、审核与运维
+
+下列包装脚本仍使用仓库级共享启动器，有些还读取其他技能的规则或资产。单独复制技能目录不足以运行；由负责该工作流的维护者准备完整仓库布局、匹配 CLI 与任务输入。它们不属于新用户的独立安装路径。
+
+| 技能名 | 输入 → 结果 | 前置条件或边界 |
+| --- | --- | --- |
+| `process-automated-builder` | 参考流、证据和计划 → 本地过程构建及发布交接文件 | 构建与发布是不同阶段；发布需批准 |
+| `lifecyclemodel-automated-builder` | 已有过程构建结果 → 生命周期模型与连接 | 先具备上游构建目录 |
+| `lifecyclemodel-resulting-process-builder` | 已有模型与过程数据 → 汇总过程及关联信息 | 必要时读取远程数据；发布另行授权 |
+| `lifecyclemodel-recursive-orchestrator` | 预先准备的候选与构建请求 → 多层模型、图与来源关系 | 依赖其他构建技能和完整运行布局 |
+| `lifecycleinventory-review` | 本地构建结果或已固定的远程快照 → 清单质量报告 | 检查结果，不等于发布批准 |
+| `flow-governance-review` | 流快照与修复计划 → 质量检查、修复和发布准备 | 部分子命令可能写入，须逐步审批 |
+| `process-dedup-review` | 分组的重复候选快照 → 保留/删除建议与证据 | 建议不是删除许可 |
+| `process-scope-statistics` | 获授权的过程范围 → 快照、覆盖统计与报告 | 远程读取；保持范围和计数可追溯 |
+| `current-account-dataset-review` | 当前账号快照 → 校验、引用修复、草稿及审核报告 | 复核与修复权限分开 |
+| `tiangong-lca-remote-ops` | 明确过程维护输入 → 引用刷新与写后验证 | 可能远程写入，不是任意管理接口 |
+| `lca-publish-executor` | 已完成的发布交接包 → 预检、发布与验证报告 | 明确批准后才真实写入 |
+| `embedding-ft` | 运维任务输入 → 向量任务排查/处理结果 | 运维专用，不属于入门流程 |
+
+## 以任务说明为主的技能
+
+这些技能组织现有 CLI 能力；安装说明文件不意味着输入、依赖或权限已准备好。按任务范围使用，不要据此把高级维护当成普通检索。
+
+| 技能名 | 输入 → 结果 | 前置条件或边界 |
+| --- | --- | --- |
+| `tidas-contract-context` | 数据类型与任务 → schema、方法学和规则上下文 | 仍需可用 CLI；用于创作前准备 |
+| `tidas-bilingual-transcreation` | 已提取的翻译单元与证据 → 经审查的中英字段 | 仅用于明确的导入后语言补全，不作导入/发布前置门槛 |
+| `dataset-rls-maintenance` | 当前账号维护范围 → 计划、批准与独立验证 | 可能删除或修改数据，属高风险操作 |
+
+## 依赖 Data Foundry 的数据生产任务
+
+这些任务依赖 Foundry 工作区、清单或脚本，不能承诺只装一个 Skill 就可以执行。只想转换本地数据包时，先看[独立 tidas 工具](/zh/docs/integration/tidas/)。
+
+| 技能名 | 输入 → 结果 | 前置条件或边界 |
+| --- | --- | --- |
+| `external-dataset-curated-import` | 合法取得的外部数据包与 Foundry 清单 → 候选及复核产物 | 依赖 Foundry、导入配置和下游技能 |
+| `source-evidence-dataset-development` | 来源文档与 Foundry 种子任务 → 证据材料和数据候选 | 可能需要额外的研究/文档工具 |
+| `tidas-data-import` | 数据包或来源文件 → 转换/创作及导入准备 | 依赖 Foundry；本地转换也可直接用 tidas |
+
+先把一个只读任务做完整，再引入生产工作流。真实写入前，阅读[安全地组织任务](/zh/docs/integration/skills/safe-workflows/)；登录和脚本问题看[故障排查](/zh/docs/integration/skills/troubleshooting/)。

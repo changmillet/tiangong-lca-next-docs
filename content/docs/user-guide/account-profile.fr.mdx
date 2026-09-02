@@ -32,7 +32,7 @@ Après la première autorisation dans le navigateur, la CLI ou le MCP distant ap
 - Vérifiez le compte et le nom de l'application sur la page de consentement.
 - La révocation supprime immédiatement le grant Supabase et empêche les prochains rafraîchissements.
 - Un jeton d'accès court déjà émis peut rester valide jusqu'à son expiration ; les endpoints sensibles suivent leur contrat de vérification en ligne.
-- Après révocation, le client doit recommencer OAuth dans le navigateur : `tiangong-lca auth login` pour la CLI ou reconnexion de l'hôte MCP.
+- Après révocation, le client doit recommencer OAuth dans le navigateur : `pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login` pour la CLI ou reconnexion de l'hôte MCP.
 - `auth logout` de la CLI ou une déconnexion MCP locale supprime seulement l'état local et ne vaut pas révocation côté compte.
 
 ## CLI, MCP et automatisation

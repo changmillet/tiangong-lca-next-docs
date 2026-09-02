@@ -7,6 +7,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { publicLocales, readPublicDocInventory, toolGuideRoutes, normalizeRoute } from '../lib/public-doc-inventory.mjs';
+import { categoryBases } from '../lib/ia.ts';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const outRoot = path.join(ROOT, 'out');
@@ -14,6 +16,10 @@ const load = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const siteRoutes = load('manifests/p0b/site-routes.json');
 const deny = load('manifests/p0b/greenfield-deny.json');
 const categories = load('manifests/p0b/categories.json');
+const sourcePages = readPublicDocInventory(path.join(ROOT, 'content', 'docs'));
+const indexablePages = sourcePages.filter((page) => page.indexable);
+const expectedPublicRoutes = ['/', ...publicLocales.map((lang) => `/${lang}/`), ...sourcePages.map((page) => page.url)];
+const expectedIndexRoutes = indexablePages.map((page) => page.url);
 
 const errors = [];
 const passed = [];
@@ -27,11 +33,7 @@ if (!fs.existsSync(outRoot)) {
 }
 
 // lib/ia.ts 硬编码分类集 == manifest（单一来源断言）
-const iaBases = [
-  'overview', 'quick-start', 'user-guide', 'data-collection',
-  'data-collection/case-introduction', 'integration', 'openapi',
-  'deploy-and-dev', 'faq', 'changelog',
-];
+const iaBases = categoryBases;
 if (JSON.stringify(iaBases) !== JSON.stringify(categories.map((c) => c.newBase))) {
   errors.push('lib/ia.ts categoryBases != manifests/p0b/categories.json');
 } else {
@@ -63,6 +65,11 @@ for (const route of siteRoutes.htmlRoutes) {
 if (htmlOk === siteRoutes.htmlRoutes.length) {
   passed.push(`html routes ${htmlOk}/${siteRoutes.htmlRoutes.length}`);
 }
+for (const route of expectedPublicRoutes) {
+  const relative = route === '/' ? 'index.html' : `${route.slice(1)}index.html`;
+  if (!exists(relative)) errors.push(`source page missing from HTML output: ${route}`);
+}
+passed.push(`source-derived public HTML inventory (${expectedPublicRoutes.length} routes)`);
 
 // 2. 系统端点
 for (const p of ['llms.txt', 'robots.txt', 'sitemap.xml', 'search-records.json', 'api/search']) {
@@ -102,26 +109,37 @@ if (sr.sourceCommit !== (commit ?? null)) {
 }
 const recomputed = createHash('sha256').update(JSON.stringify(sr.records)).digest('hex');
 if (sr.digest !== `sha256:${recomputed}`) errors.push('search-records digest mismatch');
-const expectedCounts = { zh: 38, en: 38, de: 38, fr: 38 };
+const expectedCounts = Object.fromEntries(publicLocales.map((lang) => [lang, indexablePages.filter((page) => page.locale === lang).length]));
 for (const [lang, count] of Object.entries(expectedCounts)) {
   if (sr.countsByLocale?.[lang] !== count) {
     errors.push(`countsByLocale.${lang} = ${sr.countsByLocale?.[lang]}, expected ${count}`);
   }
 }
 for (const record of sr.records) {
-  if (record.tag !== String(record.url).split('/')[1]) {
+  if (record.tag !== String(record.url).split('/')[1] || record.locale !== record.tag) {
     errors.push(`record tag/locale mismatch: ${record._id}`);
     break;
   }
 }
+function verifyRouteSet(label, actualRoutes, expectedRoutes) {
+  const actual = new Set(actualRoutes.map(normalizeRoute));
+  const expected = new Set(expectedRoutes.map(normalizeRoute));
+  if (actual.size !== actualRoutes.length) errors.push(`${label} contains duplicate routes`);
+  for (const route of expected) if (!actual.has(route)) errors.push(`${label} missing source route ${route}`);
+  for (const route of actual) if (!expected.has(route)) errors.push(`${label} unexpected route ${route}`);
+}
+verifyRouteSet('search-records', sr.records.map((record) => record.url), expectedIndexRoutes);
+if (sr.count !== sr.records.length || sr.count !== indexablePages.length) errors.push('search-records total differs from its records or source inventory');
 passed.push(`search-records count=${sr.count} counts=${JSON.stringify(sr.countsByLocale)}`);
 
-// 5. llms.txt：commit + 条目计数（78 = 74 正文 + 4 首页；分类页排除）
+// 5. llms.txt: every indexable source URL, including substantive tool-guide indexes.
 const llms = read('llms.txt');
 if (commit && !llms.includes(commit)) errors.push('llms.txt does not expose SOURCE_COMMIT');
 const llmsEntries = (llms.match(/^- \[/gm) ?? []).length;
-if (llmsEntries !== 152) errors.push(`llms entries = ${llmsEntries}, expected 152`);
-else passed.push(`llms entries 152 + commit`);
+const llmsRoutes = [...llms.matchAll(/^- \[.*?\]\((https?:\/\/[^)]+)\)/gmu)].map((match) => match[1]);
+verifyRouteSet('llms.txt', llmsRoutes, expectedIndexRoutes);
+if (llmsEntries !== indexablePages.length) errors.push(`llms entries = ${llmsEntries}, expected ${indexablePages.length}`);
+else passed.push(`llms entries ${llmsEntries} + commit`);
 // 分类页不得出现在 llms（抽样：quick-start 分类首页的 URL 形态）
 if (/\/zh\/docs\/quick-start\/\)/.test(llms)) errors.push('category page leaked into llms.txt');
 
@@ -138,13 +156,14 @@ if (deployEnv !== 'production') {
   errors.push('production robots.txt missing absolute sitemap URL');
 }
 
-// 7. sitemap：locale 隔离（de/fr 深层路由不出现）+ 全量收录
+// 7. sitemap: exactly the real four-language source inventory plus landing pages.
 const sitemap = read('sitemap.xml');
 const sitemapCount = (sitemap.match(/<loc>/g) ?? []).length;
-if (sitemapCount !== 197) errors.push(`sitemap entries = ${sitemapCount}, expected 197`);
-else passed.push('sitemap 197 entries');
+verifyRouteSet('sitemap', [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1]), expectedPublicRoutes);
+if (sitemapCount !== expectedPublicRoutes.length) errors.push(`sitemap entries = ${sitemapCount}, expected ${expectedPublicRoutes.length}`);
+else passed.push(`sitemap ${sitemapCount} entries`);
 
-// 8. OG 图（98 页 → ≥98 产物）
+// 8. OG images cover every source page, without a stale frozen page count.
 let ogCount = 0;
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -153,8 +172,8 @@ let ogCount = 0;
     else if (e.isFile() && !e.name.endsWith('.html')) ogCount += 1;
   }
 })(path.join(outRoot, 'og'));
-if (ogCount >= 192) passed.push(`og images (${ogCount})`);
-else errors.push(`expected >=192 OG images, found ${ogCount}`);
+if (ogCount >= sourcePages.length) passed.push(`og images (${ogCount})`);
+else errors.push(`expected >=${sourcePages.length} OG images, found ${ogCount}`);
 
 // 9. 内部路径零泄漏
 let leaked = null;
@@ -182,6 +201,11 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
   if (!html.includes('data-docs-portal-map="lca-task-route"')) {
     errors.push(`${lang} docs root omits the LCA task-route marker`);
     continue;
+  }
+  for (const section of ['cli', 'skills', 'tidas']) {
+    if (!html.includes(`href="/${lang}/docs/integration/${section}/"`)) {
+      errors.push(`${lang} docs hub omits the ${section} reader guide`);
+    }
   }
   docsPortalCount += 1;
 }
@@ -234,6 +258,7 @@ const directoryBases = [
   'overview', 'user-guide', 'data-collection', 'integration',
   'openapi', 'deploy-and-dev', 'faq', 'changelog',
   'data-collection/case-introduction',
+  'integration/cli', 'integration/skills', 'integration/tidas',
 ];
 let categoryDirectoryCount = 0;
 for (const lang of ['zh', 'en', 'de', 'fr']) {
@@ -263,7 +288,20 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
     categoryDirectoryCount += 1;
   }
 }
-if (categoryDirectoryCount === 36) passed.push('36 automatic localized category directories');
+const expectedDirectoryCount = directoryBases.length * publicLocales.length;
+if (categoryDirectoryCount === expectedDirectoryCount) passed.push(`${categoryDirectoryCount} automatic localized category directories`);
+
+// 13. Every tool-guide chapter is discoverable through both public indexes and
+// the static search payload used by preview/CI, including the three guide roots.
+const staticSearch = read('api/search');
+const searchRouteSet = new Set(sr.records.map((record) => normalizeRoute(record.url)));
+const llmsRouteSet = new Set(llmsRoutes.map(normalizeRoute));
+for (const route of toolGuideRoutes()) {
+  if (!searchRouteSet.has(route)) errors.push(`tool guide missing from search records: ${route}`);
+  if (!llmsRouteSet.has(route)) errors.push(`tool guide missing from llms.txt: ${route}`);
+  if (!staticSearch.includes(route.replace(/\/$/u, ''))) errors.push(`tool guide missing from static search: ${route}`);
+}
+passed.push(`four-language tool-guide discovery (${toolGuideRoutes().length} chapters)`);
 
 // --- summary ---
 console.log(`\n[verify-out] ${passed.length} checks passed:`);

@@ -1,0 +1,93 @@
+---
+title: "Maintenance et réparation des données"
+description: "Référence pour opérateurs autorisés : plan, approbation, exécution, reprise et vérification indépendante."
+---
+
+La maintenance peut modifier ou supprimer des données. Utilisez cette référence seulement avec un périmètre explicite, des entrées préparées et une autorisation. Pour débuter, commencez par [les requêtes en lecture seule](/fr/docs/integration/cli/getting-started/). Fichiers et approbations à remplacer appartiennent à une tâche réelle, pas à un exercice prêt à lancer.
+
+Cette page utilise la commande courte `tiangong-lca` installée globalement ; voir [le démarrage](/fr/docs/integration/cli/getting-started/) pour l’installation.
+
+## Maintenance ordinaire : planifier, appliquer, vérifier
+
+`tiangong-lca dataset maintenance plan/apply/verify` sert au nettoyage contrôlé au niveau du compte,
+à la réparation de mauvais imports, à la fusion d'alias de données de support et aux reconstructions
+protégées de dérivés de processus. Il s'exécute comme l'utilisateur actuellement authentifié et
+s'appuie sur la RLS côté serveur pour limiter les lignes visibles et modifiables ; ne le traitez pas
+comme un outil batch d'administration entre comptes.
+
+```bash
+tiangong-lca dataset maintenance plan --scope ./maintenance-scope.json --operation redo-import --out-dir ./dataset-maintenance --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./derivative-rebuild-scope.json --operation rebuild-derivatives --out-dir ./derivative-rebuild --json
+tiangong-lca dataset maintenance apply --plan ./dataset-maintenance/maintenance-plan.json --commit --approve-plan <sha256> --confirm <current-account-email> --timeout-ms 10000 --json
+tiangong-lca dataset maintenance verify --plan ./dataset-maintenance/maintenance-plan.json --out-dir ./dataset-maintenance/verify --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./alias-scope.json --operation merge-support-aliases --out-dir ./dataset-maintenance --json
+tiangong-lca dataset maintenance flow-identity --help
+```
+
+## Exécution protégée en production
+
+Utilisez `merge-support-aliases` uniquement pour réparer des alias de données de support protégés
+en owner-draft. Le `apply` ordinaire n'est pas le repli d'une exécution de production scellée :
+construisez d'abord le plan immuable, utilisez `freeze-protected` pour relire le périmètre de
+production exact et générer la demande d'approbation, utilisez `seal-protected-approval` pour
+enregistrer localement l'approbation humaine octet pour octet, puis utilisez `run-protected`
+uniquement pour exécuter ou inspecter une exécution de production scellée. `verify` doit juger le
+résultat à partir d'une preuve de relecture fraîche plutôt qu'en faisant confiance au seul rapport
+apply/run. Le préflight reste lié à l'expiration côté serveur ; le CLI ne tolère qu'un faible décalage
+d'horloge serveur en avance et ne prolonge pas la validité de l'approbation ou de l'exécution. La
+vérification des dérivés relie l'action evidence du domaine base de données au snapshot frais ; ne
+comparez pas directement le JSON canonique du CLI avec `jsonb::text` PostgreSQL comme s'ils relevaient
+du même domaine de hash.
+
+## Maintenance de l’identité des flux et reprise
+
+La maintenance d’identité de flux utilise le sous-workflow dédié `dataset maintenance flow-identity`, et non un autre exécuteur de maintenance. L'ordre habituel est :
+`capture` pour un recensement production en lecture seule et une attestation base de données, `plan`
+à partir de la politique de compatibilité, du ledger de revue et du live capture, `freeze` puis
+`seal-approval` pour lier les octets exacts d'exécution, `run` pour soumettre en série le prochain
+durable ordinal et finaliser seulement lorsque les dérivés sont prêts, puis `verify` pour relire
+indépendamment le périmètre terminal, les lignes sources, les lignes publiques/support, les processus
+affectés et la fermeture de références owner-draft. Si une réponse est ambiguë, si le wrapper se
+termine sans son permit en mémoire, ou si les dérivés deviennent prêts plus tard, continuez seulement
+avec `freeze-recovery`, `seal-recovery-approval` et `run-recovery` ; ne rejouez pas automatiquement
+les écritures de processus dans la même invocation.
+
+## Complétude de pagination et concurrence
+
+`--page-size` est le maximum demandé, de `1-5000` ; PostgREST peut tout de même renvoyer des pages
+plus petites à cause d'une limite côté serveur. Le CLI demande `Prefer: count=exact`, valide le total
+exact et la plage retournée depuis chaque `Content-Range`, puis avance l'offset suivant du nombre de
+lignes réellement renvoyées. Un scan accepté doit conserver un ordre strict `id` / `version`, sans
+identités manquantes ni dupliquées, et enregistre pour chaque table la taille de page demandée, la
+taille effective, le nombre de pages, les lignes lues, le total exact et les compteurs agrégés
+d'entités.
+
+Cette preuve de complétude signifie que le CLI a parcouru le résultat filtré pendant que les membres
+de la table et les clés de tri restaient stables. Comme la lecture couvre plusieurs requêtes HTTP,
+ce n'est pas un snapshot transactionnel ou MVCC d'un instant unique ; évitez tout nettoyage,
+suppression ou insertion concurrent pour le même compte pendant la maintenance. `plan` lie la preuve
+de complétude au hash immuable du plan, `apply` relance le scan complet du compte et les contrôles de
+dérive avant d'accepter l'approbation ou d'écrire, et `verify` utilise une preuve fraîche de relecture
+complète au lieu de faire confiance au seul rapport apply.
+
+## Valider les dérivés de procédés
+
+`rebuild-derivatives` ne peut cibler qu'un seul processus brouillon de l'utilisateur courant, à une
+version exacte. Le scope doit déclarer `action: "rebuild_derivatives"`, `target_mode: "owner_draft"`,
+le propriétaire courant attendu, le `state_code: 0` attendu, ainsi que l'ensemble complet de
+composants `extracted_md` et `embedding_ft`. L'opération reconstruit uniquement le Markdown et les
+embeddings dérivés ; elle ne modifie pas la charge utile principale du processus, son propriétaire,
+son état ni `modified_at`, et ne peut pas cibler de ligne publique/partagée, de propriétaire tiers,
+de ligne non brouillon, d'autre table, plusieurs lignes ou un sous-ensemble de composants.
+
+Pour `rebuild-derivatives`, un `apply` réussi signifie seulement que la RPC de base de données
+protégée a accepté et mis la demande en file. Cela ne signifie pas que la génération Markdown ou
+embedding est terminée. Le CLI ne propose aucun repli vers un appel Edge direct,
+`admin embedding-run`, une file brute, SQL, des identifiants service-role ou une mutation REST brute ; la
+réexécution du même plan doit retourner la même preuve de demande durable. `verify` lit la demande
+durable et un nouveau snapshot des dérivés du processus, puis ne rapporte que `pending`, `passed` ou
+`failed`. Il ne passe que lorsque les deux dérivés demandés sont à jour et que les préconditions
+gelées des champs primaires correspondent toujours ; traitez `pending` et `failed` comme des états
+non réussis.
+
+Chaque workflow réussit seulement quand une nouvelle relecture satisfait le plan et l’état final requis. En cas de dérive du périmètre, d’approbation expirée, de réponse ambiguë ou de dérivés en file, conservez les preuves et utilisez la reprise prévue. Ne répétez pas automatiquement les écritures.

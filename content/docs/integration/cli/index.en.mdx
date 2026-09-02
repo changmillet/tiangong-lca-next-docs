@@ -1,0 +1,28 @@
+---
+title: "CLI user guide"
+description: "Install, sign in, query platform data, and understand results before moving on to validation, automation, and guarded writes."
+---
+
+`tiangong-lca` is the TianGong LCA command-line client. Use it to query platform data, validate local records, and—with the required permissions—save drafts or publish. You do not need to read source code or clone a repository.
+
+Start with [Install, sign in, and run your first query](/en/docs/integration/cli/getting-started/). You will retrieve up to 3 public processes and learn to distinguish success, empty results, and access problems.
+
+## Choose the right tool
+
+| Your task | Use |
+| --- | --- |
+| Run a specific platform operation yourself in a terminal | `tiangong-lca`, covered here |
+| Ask an AI to follow a repeatable task workflow | [Agent Skills guide](/en/docs/integration/skills/) |
+| Validate, import, or convert a local data package | [Local tidas tools](/en/docs/integration/tidas/) |
+
+`tidas` and `tiangong-lca` are separate commands; installing one does not install the other. Skills supply task instructions and runners, not another account system. Platform commands use the CLI’s local sign-in session. MCP is an optional alternative integration, not a CLI prerequisite.
+
+## Versions used in this guide
+
+Examples pin `@tiangong-lca/cli@0.1.8`, requiring Node.js `>=24.19.0 <25` and pnpm `11.24.0`. If you also use Skills, choose their exact required Node.js version, `24.19.0`.
+
+The first query is read-only: it creates, changes, and deletes no platform data. Publishing and maintenance chapters are for operators with prepared inputs and explicit authorization. Signing in does not itself grant publishing or administrative access.
+
+## Read by task
+
+<CategoryDirectory lang="en" category="integration/cli" />

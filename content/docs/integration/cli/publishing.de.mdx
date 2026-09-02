@@ -1,0 +1,58 @@
+---
+title: "LCI/LCIA-Daten veröffentlichen"
+description: "Berechtigungen, Veröffentlichungsphasen, Dateiprüfungen und unabhängige Abnahme verstehen."
+---
+
+Diese Referenz richtet sich an autorisierte Verantwortliche für Datenveröffentlichungen, nicht für neue npm-CLI-Versionen. Zuerst [Identität prüfen](/de/docs/integration/cli/authentication/) und einen freigegebenen Plan, JSON-Eingaben je Phase und die ZIP-Dateien vorbereiten. Diese aufgabenspezifischen Eingaben gehören nicht zum Einstiegstutorial.
+
+Hier wird der global installierte Kurzbefehl `tiangong-lca` verwendet; die Installation steht im [Einstieg](/de/docs/integration/cli/getting-started/).
+
+Die Befehle zeigen die Phasenfolge, keine direkt ausführbare Übung. `prepare`, `upload`, `finalize`, `approve` und `publish` verändern den Zustand einer echten Remote-Veröffentlichung. Jeder Schritt braucht passende Freigabe und Erfolgsnachweise.
+
+`tiangong-lca release ...` ist die Remote-Befehlsfamilie für die LCI/LCIA-Datenrelease-Steuerung.
+Sie ist weder der npm-Paket-Release-Workflow noch ein Alias für den lokalen `tidas`-Paketbauer. Sie
+nutzt die OAuth-Nutzersitzung der CLI; der Server prüft für private Lese- und
+Schreiboperationen weiterhin `data_product_manager`-Zugriff und akzeptiert keine service-role keys.
+
+Die übliche Reihenfolge ist:
+
+```bash
+tiangong-lca release prepare --input ./release-prepare.json --json
+tiangong-lca release upload --input ./release-upload.json --output ./upload-receipt.json
+tiangong-lca release finalize --input ./release-finalize.json --json
+tiangong-lca release approve --input ./release-approval.json --json
+tiangong-lca release publish --input ./release-publish.json --json
+tiangong-lca release readback-verify --input ./release-readback.json --json
+tiangong-lca release status --release-run-id <release-run-id> --json
+```
+
+Release-Artefakte bleiben dateibasiert: Die Upload-Anfrage muss für jedes ZIP Profil, Format, Pfad,
+Byte-Größe und SHA-256 deklarieren. Das CLI prüft die lokalen Bytes, bevor es signierte Upload-URLs
+anfordert. Belege, Downloads und Calculation-Bundle-Projektionen werden in private Dateien geschrieben
+statt große Nutzlasten nach stdout zu streamen.
+
+```bash
+tiangong-lca release calculation-bundle --package-id <package-id> --output ./calculation-bundle.json
+tiangong-lca release calculation-artifact --package-id <package-id> --artifact-path chunks/lci-00000.jsonl.gz --output ./lci-00000.jsonl.gz
+tiangong-lca release current --json
+tiangong-lca release artifact-download --artifact-id <artifact-id> --output ./release.zip
+```
+
+`calculation-bundle` gibt nur eine geprüfte Manifest-Projektion plus kurzlebige Download-URLs zurück.
+Prüfen Sie vor einem Artefakt-Download, dass der exakte Pfad in diesem Manifest vorhanden ist; nach
+dem Download prüft das CLI Größe und SHA-256 erneut. Nutzen Sie `--dry-run`, wenn Sie eine
+zugangsdatenmaskierte Anfrageform prüfen müssen, und geben Sie Zugangsdaten oder signierte URLs
+nicht an KI oder Chats weiter.
+
+Nutzen Sie die eingebaute Hilfe für alle Optionen:
+
+```bash
+tiangong-lca flow --help
+tiangong-lca process --help
+tiangong-lca lifecyclemodel --help
+tiangong-lca release --help
+```
+
+## Wann ist die Veröffentlichung abgeschlossen?
+
+Ein erfolgreicher Aufruf oder eine ZIP-Datei reicht nicht aus. Belege und SHA-256-Werte je Phase aufbewahren, den serverseitigen Endzustand bestätigen und unabhängig mit `readback-verify` prüfen. Tatsächlich zugängliche Paketidentität, Version und Hashes müssen stimmen. Fehlgeschlagene oder teilweise Ergebnisse sind keine abgeschlossene Veröffentlichung.

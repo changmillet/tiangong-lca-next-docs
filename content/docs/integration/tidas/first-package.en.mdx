@@ -1,0 +1,96 @@
+---
+title: "Validate and convert your first package"
+description: "Use a downloadable teaching file for validation, eILCD conversion, and round-trip checks, and understand what the reports prove."
+---
+
+You will convert one complete Flow JSON into eILCD XML, convert it back, and validate it. First [install tidas](/en/docs/integration/tidas/installation/) and confirm `tidas --version` prints `tidas 0.2.0`. Perform all steps in the same new practice folder.
+
+## 1. Download the teaching file
+
+Run these two commands where you want to store the exercise. They work in macOS/Linux shells and PowerShell 7; choose a new name if the directory exists. All later relative paths start from this practice directory.
+
+```bash
+mkdir tidas-practice
+cd tidas-practice
+```
+
+Download the [teaching Flow JSON](/assets/docs/tool-guides-v1/demo-flow.json) to `sample/flows/demo-flow.json`. `flows` is the dataset category directory; do not place the JSON directly at the package root. Create the folders and save the file with your file manager, or use these commands.
+
+macOS / Linux:
+
+```bash
+mkdir -p sample/flows
+curl --proto '=https' --tlsv1.2 -fsSL https://docs.tiangong.earth/assets/docs/tool-guides-v1/demo-flow.json -o sample/flows/demo-flow.json
+```
+
+Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force sample/flows
+Invoke-WebRequest https://docs.tiangong.earth/assets/docs/tool-guides-v1/demo-flow.json -OutFile sample/flows/demo-flow.json
+```
+
+All UUIDs and references in this file are fictional. It demonstrates structure validation and conversion, not a complete production dependency package. Do not upload, publish, or use it for calculations.
+
+## 2. Validate TIDAS JSON
+
+Run commands one at a time. Immediately afterward, use `echo $?` on macOS/Linux or `$LASTEXITCODE` in PowerShell 7 to read the exit code; later commands can replace it. Except for explicitly expected sign-in/error demonstrations, stop on a nonzero code and resolve the error before continuing.
+
+| Terminal | Read the preceding exit code immediately |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+```bash
+tidas validate sample --input-format tidas-json --format json
+```
+
+Success means exit code `0`, `status: succeeded`, and `exit_class: success`. Check these fields to confirm that one document was validated, not an empty directory:
+
+| Field | Expected for this example |
+| --- | --- |
+| `summary.validation.document_count` | `1` |
+| `summary.validation.error_count` | `0` |
+| `summary.eilcd_projection_validation.ok` | `true`: the eILCD projection passes XSD validation |
+| `summary.semantic_roundtrip.ok` | `true`: conversion can recover the source semantics |
+
+## 3. Convert to eILCD and validate the output
+
+Keep the `./` prefix in the output path and choose a directory that does not yet exist. Input and output must not overlap. Generated data is in `converted/data/`, not the `converted/` root. Conversion also includes supporting schema assets.
+
+```bash
+tidas convert sample --output ./converted --to ilcd --format json
+```
+
+```bash
+tidas validate converted/data --input-format ilcd-xml --format json
+```
+
+The conversion report should show `summary.conversion.converted_file_count: 1`. The second command should show `summary.validation.document_count: 1` and `error_count: 0`. Creating files is not the same as validating them: check both commands.
+
+## 4. Convert back to TIDAS and validate again
+
+```bash
+tidas convert converted/data --output ./roundtrip --to tidas --format json
+```
+
+```bash
+tidas validate roundtrip/data --input-format tidas-json --format json
+```
+
+The final validation should again be `succeeded`, with one document and zero errors. You have completed input validation, conversion, output validation, and a return conversion. Keep `sample`, `converted`, and `roundtrip` for comparison; use fresh output directories when repeating the exercise.
+
+For a repeat exercise, the simplest approach is a new outer practice directory with unchanged commands. If you rename only an output directory, update every later validation/conversion path too, so you do not accidentally validate old results.
+
+## Judge success and failure
+
+Success proves that this document meets the tool’s structural and semantic rules, produces XSD-valid eILCD, and can recover source semantics. It does not prove that referenced datasets exist or that dependencies are complete, and it does not replace scientific review or publishing approval.
+
+| Symptom | Action |
+| --- | --- |
+| Document count is `0` | Check the input path and `flows` directory; an empty scan does not complete this task |
+| `completed-with-issues`, exit `2` | Read issue paths and diagnostics, repair the source, and rerun |
+| `failed`, exit `74` | Check file existence, write permissions, and output path; with `0.2.0`, use an explicit directory path such as `./converted` |
+| Output directory already exists | Choose a new directory; do not overwrite earlier inputs or results |
+
+For complete issue lists, other import formats, and scripting, read the [Command and report reference](/en/docs/integration/tidas/reference/).

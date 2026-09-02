@@ -1,0 +1,57 @@
+---
+title: "Skill catalogue and prerequisites"
+description: "Choose by task and distinguish standalone search packages, full-repository workflows, and Data Foundry requirements."
+---
+
+Choose by the input you have and the result you need, then check prerequisites and write risks. These 21 entries come from the [reviewed Skills revision](https://github.com/tiangong-lca/skills/tree/29039bcc07a7b246acc3d4009ee641d3a6878d01). This is not a promise that installing everything makes every workflow ready.
+
+## Independently installable: three search skills
+
+Each includes its launcher, example, and references, with no Skills/CLI checkout or Data Foundry requirement. Follow [installation](/en/docs/integration/skills/getting-started/) and replace only the name after `--skill`. All need the specified Node.js/pnpm versions and human-completed CLI OAuth sign-in.
+
+| Skill | Input → result | Prerequisite or boundary |
+| --- | --- | --- |
+| `flow-hybrid-search` | Flow description and optional filters → candidate flows | Remote read-only |
+| `process-hybrid-search` | Process description and optional filters → candidate processes | Remote read-only |
+| `lifecyclemodel-hybrid-search` | Model description and optional filters → candidate models | Remote read-only |
+
+## Full Skills repository: build, review, and operations
+
+These wrappers still use the repository-level shared launcher, and some read other skills’ rules or assets. Copying a single directory is insufficient. Have the workflow maintainer prepare the complete layout, matching CLI, and task inputs. These are not the beginner standalone installation path.
+
+| Skill | Input → result | Prerequisite or boundary |
+| --- | --- | --- |
+| `process-automated-builder` | Reference flow, evidence, and plan → local process build and publishing handoff | Building and publishing are separate; publishing needs approval |
+| `lifecyclemodel-automated-builder` | Existing process builds → life-cycle model and connections | Requires upstream build directories |
+| `lifecyclemodel-resulting-process-builder` | Existing model and process data → aggregated process and relations | May read remote data; publishing needs separate authorization |
+| `lifecyclemodel-recursive-orchestrator` | Prepared candidates and build request → multi-layer models, graph, and lineage | Depends on other builders and the complete runtime layout |
+| `lifecycleinventory-review` | Local builds or frozen remote snapshots → inventory quality report | Review output is not publishing approval |
+| `flow-governance-review` | Flow snapshots and repair plan → QA, repair, and publishing preparation | Some subcommands write; approve each step |
+| `process-dedup-review` | Grouped duplicate snapshots → keep/delete recommendations and evidence | A recommendation is not deletion permission |
+| `process-scope-statistics` | Authorized process scope → snapshot, coverage statistics, and reports | Remote reads; retain scope and count evidence |
+| `current-account-dataset-review` | Current-account snapshots → validation, reference repair, drafts, and audit | Review and repair permissions are distinct |
+| `tiangong-lca-remote-ops` | Specific process maintenance input → reference refresh and post-write checks | May write remotely; not an unrestricted admin interface |
+| `lca-publish-executor` | Completed publishing handoff → preflight, publish, and verification reports | Actual writes need explicit approval |
+| `embedding-ft` | Operational input → embedding-job investigation or processing | Operations only, not part of the introduction |
+
+## Instruction-led skills
+
+These organize existing CLI capabilities. Installing instructions does not prepare inputs, dependencies, or permissions. Use them within an explicit task scope; advanced maintenance is not ordinary search.
+
+| Skill | Input → result | Prerequisite or boundary |
+| --- | --- | --- |
+| `tidas-contract-context` | Dataset type and task → schema, methodology, and rules context | Needs a working CLI; prepares authoring context |
+| `tidas-bilingual-transcreation` | Extracted translation units and evidence → reviewed Chinese/English fields | Explicit post-import language completion only, not an import/publish gate |
+| `dataset-rls-maintenance` | Current-account maintenance scope → plan, approval, and verification | May delete or modify data; high risk |
+
+## Data production that depends on Data Foundry
+
+These tasks require Foundry workspaces, manifests, or scripts. Do not assume one Skill installation is enough. For local conversion only, start with the [independent tidas tool](/en/docs/integration/tidas/).
+
+| Skill | Input → result | Prerequisite or boundary |
+| --- | --- | --- |
+| `external-dataset-curated-import` | Legitimately obtained package and Foundry manifest → curated candidates | Needs Foundry, import configuration, and downstream skills |
+| `source-evidence-dataset-development` | Source documents and Foundry seed → evidence dossier and candidates | May need additional research/document tools |
+| `tidas-data-import` | Package or source files → conversion/authoring and import preparation | Needs Foundry; local conversion can use tidas directly |
+
+Complete one read-only task before introducing production workflows. Before real writes, read [Organize tasks safely](/en/docs/integration/skills/safe-workflows/); for sign-in or script issues, use [troubleshooting](/en/docs/integration/skills/troubleshooting/).

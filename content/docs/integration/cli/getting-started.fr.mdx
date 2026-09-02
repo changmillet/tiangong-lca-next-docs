@@ -1,0 +1,138 @@
+---
+title: "Installer, se connecter et lancer une première requête"
+description: "Se connecter depuis un terminal, lire 3 procédés publics et comprendre la réponse."
+---
+
+À la fin de cette page, votre dossier de travail contient `processes.json` : jusqu’à 3 procédés publics, classés par dernière modification. Cette tâche en lecture seule ne change aucune donnée de la plateforme.
+
+## 1. Préparer un terminal et un compte
+
+Ouvrez d’abord le [site de production TianGong LCA](https://lca.tiangong.earth/) et l’inscription si nécessaire. Les exemples Windows utilisent PowerShell 7 pour éviter que les anciennes versions enregistrent `>` avec un encodage inadapté au traitement JSON suivant.
+
+Vous avez besoin d’un compte TianGong LCA. Si nécessaire, suivez d’abord [Inscription et connexion](/fr/docs/quick-start/first-login/). Utilisez un shell macOS/Linux ou Windows PowerShell.
+
+Installez [Node.js](https://nodejs.org/download/release/v24.19.0/) `24.19.0` et [pnpm](https://pnpm.io/installation) `11.24.0`. Rouvrez le terminal et vérifiez que les commandes ci-dessous affichent `v24.19.0` et `11.24.0`. Le CLI accepte Node.js `>=24.19.0 <25` ; choisir `24.19.0` satisfait aussi les exigences du tutoriel Skills.
+
+```bash
+node --version
+pnpm --version
+```
+
+Créez un dossier d’exercice vide et ouvrez-y un terminal. Tous les chemins d’entrée et de sortie ci-dessous sont relatifs à ce dossier.
+
+### Si les versions requises manquent
+
+Sur la [page Node.js 24.19.0](https://nodejs.org/download/release/v24.19.0/), choisissez `node-v24.19.0.pkg` pour macOS ou le `x64.msi`/`arm64.msi` adapté à Windows, puis ouvrez l’installateur. Sous Linux, extrayez le `.tar.xz` adapté et ajoutez son dossier `bin` au PATH. Un gestionnaire de versions existant peut sélectionner `24.19.0` ; n’écrasez pas un environnement géré par votre organisation.
+
+Si pnpm manque, voici la version fixée de son [installation autonome officielle](https://pnpm.io/installation). Téléchargez et examinez le script, puis exécutez seulement le bloc de votre plateforme. Avec pnpm déjà présent, utilisez `pnpm self-update 11.24.0`. Suivez les indications PATH ou rouvrez le terminal, puis vérifiez les versions.
+
+macOS Apple Silicon / Linux :
+
+```bash
+curl --proto '=https' --tlsv1.2 -fsSL https://get.pnpm.io/install.sh -o install-pnpm.sh
+env PNPM_VERSION=11.24.0 sh install-pnpm.sh
+```
+
+Windows PowerShell 7 :
+
+```powershell
+Invoke-WebRequest https://get.pnpm.io/install.ps1 -OutFile install-pnpm.ps1
+$env:PNPM_VERSION = "11.24.0"
+.\install-pnpm.ps1
+```
+
+L’installateur autonome pnpm 11 ne prend pas en charge Intel macOS. Sur cette plateforme, choisissez dans le guide officiel une installation utilisant Node.js système et vérifiez `11.24.0` ; ne relancez pas indéfiniment le script ci-dessus. Sur un poste géré, demandez l’environnement adapté à l’administrateur.
+
+Exécutez ces deux commandes à l’endroit où vous souhaitez conserver l’exercice. Elles conviennent à macOS/Linux et PowerShell 7 ; choisissez un autre nom si le dossier existe. Tous les chemins relatifs suivants partent de ce dossier.
+
+```bash
+mkdir cli-practice
+cd cli-practice
+```
+
+## 2. Exécuter la version fixée
+
+La commande suivante télécharge et exécute le CLI `0.1.8`, puis réutilise le cache local. Aucune installation globale ni copie du code source n’est nécessaire. Le premier téléchargement nécessite un accès réseau. La Production officielle inclut ses paramètres publics : aucun `.env`, identifiant client ou API Key n’est à préparer.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+```
+
+Au premier lancement, `"status":"login-required"` et le code de sortie `1` sont normaux : le CLI fonctionne, mais vous n’êtes pas connecté. N’ajoutez pas de variables d’environnement pour cet état normal.
+
+Exécutez les commandes une à une. Immédiatement après, `echo $?` sur macOS/Linux ou `$LASTEXITCODE` dans PowerShell 7 donne le code de sortie ; une commande suivante peut le remplacer. Sauf démonstration explicite de connexion manquante ou d’erreur, arrêtez-vous sur un code non nul et corrigez avant de continuer.
+
+| Terminal | Lire immédiatement le code précédent |
+| --- | --- |
+| macOS / Linux | `echo $?` |
+| PowerShell 7 | `$LASTEXITCODE` |
+
+## 3. Se connecter dans le navigateur
+
+Exécutez vous-même la commande suivante dans un terminal de confiance. Connectez-vous et autorisez TianGong CLI dans le navigateur qui s’ouvre, puis revenez au terminal. Laissez ce dernier ouvert pendant l’attente du callback.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+`ready` dans `auth status` indique une session locale disponible. `passed` dans `auth doctor-auth` confirme la vérification d’identité en ligne. `doctor` seul ne prouve pas la connexion. Ne transmettez jamais de mot de passe, code d’autorisation ou jeton à une IA.
+
+## 4. Lire les procédés publics récemment modifiés
+
+Dans le même terminal, exécutez :
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process list --state-code 100 --order modified_at.desc,id.asc,version.asc --limit 3 --json > processes.json 2> process-errors.txt
+```
+
+`2>` enregistre les erreurs dans `process-errors.txt`. Si le code est non nul ou le JSON inattendu, ouvrez d’abord ce fichier et retirez les données sensibles avant partage. La sortie JSON est compacte ; le formatage JSON d’un éditeur facilite la lecture des champs imbriqués.
+
+`>` enregistre la réponse JSON dans votre dossier de travail. Ouvrez `processes.json` dans un éditeur de texte. `--state-code 100` sélectionne les données publiques et `--limit 3` limite la réponse à 3 enregistrements. Le tri est décroissant sur `modified_at`, puis stable sur `id` et `version`. Sans `--order`, le CLI utilise `id.asc,version.asc`, pas le nom ni la date de modification.
+
+## 5. Comprendre le résultat
+
+Une réponse réussie contient ces champs. Il s’agit d’un extrait sans le contenu complet des procédés, pas d’une promesse sur le nombre de résultats :
+
+```json
+{
+  "status": "listed_remote_processes",
+  "count": 0,
+  "rows": []
+}
+```
+
+| Champ | Signification |
+| --- | --- |
+| `status` | `listed_remote_processes` indique une requête de liste réussie |
+| `count` | Nombre renvoyé par cette requête, pas le total de la base |
+| `rows` | Tableau d’enregistrements ; chaque `process` contient les données complètes |
+| `id` + `version` | Identifient ensemble un enregistrement ; conserver les deux pour le citer |
+| `modified_at` | Date de dernière modification, pas la version du jeu de données |
+
+La tâche est terminée si le code de sortie est `0`, si `status` vaut `listed_remote_processes` et si `count` est égal à `rows.length`, sans dépasser `3`. `count: 0` et `rows: []` peuvent aussi représenter une requête réussie sans résultat ; cela ne prouve pas que la base entière est vide.
+
+## En cas de problème
+
+| Symptôme | Étape suivante |
+| --- | --- |
+| `node` ou `pnpm` absent, ou version incorrecte | Suivre les liens officiels ci-dessus, rouvrir le terminal et vérifier les versions |
+| `login-required` | Se connecter soi-même, puis lancer `auth doctor-auth --json` |
+| Connexion navigateur terminée, mais terminal en attente | Vérifier le même ordinateur et la disponibilité du port de callback ; voir [Connexion et sécurité du compte](/fr/docs/integration/cli/authentication/) |
+| `401` / `403` | Vérifier l’identité en ligne ; si l’erreur persiste, faire vérifier les droits du client et des données, sans utiliser de clé privilégiée |
+| Fichier vide ou JSON inattendu | `process-errors.txt` et le code précédent expliquent les erreurs ; un fichier créé ne prouve pas la réussite |
+
+Suite : [Rechercher et récupérer des données](/fr/docs/integration/cli/queries/) présente la recherche de flux et la lecture d’un procédé complet par ID.
+
+## Facultatif : installer la commande courte
+
+Pour un usage régulier, installez globalement. Si pnpm indique que le répertoire global des exécutables n’est pas configuré, lancez `pnpm setup`, rouvrez le terminal, puis réessayez. Les chapitres avancés utilisent cette forme courte.
+
+```bash
+pnpm add --global @tiangong-lca/cli@0.1.8
+tiangong-lca --help
+```

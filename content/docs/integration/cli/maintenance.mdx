@@ -1,0 +1,71 @@
+---
+title: "数据维护与修复"
+description: "面向受授权操作者的账号维护参考：计划、审批、执行、恢复与独立验证。"
+---
+
+维护可能修改或删除数据。仅在拥有明确任务范围、输入计划和操作者授权时使用本页；初学者请先完成[只读查询](/zh/docs/integration/cli/getting-started/)。下面的文件和审批占位值来自实际维护任务，不是可直接使用的教程输入。
+
+本页使用全局安装后的 `tiangong-lca` 短命令；安装方式见[入门页](/zh/docs/integration/cli/getting-started/)。
+
+## 普通维护：计划、执行、验证
+
+`tiangong-lca dataset maintenance plan/apply/verify` 面向受控的账号级数据清理、坏导入修复、
+支持数据别名合并和受保护的过程派生物重建。它以当前认证用户运行，依赖服务端 RLS 限制可见行
+和可写行；不要把它当成跨账号管理员批处理工具。
+
+```bash
+tiangong-lca dataset maintenance plan --scope ./maintenance-scope.json --operation redo-import --out-dir ./dataset-maintenance --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./derivative-rebuild-scope.json --operation rebuild-derivatives --out-dir ./derivative-rebuild --json
+tiangong-lca dataset maintenance apply --plan ./dataset-maintenance/maintenance-plan.json --commit --approve-plan <sha256> --confirm <current-account-email> --timeout-ms 10000 --json
+tiangong-lca dataset maintenance verify --plan ./dataset-maintenance/maintenance-plan.json --out-dir ./dataset-maintenance/verify --page-size 1000 --timeout-ms 10000 --json
+tiangong-lca dataset maintenance plan --scope ./alias-scope.json --operation merge-support-aliases --out-dir ./dataset-maintenance --json
+tiangong-lca dataset maintenance flow-identity --help
+```
+
+## 受保护的生产执行
+
+`merge-support-aliases` 面向受保护的 owner-draft 支持数据别名修复。普通 `apply` 不能作为
+生产级封存执行的回退路径；需要先用 `plan` 生成不可变计划，再通过 `freeze-protected`
+重新读取精确生产范围并生成审批请求，`seal-protected-approval` 只在本地封存逐字节人工审批，
+`run-protected` 只执行或查询一次已封存的生产执行。`verify` 必须通过新的读回证明判断结果，
+而不是只信任 apply/run 报告。预检时间仍以服务端过期时间为准；CLI 只容忍很小的服务端超前时钟
+偏差，不会延长审批或执行有效期。派生物校验使用数据库域 action evidence 与新快照之间的桥接证明，
+不要把 CLI canonical JSON 与 PostgreSQL `jsonb::text` 当作同一个哈希域。
+
+## 流身份维护与恢复
+
+流身份维护使用独立的 `dataset maintenance flow-identity` 子工作流，不复用其他维护执行器。常用顺序是 `capture` 进行生产只读 census 与一次数据库证明，`plan` 基于兼容策略、
+审核 ledger 和 live capture 生成不可变计划，`freeze` 与 `seal-approval` 绑定本次执行的精确
+字节，`run` 串行提交下一个 durable ordinal 并只在派生物就绪后 finalize，`verify` 独立重读终态
+scope、来源行、公开/支持行、受影响过程和 owner-draft 引用闭包。若响应不明确、wrapper 退出后
+丢失内存 permit，或派生物稍后才就绪，只能走 `freeze-recovery`、`seal-recovery-approval`、
+`run-recovery`，不能在同一次调用中自动重放过程写入。
+
+## 分页完整性与并发限制
+
+`--page-size` 是请求的最大值，范围为 `1-5000`；PostgREST 仍可能按服务端上限返回更小页面。
+CLI 会请求 `Prefer: count=exact`，从每个 `Content-Range` 校验精确总数和返回范围，并按实际
+返回行数推进下一页 offset。一个可接受的扫描必须保持严格的 `id` / `version` 排序，不能缺失
+或重复身份，并会记录每张表的请求页大小、有效页大小、页数、已取行数、精确总数和聚合实体数。
+
+这个完整性证明表示 CLI 在表成员和排序键保持稳定期间遍历了过滤后的结果集。由于读取跨多个
+HTTP 请求完成，它不是单一时刻的事务级或 MVCC 快照；同账号维护期间应避免并发清理、删除或插入。
+`plan` 会把完整性证明写入不可变计划哈希，`apply` 在接受批准或写入前会重新执行完整账号扫描并
+检查漂移，`verify` 也会通过新的完整读回证明而不是只信任 apply 报告。
+
+## 过程派生物的验收
+
+`rebuild-derivatives` 只能面向一个精确版本的当前用户草稿过程，scope 中必须声明
+`action: "rebuild_derivatives"`、`target_mode: "owner_draft"`、期望的当前 owner、期望的
+`state_code: 0`，以及完整组件集 `extracted_md` 和 `embedding_ft`。它只重建派生的 Markdown
+与 embedding；不会更改主过程载荷、owner、状态或 `modified_at`，也不能面向公开/共享行、外部
+owner、非草稿行、其他表、多行或部分组件集。
+
+对 `rebuild-derivatives` 执行 `apply` 时，成功仅表示受保护数据库 RPC 已接受并排队该请求，
+不表示 Markdown 或 embedding 已完成。CLI 不提供直接 Edge 调用、`admin embedding-run`、原始
+队列、SQL、service-role 凭据或原始 REST 回退；重放同一计划时必须返回同一个持久请求证明。
+`verify` 会读取持久请求和新的过程派生物快照，只报告 `pending`、`passed` 或 `failed`。只有两种
+派生物都已更新且冻结的主字段前置条件仍匹配时才会通过；`pending` 与 `failed` 都应继续按非成功
+状态处理。
+
+无论哪个子流程，只有新读回结果满足计划和终态要求才算成功。范围漂移、过期审批、响应不明确或衍生物仍在排队时，保留记录并按受支持的恢复流程处理；不要自动重复写入。

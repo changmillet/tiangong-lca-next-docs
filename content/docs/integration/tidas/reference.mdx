@@ -1,0 +1,59 @@
+---
+title: "命令与报告参考"
+description: "查阅外部格式导入、报告字段、退出码和高级导出/打包边界。"
+---
+
+先完成[本地转换教程](/zh/docs/integration/tidas/first-package/)。本页是按需查阅的参考，不是要求逐条执行的操作清单。
+
+## 导入外部格式
+
+`tidas import` 支持 EcoSpold 1/2、SimaPro CSV、openLCA JSON-LD、openLCA process XLSX，以及 ILCD/eILCD，通常可自动识别格式。下面假设你已经有合法获得的 `openlca-package.zip`；它不是教程提供的文件。
+
+```bash
+tidas import ./openlca-package.zip --output ./imported --target tidas --format json
+tidas validate ./imported/tidas --input-format tidas-json --issues ./imported/validation-issues.jsonl --format json
+```
+
+常规输出包括 `import-report.json`、`issues.jsonl`、`tidas/` 和 `process-bundles/<process_uuid>/`。`--write-mapping` 生成供字段复核的 `mapping.csv.gz`；不需要逐过程依赖包时可使用 `--no-process-bundles`。`.zolca` 不受支持，请先在 openLCA 导出受支持的交换格式。转换成功也要检查丢失字段、诊断和来源信息。
+
+## 保存报告，而不是解析终端文字
+
+`--format json` 把机器可读报告写到标准输出。`--report` 则把完整操作报告原子写入指定文件，替代标准输出；`--issues` 保存逐行 JSON 问题清单。以下示例沿用教程中的 `sample`。
+
+```bash
+tidas validate sample --input-format tidas-json --format json --report ./validation-report.json --issues ./validation-issues.jsonl
+```
+
+| 字段 | 用途 |
+| --- | --- |
+| `status` / `exit_class` | 操作结果与失败分类 |
+| `completeness` | 是否完整执行；不能忽略部分结果 |
+| `summary` | 文档数、问题数、转换数量等统计 |
+| `diagnostics` | 诊断代码、路径、消息与上下文 |
+| `artifacts` | 输出位置、类型及可用时的字节数/摘要 |
+| `next_actions` | 建议的后续检查，不等于已执行 |
+
+## 退出码
+
+| 退出码 | 含义 |
+| ---: | --- |
+| `0` | 成功 |
+| `2` | 已完成，但存在数据问题 |
+| `64` | 用法或选项错误 |
+| `69` | 已知能力当前不可用 |
+| `70` | 内部错误 |
+| `74` | 必需的 I/O 操作失败 |
+| `130` | 操作被取消 |
+
+`validate --schema-only` 只用于诊断，不证明 eILCD 可转换性。不要用这个较弱检查替代教程里的完整验证。脚本必须同时检查退出码、报告状态、完整性和实际文档数。
+
+## 高级：导出、打包与开发者安装
+
+`tidas export` 面向已配置的数据源；数据库访问权限与平台 CLI OAuth 是不同边界，不要向 AI 提供数据库凭证。`tidas release` 用于本地确定性数据包构建，不会替代平台 `tiangong-lca release` 的审批与发布流程。没有已审核的连接配置或发布计划时，只查阅帮助，不执行这些操作。
+
+```bash
+tidas export --help
+tidas release --help
+```
+
+预编译程序是推荐安装方式。需要从源码构建的开发者应按照 [tidas-tools 官方说明](https://github.com/tiangong-lca/tidas-tools/tree/v0.2.0)准备 Rust 和 libxml2/libxslt 开发依赖；源码构建不是使用本指南的前提。

@@ -1,0 +1,58 @@
+---
+title: "Validate local data and read reports"
+description: "Validate a complete example locally, locate an error, and distinguish validation from preflight and writes."
+---
+
+This page does not contact the platform or require sign-in. You will validate a teaching-only Flow JSON and produce reports you can read in an editor.
+
+## 1. Prepare a complete input
+
+Download the [teaching Flow JSON](/assets/docs/tool-guides-v1/demo-flow.json) as `demo-flow.json` in your practice folder. Its UUIDs and references are fictional. Do not publish it or use it for LCA calculations.
+
+The CLI accepts a single JSON object, a JSON array, an object containing a `rows` array, or JSONL with one complete object per line. This example is a complete JSON document with a `flowDataSet` root. Search-result summaries are not necessarily complete datasets.
+
+## 2. Run validation
+
+Run commands one at a time. Immediately afterward, use `echo $?` on macOS/Linux or `$LASTEXITCODE` in PowerShell 7 to read the exit code; later commands can replace it. Except for explicitly expected sign-in/error demonstrations, stop on a nonzero code and resolve the error before continuing.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./demo-flow.json --type flow --out-dir ./flow-validation --json
+```
+
+Expect exit code `0`. Open `flow-validation/outputs/validation-report.json`; its key fields should be:
+
+```json
+{
+  "status": "completed",
+  "counts": { "total": 1, "valid": 1, "invalid": 0 }
+}
+```
+
+## 3. Act on the report
+
+| Result | Next action |
+| --- | --- |
+| `counts.valid: 1`, `counts.invalid: 0` | The example passes CLI structure checks; still inspect content and references |
+| `completed_with_failures` | Read `path`, `code`, and `message` in `rows[].issues`, fix the input, and rerun |
+| Input cannot be read or parsed | Check the path, UTF-8 encoding, and JSON syntax |
+| `outputs/invalid-rows.jsonl` contains records | Retain failures; do not send them to a write step as successful rows |
+
+`outputs/valid-rows.jsonl` contains passing rows and `outputs/invalid-rows.jsonl` contains failures. Each line is a JSON object, not an outer array; either file may be empty.
+
+## 4. Practice locating one error
+
+Save a copy as `broken-flow.json`. In a text editor, remove `flowDataSet.flowInformation.dataSetInformation.name.baseName`, then run the command below. Keep the original `demo-flow.json` unchanged.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./broken-flow.json --type flow --out-dir ./broken-validation --json
+```
+
+Expect a nonzero exit code, `completed_with_failures`, and `counts.invalid: 1`. Locate the issue path for `baseName`, restore the field, and validate again. A report file being created does not itself mean validation passed.
+
+## What does passing validation prove?
+
+Before writes, the CLI uses the TIDAS SDK to check structure. When fast validation fails, deeper checks provide more specific paths. This does not replace source review, methodological judgment, reference-closure checks, scientific quality assessment, or publishing authorization. This example has fictional references: it is not production data even though its structure passes.
+
+Classification paths can stop at their natural depth; do not add empty levels. Duplicate levels, excessive depth, and invalid values remain blocked. Repair import placeholders, local paths, and missing-source declarations at their source rather than hiding a real issue just to pass validation.
+
+For eILCD convertibility and round-trip checks on local packages, use the separate [tidas tutorial](/en/docs/integration/tidas/first-package/). Before draft writes, read [Automation and guarded writes](/en/docs/integration/cli/automation/).

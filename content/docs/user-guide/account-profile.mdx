@@ -32,7 +32,7 @@ CLI 或远程 MCP 首次通过浏览器授权后，会出现在**已连接应用
 - 在授权页确认当前账号与应用名称后再允许访问。
 - 撤销某个应用会立即删除该应用的 Supabase grant，并阻止后续 refresh。
 - 已签发的短期 access token 仍可能有效到到期；敏感接口按自己的在线校验契约处理。
-- 撤销后，客户端必须重新发起浏览器授权。CLI 可再次运行 `tiangong-lca auth login`；MCP host 重新连接即可。
+- 撤销后，客户端必须重新发起浏览器授权。CLI 可再次运行 `pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login`；MCP host 重新连接即可。
 - CLI 的 `auth logout` 或 MCP host 本地断开只删除本地 session，不等于账号侧撤销。
 
 ## CLI、MCP 与自动化

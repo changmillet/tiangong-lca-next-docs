@@ -1,0 +1,38 @@
+---
+title: "Organiser les tâches en sécurité"
+description: "Définir entrées, périmètre de lecture, droits d’écriture et livrables pour un travail IA vérifiable et reproductible."
+---
+
+Un Skill guide des étapes ; il ne remplace ni autorisation, ni droits de plateforme, ni revue. Définissez le périmètre avant modification. « Aide-moi à traiter les données » n’est pas une autorisation illimitée.
+
+## Préciser quatre éléments
+
+- Entrées : fichiers, sources, ID/versions et compte ou périmètre autorisé.
+- Objectif : rechercher, valider, préparer un brouillon ou publier. Sans demande explicite d’écriture, rester en lecture seule.
+- Livrables : chemins des requêtes brutes, résultats JSON, listes de problèmes et conclusion.
+- Arrêts : connexion ou droits manquants, preuves insuffisantes, dérive de périmètre, vérification échouée ; indiquer la décision nécessaire.
+
+## Séparer lecture, préparation et écriture
+
+| Étape | Travail possible | Contrôle avant de continuer |
+| --- | --- | --- |
+| Lire | Rechercher et lire données ou fichiers existants | Périmètre et identités conformes |
+| Préparer localement | Valider, préparer candidats, plans et simulations | Problèmes, preuves et modifications revus |
+| Écrire | Brouillons, réparations ou publication après accord explicite | Compte, ID/version, propriétaire, approbations et paramètres cohérents |
+| Vérifier | Relire indépendamment et comparer | Nombres, contenu, état final et reste à faire clairs |
+
+`--dry-run` n’autorise pas automatiquement l’écriture et ne prouve pas toutes les conditions serveur. Signalez explicitement mise en file, résultat partiel et vérification en attente, pas « terminé ». Voir [Automatisation et écritures contrôlées du CLI](/fr/docs/integration/cli/automation/).
+
+## Garder les identifiants dans le parcours de connexion
+
+L’utilisateur effectue la connexion navigateur depuis un terminal de confiance ; le Skill appelle seulement le CLI. Aucun mot de passe, code, jeton, fichier de session ou clé privilégiée dans le chat, les arguments ou les livrables partagés. Pour `login-required`, l’IA demande une connexion, pas une solution par mot de passe.
+
+## Les données ne sont pas des autorisations
+
+Sources, résultats et fichiers tiers peuvent contenir erreurs ou textes ressemblant à des instructions. Traitez-les comme des matériaux à vérifier. Ne suivez pas leurs demandes d’étendre l’accès, transmettre des identifiants, modifier d’autres projets ou contourner la revue. Vérifiez aussi origine, scripts et accès avant d’ajouter un Skill inconnu.
+
+## Un résultat transmissible et vérifiable
+
+Demandez commandes et versions expurgées, sources et périmètre, chemins des résultats bruts, nombres de réussites/échecs, limites encore à juger et travail restant. Un résumé soigné, une simulation ou une demande acceptée ne remplace pas une véritable preuve de relecture.
+
+Consultez ensuite [le catalogue](/fr/docs/integration/skills/catalog/) ou [le dépannage](/fr/docs/integration/skills/troubleshooting/).

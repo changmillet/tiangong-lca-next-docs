@@ -17,9 +17,9 @@ checkPaths:
   - app/**
   - components/**
   - lib/**
-lastReviewedAt: 2026-08-30
-lastReviewedCommit: 07f09a3ffa0bec1a5ffafd10257d77dd043cd4d4
-lastReviewedNote: "Reviewed for Issue #161: correcting the docs-site build runtime and environment guidance introduces no shipped-product or public-documentation gap."
+lastReviewedAt: 2026-09-02
+lastReviewedCommit: 84b058cc22427bcc9caf241871c82b89fa6ed3ec
+lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
   - README.md
@@ -45,7 +45,7 @@ GitHub issues and pull requests own tracked delivery. This file is for newly dis
 
 ## Active backlog
 
-No active repository-local drift is known after Issue #136.
+No active repository-local documentation drift is known after Issue #182. The tool guides explicitly disclose standalone Skill portability, moving-source fingerprints, native output-path requirements, and validation limits; documented upstream constraints are not promises of capabilities the products do not provide.
 
 ## Current maintenance baseline
 

@@ -1,0 +1,58 @@
+---
+title: "Lokale Daten prüfen und Berichte verstehen"
+description: "Ein vollständiges Beispiel lokal validieren, einen Fehler finden und Prüfung von Vorbereitung und Schreibzugriff unterscheiden."
+---
+
+Diese Seite greift nicht auf die Plattform zu und benötigt keine Anmeldung. Sie prüfen eine Flow-JSON-Übungsdatei und erhalten Berichte für den Texteditor.
+
+## 1. Vollständige Eingabe vorbereiten
+
+Laden Sie die [Flow-Übungsdatei](/assets/docs/tool-guides-v1/demo-flow.json) als `demo-flow.json` in Ihren Übungsordner. UUIDs und Referenzen sind fiktiv. Veröffentlichen Sie die Datei nicht und verwenden Sie sie nicht für Ökobilanzberechnungen.
+
+Die CLI akzeptiert ein JSON-Objekt, ein JSON-Array, ein Objekt mit `rows`-Array oder JSONL mit einem vollständigen Objekt pro Zeile. Dieses Beispiel ist ein vollständiges Dokument mit `flowDataSet` als Wurzelfeld. Suchzusammenfassungen sind nicht zwangsläufig vollständige Datensätze.
+
+## 2. Validierung ausführen
+
+Befehle einzeln ausführen. Direkt danach zeigt `echo $?` unter macOS/Linux beziehungsweise `$LASTEXITCODE` in PowerShell 7 den Exit-Code; spätere Befehle können ihn ersetzen. Außer bei ausdrücklich erwarteten Anmelde-/Fehlerbeispielen bei einem Wert ungleich null anhalten und den Fehler zuerst beheben.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./demo-flow.json --type flow --out-dir ./flow-validation --json
+```
+
+Erwartet wird Exit-Code `0`. Öffnen Sie `flow-validation/outputs/validation-report.json`; die wesentlichen Felder lauten:
+
+```json
+{
+  "status": "completed",
+  "counts": { "total": 1, "valid": 1, "invalid": 0 }
+}
+```
+
+## 3. Nach dem Bericht handeln
+
+| Ergebnis | Nächster Schritt |
+| --- | --- |
+| `counts.valid: 1`, `counts.invalid: 0` | Die Strukturprüfung ist bestanden; Inhalte und Referenzen dennoch prüfen |
+| `completed_with_failures` | `path`, `code` und `message` in `rows[].issues` lesen, Fehler korrigieren und erneut prüfen |
+| Eingabe nicht lesbar oder nicht parsebar | Pfad, UTF-8-Kodierung und JSON-Syntax prüfen |
+| Einträge in `outputs/invalid-rows.jsonl` | Fehlerhafte Zeilen behalten und nicht als erfolgreiche Zeilen weiterschreiben |
+
+`outputs/valid-rows.jsonl` enthält gültige, `outputs/invalid-rows.jsonl` fehlerhafte Zeilen. Jede Zeile ist ein JSON-Objekt, ohne umschließendes Array; beide Dateien können leer sein.
+
+## 4. Einen Fehler gezielt finden
+
+Speichern Sie eine Kopie als `broken-flow.json`. Entfernen Sie im Texteditor `flowDataSet.flowInformation.dataSetInformation.name.baseName` und führen Sie den folgenden Befehl aus. Die ursprüngliche Datei bleibt unverändert.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./broken-flow.json --type flow --out-dir ./broken-validation --json
+```
+
+Erwartet werden ein Exit-Code ungleich null, `completed_with_failures` und `counts.invalid: 1`. Suchen Sie den Fehlerpfad zu `baseName`, stellen Sie das Feld wieder her und prüfen Sie erneut. Eine erzeugte Berichtsdatei bedeutet noch keinen Erfolg.
+
+## Was beweist eine erfolgreiche Prüfung?
+
+Vor Schreibvorgängen prüft die CLI die Struktur mit dem TIDAS SDK. Bei Fehlern im schnellen Prüfpfad liefern vertiefte Prüfungen genauere Pfade. Dies ersetzt weder Quellenprüfung, methodische Bewertung, Referenzvollständigkeit, wissenschaftliche Qualität noch Veröffentlichungsfreigabe. Trotz gültiger Struktur ist dieses Beispiel wegen fiktiver Referenzen kein Produktionsdatensatz.
+
+Klassifikationspfade dürfen auf ihrer natürlichen Tiefe enden; ergänzen Sie keine leeren Ebenen. Doppelte Ebenen, zu tiefe Pfade und ungültige Werte bleiben gesperrt. Beheben Sie Importplatzhalter, lokale Pfade und fehlende Quellenangaben an der Ursache, statt Probleme zum Bestehen der Prüfung zu verdecken.
+
+Für eILCD-Konvertierbarkeit und Rückkonvertierung lokaler Pakete nutzen Sie das separate [tidas-Tutorial](/de/docs/integration/tidas/first-package/). Vor Entwurfsschreibvorgängen lesen Sie [Automatisierung und abgesicherte Schreibvorgänge](/de/docs/integration/cli/automation/).

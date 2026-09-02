@@ -1,0 +1,59 @@
+---
+title: "Befehls- und Berichtsreferenz"
+description: "Externe Formate, Berichtsfelder, Exit-Codes und Grenzen von Export und Paketbau nachschlagen."
+---
+
+Führen Sie zuerst das [lokale Konvertierungstutorial](/de/docs/integration/tidas/first-package/) durch. Diese Seite ist eine Referenz, keine Liste vollständig auszuführender Befehle.
+
+## Externe Formate importieren
+
+`tidas import` unterstützt EcoSpold 1/2, SimaPro CSV, openLCA JSON-LD, openLCA process XLSX und ILCD/eILCD, meist mit automatischer Erkennung. Das Beispiel setzt eine rechtmäßig erhaltene `openlca-package.zip` voraus; sie gehört nicht zu den Übungsdownloads.
+
+```bash
+tidas import ./openlca-package.zip --output ./imported --target tidas --format json
+tidas validate ./imported/tidas --input-format tidas-json --issues ./imported/validation-issues.jsonl --format json
+```
+
+Übliche Ausgaben sind `import-report.json`, `issues.jsonl`, `tidas/` und `process-bundles/<process_uuid>/`. `--write-mapping` erzeugt `mapping.csv.gz` für Feldprüfungen; `--no-process-bundles` verzichtet auf einzelne Prozesspakete. `.zolca` wird nicht unterstützt: Exportieren Sie vorher ein unterstütztes Austauschformat aus openLCA. Prüfen Sie auch nach erfolgreicher Konvertierung ausgelassene Felder, Diagnosen und Quellen.
+
+## Berichte speichern statt Terminaltext auswerten
+
+`--format json` schreibt den maschinenlesbaren Bericht nach stdout. `--report` schreibt den vollständigen Bericht stattdessen atomar in eine Datei; `--issues` speichert die Fehlerliste als JSONL. Das Beispiel verwendet `sample` aus dem Tutorial.
+
+```bash
+tidas validate sample --input-format tidas-json --format json --report ./validation-report.json --issues ./validation-issues.jsonl
+```
+
+| Feld | Zweck |
+| --- | --- |
+| `status` / `exit_class` | Ergebnis und Fehlerklasse |
+| `completeness` | Vollständigkeit der Ausführung; Teilergebnisse beachten |
+| `summary` | Dokument-, Fehler- und Konvertierungszahlen |
+| `diagnostics` | Codes, Pfade, Meldungen und Kontext |
+| `artifacts` | Ausgabepfade, Typen und verfügbare Größen/Hashes |
+| `next_actions` | Empfohlene, noch nicht ausgeführte Prüfungen |
+
+## Exit-Codes
+
+| Exit | Bedeutung |
+| ---: | --- |
+| `0` | Erfolg |
+| `2` | Mit Datenproblemen abgeschlossen |
+| `64` | Nutzungs- oder Optionsfehler |
+| `69` | Bekannte Funktion derzeit nicht verfügbar |
+| `70` | Interner Fehler |
+| `74` | Erforderlicher E/A-Vorgang fehlgeschlagen |
+| `130` | Abgebrochen |
+
+`validate --schema-only` dient nur der Diagnose und beweist keine eILCD-Konvertierbarkeit. Ersetzen Sie damit nicht die vollständige Prüfung des Tutorials. Skripte müssen Exit-Code, Status, Vollständigkeit und tatsächliche Dokumentzahl gemeinsam prüfen.
+
+## Fortgeschritten: Export, Paketbau und Quellcode
+
+`tidas export` verwendet eine konfigurierte Datenquelle. Datenbankzugriff und Plattform-CLI-OAuth sind getrennt; geben Sie einer KI keine Datenbankzugangsdaten. `tidas release` baut deterministische lokale Pakete und ersetzt weder Freigabe noch Veröffentlichung über `tiangong-lca release`. Ohne geprüfte Verbindungskonfiguration oder Veröffentlichungsplan nur die Hilfe lesen.
+
+```bash
+tidas export --help
+tidas release --help
+```
+
+Vorgefertigte Programme sind der empfohlene Installationsweg. Für Quellcode-Builds folgen Entwickler den [offiziellen tidas-tools-Hinweisen](https://github.com/tiangong-lca/tidas-tools/tree/v0.2.0) zu Rust und libxml2/libxslt-Entwicklungsabhängigkeiten. Ein Quellcode-Build ist keine Voraussetzung für dieses Handbuch.

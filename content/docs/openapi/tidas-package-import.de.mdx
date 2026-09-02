@@ -52,9 +52,9 @@ Es empfiehlt sich, `X-Idempotency-Key` bei `prepare_upload` und
 
 ## Lokaler Preflight mit `tidas`
 
-Automation clients can check a package with the released Rust
-[`tidas` 0.1.3 CLI](/de/docs/integration/cli/#tidas-013-installieren) before calling the
-API. Extract the ZIP into a temporary directory, then run:
+Automatisierte Clients können ein Paket vor dem API-Aufruf mit dem veröffentlichten
+[`tidas` 0.2.0](/de/docs/integration/tidas/installation/) prüfen. Entpacken Sie die ZIP-Datei
+in ein temporäres Verzeichnis und führen Sie anschließend aus:
 
 ```bash
 tidas validate ./unpacked-package \

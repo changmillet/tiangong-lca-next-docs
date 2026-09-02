@@ -1,0 +1,58 @@
+---
+title: "Valider des données locales et lire les rapports"
+description: "Valider un exemple complet, repérer une erreur et distinguer validation, préparation et écriture."
+---
+
+Cette page ne contacte pas la plateforme et ne nécessite pas de connexion. Vous validerez un fichier Flow JSON pédagogique et obtiendrez des rapports lisibles dans un éditeur.
+
+## 1. Préparer une entrée complète
+
+Téléchargez le [Flow JSON pédagogique](/assets/docs/tool-guides-v1/demo-flow.json) sous le nom `demo-flow.json` dans votre dossier d’exercice. Ses UUID et références sont fictifs. Ne le publiez pas et ne l’utilisez pas pour des calculs ACV.
+
+Le CLI accepte un objet JSON, un tableau JSON, un objet contenant un tableau `rows` ou du JSONL avec un objet complet par ligne. Cet exemple est un document complet dont la racine est `flowDataSet`. Un résumé de recherche n’est pas nécessairement un jeu de données complet.
+
+## 2. Lancer la validation
+
+Exécutez les commandes une à une. Immédiatement après, `echo $?` sur macOS/Linux ou `$LASTEXITCODE` dans PowerShell 7 donne le code de sortie ; une commande suivante peut le remplacer. Sauf démonstration explicite de connexion manquante ou d’erreur, arrêtez-vous sur un code non nul et corrigez avant de continuer.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./demo-flow.json --type flow --out-dir ./flow-validation --json
+```
+
+Le code de sortie attendu est `0`. Ouvrez `flow-validation/outputs/validation-report.json` ; ses champs principaux doivent être :
+
+```json
+{
+  "status": "completed",
+  "counts": { "total": 1, "valid": 1, "invalid": 0 }
+}
+```
+
+## 3. Agir selon le rapport
+
+| Résultat | Étape suivante |
+| --- | --- |
+| `counts.valid: 1`, `counts.invalid: 0` | La structure passe les contrôles du CLI ; vérifier encore contenu et références |
+| `completed_with_failures` | Lire `path`, `code` et `message` dans `rows[].issues`, corriger puis relancer |
+| Entrée illisible ou non analysable | Vérifier chemin, encodage UTF-8 et syntaxe JSON |
+| Enregistrements dans `outputs/invalid-rows.jsonl` | Conserver les échecs ; ne pas les transmettre comme des lignes valides à une écriture |
+
+`outputs/valid-rows.jsonl` contient les lignes valides, `outputs/invalid-rows.jsonl` les échecs. Chaque ligne est un objet JSON, sans tableau englobant ; l’un ou l’autre fichier peut être vide.
+
+## 4. S’exercer à repérer une erreur
+
+Enregistrez une copie sous `broken-flow.json`. Dans un éditeur, supprimez `flowDataSet.flowInformation.dataSetInformation.name.baseName`, puis exécutez la commande suivante. Conservez `demo-flow.json` intact.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca dataset validate --input ./broken-flow.json --type flow --out-dir ./broken-validation --json
+```
+
+Vous devez obtenir un code non nul, `completed_with_failures` et `counts.invalid: 1`. Repérez le chemin signalant `baseName`, restaurez le champ puis recommencez. La création d’un rapport ne signifie pas que la validation a réussi.
+
+## Que prouve une validation réussie ?
+
+Avant écriture, le CLI contrôle la structure avec le SDK TIDAS. Si le contrôle rapide échoue, une validation approfondie précise les chemins en erreur. Elle ne remplace ni la revue des sources, ni l’évaluation méthodologique, la complétude des références, la qualité scientifique ou l’autorisation de publier. Malgré sa structure valide, cet exemple aux références fictives n’est pas une donnée de production.
+
+Les chemins de classification peuvent s’arrêter à leur profondeur naturelle ; n’ajoutez pas de niveaux vides. Les niveaux dupliqués, profondeurs excessives et valeurs invalides restent bloqués. Corrigez les marqueurs d’import, chemins locaux et déclarations de sources manquantes à leur origine, sans masquer un problème pour faire passer la validation.
+
+Pour vérifier la conversion eILCD et l’aller-retour des paquets locaux, consultez le [tutoriel tidas](/fr/docs/integration/tidas/first-package/). Avant d’écrire des brouillons, lisez [Automatisation et écritures contrôlées](/fr/docs/integration/cli/automation/).

@@ -32,7 +32,7 @@ Nach der ersten Browserautorisierung erscheinen CLI oder Remote-MCP unter **Verb
 - Prüfen Sie Konto und Anwendungsname auf der Einwilligungsseite.
 - Ein Widerruf löscht den Supabase-Grant sofort und verhindert weitere Refreshes.
 - Ein bereits ausgestelltes kurzlebiges Access-Token kann bis zum Ablauf gültig bleiben; sensible Endpunkte folgen ihrem Online-Validierungsvertrag.
-- Nach Widerruf muss der Client erneut Browser-OAuth starten: `tiangong-lca auth login` für die CLI oder erneutes Verbinden des MCP-Hosts.
+- Nach Widerruf muss der Client erneut Browser-OAuth starten: `pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login` für die CLI oder erneutes Verbinden des MCP-Hosts.
 - CLI `auth logout` oder lokales MCP-Trennen entfernt nur lokalen Zustand und ist kein kontoseitiger Widerruf.
 
 ## CLI, MCP und Automatisierung

@@ -1,0 +1,71 @@
+---
+title: "查询与读取数据"
+description: "按描述搜索流，按 ID 与版本读取过程，并判断空结果和版本回退。"
+---
+
+本页接着[第一次查询](/zh/docs/integration/cli/getting-started/)操作，沿用同一终端、文件夹和登录会话。所有命令只读；示例仍使用固定版本，不要求全局安装。
+
+## 按描述搜索流
+
+用文本编辑器将下面的完整 JSON 保存为 `flow-search.request.json`，编码选择 UTF-8。也可以直接下载[示例请求](/assets/docs/tool-guides-v1/flow-search.request.json)。
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": {
+    "flowType": "Elementary flow",
+    "asInput": false
+  }
+}
+```
+
+`query` 描述你想找的流；`filter` 是可选筛选条件。这里限定基本流（`Elementary flow`）；`asInput: false` 不启用针对输入流的限制，并不保证候选全部是输出流，仍需核对实际分类和用途。查询文字不是修改数据的指令。
+
+先预检（dry run），检查目标地址和请求内容；再发出真实查询：
+
+逐条运行命令。每条结束后，立即在 macOS/Linux 输入 `echo $?`，或在 PowerShell 7 输入 `$LASTEXITCODE` 查看退出码；之后的命令可能覆盖这个值。除本页明确说明的未登录/错误演示外，非零时先停下处理错误，不执行下一步。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --dry-run --json
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --json > flow-results.json
+```
+
+`--dry-run` 返回 `dryRun: true` 和脱敏的 `request`，不发出业务查询，也不证明你的登录或权限有效。第二条命令才访问平台；它可能需要比普通列表查询更长的时间。
+
+## 区分“没找到”和“调用失败”
+
+结果的每条记录用 `id` 和 `version` 标识；完整流内容在 `json.flowDataSet` 中。名称可从其中的 `flowInformation.dataSetInformation.name.baseName` 查看，语言文本使用 `@xml:lang` 和 `#text`。只使用响应实际给出的字段。
+
+成功且有匹配时返回 `{ "data": [...] }`；无匹配时可能返回 `[]` 或 `{ "data": [] }`。不要仅凭数组为空判断失败，也不要把检索顺序当成适用性证明。
+
+先检查退出码，再看 JSON。没有匹配时，保留原请求作为记录，尝试更具体的名称、化学物质信息，或逐步放宽 `filter`。出现 `400` 时检查 `query` 和 JSON；`401`/`403` 先做身份与权限检查；`500` 是服务端检索失败，不能当作“数据库无此数据”。
+
+选用候选前，核对流类型、名称、分类、地区和单位/流属性是否适合你的研究。保存原请求和结果，报告实际返回数量；不要用 AI 自行补造记录。
+
+## 按 ID 读取一个完整过程
+
+打开上一步教程的 `processes.json`，从 `rows` 中选一条记录，复制它的 `id` 和 `version`。在下面的命令中分别替换 `PROCESS_ID` 和 `DATASET_VERSION`；这两个词不是可直接查询的真实值。
+
+如果公开列表成功但为空，第一次查询任务仍已完成；没有真实 `id`/`version` 时跳过本节的 `process get`，先完成上面的流检索。不要反复重新登录，也不要编造 ID。
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
+```
+
+`status: resolved_remote_process` 表示已读到过程。`requested_version` 是你的请求，`resolved_version` 是实际读到的版本，`resolution` 说明解析方式，`process` 是完整数据。若请求版本不可访问或不存在，命令可能回退到最新可访问版本；需要精确引用时，必须确认两个版本一致，不能仅以退出码 `0` 为准。
+
+## 列表、检索和分页怎么选
+
+| 目的 | 选择 |
+| --- | --- |
+| 按状态、ID 或拥有者列出记录 | `process list`；显式指定排序和数量 |
+| 用自然语言寻找相近内容 | `search flow`、`search process`、`search lifecyclemodel` |
+| 已知过程身份，读取完整内容 | `process get --id … --version …` |
+| 受控批量读取 | 先查看 `process list --help`，再决定 `--offset`、`--page-size`、`--all` |
+
+分页跨多次请求，不是数据库同一时刻的事务快照。开始时不要使用 `--all`；先限定数量、确认结果符合预期。默认排序为 `id.asc,version.asc`；希望按最近更新浏览时，显式使用 `--order modified_at.desc,id.asc,version.asc`。
+
+接下来：[校验本地数据与理解报告](/zh/docs/integration/cli/data-quality/)不需要网络登录；想让 AI 帮你完成相同检索，可阅读[第一个 Skills 任务](/zh/docs/integration/skills/first-task/)。

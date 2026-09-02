@@ -1,0 +1,24 @@
+---
+title: "Agent Skills guide"
+description: "Install reusable task skills for an AI, begin with a read-only search, and understand permissions, inputs, and results."
+---
+
+An Agent Skill is a set of task instructions for an AI, sometimes with examples, references, and executable scripts. It helps the AI follow a repeatable workflow. It is not a model, database, or account, and it does not guarantee correct results.
+
+TianGong LCA Skills organize tasks; the `tiangong-lca` CLI performs platform operations and manages local sign-in. Use the CLI yourself or let a Skills-capable AI client invoke it. Installing a Skill grants no additional rights and does not require MCP setup.
+
+## Start with one read-only skill
+
+1. [Install a search skill](/en/docs/integration/skills/getting-started/).
+2. [Run your first flow search and inspect the result](/en/docs/integration/skills/first-task/).
+3. Choose further tasks using the [Skill catalogue and prerequisites](/en/docs/integration/skills/catalog/).
+
+The introduction uses `flow-hybrid-search`, which only reads data. You will retain request, preview, and actual response files and distinguish no matches, missing sign-in, and execution failure. No Skills, CLI, or Data Foundry checkout is required.
+
+Not every catalogue entry can run after copying a single folder. The three hybrid-search skills have complete standalone runtime packages; others may need the full repository, Data Foundry, existing build artifacts, or additional authorization. Check prerequisites before installing.
+
+Without an AI, use the [CLI user guide](/en/docs/integration/cli/). For local file packages only, use [tidas tools](/en/docs/integration/tidas/).
+
+## Read by task
+
+<CategoryDirectory lang="en" category="integration/skills" />

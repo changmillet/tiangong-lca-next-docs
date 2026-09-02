@@ -1,0 +1,54 @@
+---
+title: "LCI/LCIA 数据发布"
+description: "了解数据包发布的权限、阶段、文件校验和读回验收。"
+---
+
+本页仅供负责数据发布、已获授权的操作者参考。它不是发布 npm CLI 新版本的教程。先完成[登录检查](/zh/docs/integration/cli/authentication/)，并准备经过审核的发布计划、各阶段输入 JSON 和待发布 ZIP；这些任务专用输入不由入门教程提供。
+
+本页使用全局安装后的 `tiangong-lca` 短命令；安装方式见[入门页](/zh/docs/integration/cli/getting-started/)。
+
+下列命令展示阶段顺序，不是一组可直接复制执行的练习。`prepare`、`upload`、`finalize`、`approve`、`publish` 会推进真实的远程发布工作；每一步都需要对应授权和成功证明。
+
+`tiangong-lca release ...` 是面向 LCI/LCIA 数据发布控制面的远程命令族，不是 npm 包发布流程，
+也不是本地 `tidas` 包构建命令的别名。它使用本指南所述的 OAuth 用户会话；私有读取和写入操作仍由
+服务端校验 `data_product_manager` 权限，不接受 service-role key。
+
+常用顺序如下：
+
+```bash
+tiangong-lca release prepare --input ./release-prepare.json --json
+tiangong-lca release upload --input ./release-upload.json --output ./upload-receipt.json
+tiangong-lca release finalize --input ./release-finalize.json --json
+tiangong-lca release approve --input ./release-approval.json --json
+tiangong-lca release publish --input ./release-publish.json --json
+tiangong-lca release readback-verify --input ./release-readback.json --json
+tiangong-lca release status --release-run-id <release-run-id> --json
+```
+
+发布文件以本地文件为准：上传请求必须声明每个 ZIP 的 profile、格式、路径、字节数和 SHA-256。
+CLI 会先校验本地字节，再请求签名上传地址；回执、下载和 Calculation Bundle 投影都写入私有
+文件，而不是把大载荷输出到 stdout。
+
+```bash
+tiangong-lca release calculation-bundle --package-id <package-id> --output ./calculation-bundle.json
+tiangong-lca release calculation-artifact --package-id <package-id> --artifact-path chunks/lci-00000.jsonl.gz --output ./lci-00000.jsonl.gz
+tiangong-lca release current --json
+tiangong-lca release artifact-download --artifact-id <artifact-id> --output ./release.zip
+```
+
+`calculation-bundle` 只返回经过校验的清单投影和短期下载地址。下载具体 artifact 前，应确认路径
+存在于该清单中；下载完成后，CLI 会再次校验大小和 SHA-256。调试请求结构时优先加 `--dry-run`，
+用脱敏报告确认参数，不要把凭据或签名 URL 交给 AI 或聊天窗口。
+
+需要查看完整参数时，优先使用内置帮助：
+
+```bash
+tiangong-lca flow --help
+tiangong-lca process --help
+tiangong-lca lifecyclemodel --help
+tiangong-lca release --help
+```
+
+## 怎样才算发布完成
+
+只有提交成功或看到 ZIP 文件不够。保留各阶段回执与 SHA-256，确认服务端终态，再使用 `readback-verify` 独立验收，并核对实际可读取的包身份、版本及制品摘要。任何未通过或部分完成的报告都不能宣布发布成功。

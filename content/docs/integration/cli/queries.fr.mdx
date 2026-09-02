@@ -1,0 +1,71 @@
+---
+title: "Rechercher et récupérer des données"
+description: "Rechercher des flux par description, lire des procédés par ID et version, et distinguer résultat vide et changement de version."
+---
+
+Poursuivez [la première requête](/fr/docs/integration/cli/getting-started/) dans le même terminal, dossier et avec la même session. Toutes les commandes sont en lecture seule et utilisent encore le paquet fixé, sans installation globale.
+
+## Rechercher un flux par description
+
+Enregistrez le JSON complet ci-dessous dans `flow-search.request.json` avec un éditeur de texte et l’encodage UTF-8. Vous pouvez aussi télécharger la [requête d’exemple](/assets/docs/tool-guides-v1/flow-search.request.json).
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": {
+    "flowType": "Elementary flow",
+    "asInput": false
+  }
+}
+```
+
+`query` décrit le flux recherché ; `filter` est facultatif. Cet exemple sélectionne les flux élémentaires (`Elementary flow`). `asInput: false` n’applique pas la restriction propre aux flux d’entrée ; il ne garantit pas des résultats uniquement en sortie. Vérifiez donc classification et usage. Le texte de recherche ne commande aucune modification de données.
+
+Effectuez d’abord une simulation (dry run) pour inspecter la destination et la requête, puis lancez la recherche réelle :
+
+Exécutez les commandes une à une. Immédiatement après, `echo $?` sur macOS/Linux ou `$LASTEXITCODE` dans PowerShell 7 donne le code de sortie ; une commande suivante peut le remplacer. Sauf démonstration explicite de connexion manquante ou d’erreur, arrêtez-vous sur un code non nul et corrigez avant de continuer.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --dry-run --json
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --json > flow-results.json
+```
+
+`--dry-run` renvoie `dryRun: true` et une `request` masquée. Il n’effectue pas de requête métier et ne prouve ni la connexion ni les droits. Seule la seconde commande contacte la plateforme ; une recherche peut prendre plus de temps qu’une simple liste.
+
+## Distinguer absence de résultat et échec
+
+Chaque résultat est identifié par `id` et `version` ; le flux complet se trouve dans `json.flowDataSet`. Son nom se lit dans `flowInformation.dataSetInformation.name.baseName` ; les textes multilingues utilisent `@xml:lang` et `#text`. N’utilisez que les champs réellement renvoyés.
+
+Une réponse réussie non vide a la forme `{ "data": [...] }`. Sans résultat, la réponse peut être `[]` ou `{ "data": [] }`. Un tableau vide seul n’est pas un échec, et l’ordre des résultats ne prouve pas leur pertinence pour votre étude.
+
+Vérifiez le code de sortie avant le JSON. Sans correspondance, conservez la requête originale puis essayez un nom ou identifiant chimique plus précis, ou assouplissez `filter` progressivement. Pour `400`, vérifiez `query` et la syntaxe JSON ; pour `401`/`403`, l’identité et les droits. `500` indique un échec serveur, pas l’absence de données dans la base.
+
+Avant de retenir un candidat, vérifiez son type de flux, son nom, sa classification, sa géographie et son unité/propriété de flux. Conservez requête et réponse, indiquez le nombre réel de résultats et ne demandez pas à l’IA d’inventer les enregistrements manquants.
+
+## Lire un procédé complet par ID
+
+Ouvrez `processes.json` du tutoriel précédent. Choisissez un élément de `rows` et copiez son `id` et sa `version`. Remplacez `PROCESS_ID` et `DATASET_VERSION` ci-dessous ; ces mots ne sont pas de vrais identifiants.
+
+Si la liste publique réussit mais reste vide, la première tâche est néanmoins terminée. Sans vrais `id`/`version`, sautez ce `process get` et faites la recherche de flux ci-dessus. Ne vous reconnectez pas en boucle et n’inventez pas d’ID.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
+```
+
+`status: resolved_remote_process` confirme la lecture. `requested_version` correspond à la demande, `resolved_version` à la version réellement lue, `resolution` explique la résolution et `process` contient les données. Si la version demandée manque ou n’est pas accessible, la commande peut retourner la dernière version accessible. Pour une référence exacte, vérifiez l’égalité des versions ; le code `0` ne suffit pas.
+
+## Choisir liste, recherche ou pagination
+
+| Objectif | Commande |
+| --- | --- |
+| Lister selon l’état, l’ID ou le propriétaire | `process list` avec tri et limite explicites |
+| Trouver un contenu similaire en langage naturel | `search flow`, `search process`, `search lifecyclemodel` |
+| Lire entièrement un procédé connu | `process get --id … --version …` |
+| Lire un lot contrôlé | Consulter `process list --help` avant `--offset`, `--page-size` ou `--all` |
+
+La pagination couvre plusieurs requêtes, pas un instantané transactionnel unique. Ne commencez pas par `--all` : limitez et examinez d’abord la réponse. Le tri par défaut est `id.asc,version.asc` ; pour les mises à jour récentes, précisez `--order modified_at.desc,id.asc,version.asc`.
+
+Suite : [Valider des données locales et lire les rapports](/fr/docs/integration/cli/data-quality/) ne nécessite pas de connexion en ligne. Pour confier la même recherche à une IA, suivez [Votre première tâche Skills](/fr/docs/integration/skills/first-task/).

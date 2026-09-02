@@ -1,9 +1,9 @@
 version: 1
 layout: repo
 lastReviewedAt: "2026-09-02"
-lastReviewedCommit: "ab890e0785d2dac251aafe301d889f854e864e91"
-reviewNote: "Reviewed for Issue #180: existing public-content and site-test rules cover four-locale CLI 0.1.8 first-login instructions and their executable documentation guard."
-lastReviewedNote: "Reviewed for Issue #180: CLI-owned Production defaults, complete custom/headless boundaries, and pinned first-login examples require no routing, ownership, or site-runtime change."
+lastReviewedCommit: "dec9cc87596cc1d65310b12d7a1dc14a03ee7971"
+reviewNote: "Reviewed for Issue #182: public content and lib/site-test rules cover the separate four-language CLI, Skills and native tidas guides and source-derived publication inventory; no new ownership or rule exception is needed."
+lastReviewedNote: "Reviewed for Issue #182: reader-first guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 
 catalog:
   repos:

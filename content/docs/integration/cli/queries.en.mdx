@@ -1,0 +1,71 @@
+---
+title: "Query and retrieve data"
+description: "Search for flows by description, retrieve processes by ID and version, and understand empty results and version fallback."
+---
+
+Continue from [your first query](/en/docs/integration/cli/getting-started/) in the same terminal, folder, and signed-in session. Every command here is read-only. The examples still use the pinned package and require no global installation.
+
+## Search for a flow by description
+
+Save the complete JSON below as `flow-search.request.json` in a text editor using UTF-8. You can also download the [example request](/assets/docs/tool-guides-v1/flow-search.request.json).
+
+```json
+{
+  "query": "Carbon dioxide emission to air",
+  "filter": {
+    "flowType": "Elementary flow",
+    "asInput": false
+  }
+}
+```
+
+`query` describes the flow you need; `filter` is optional. This example selects elementary flows (`Elementary flow`). `asInput: false` does not apply the input-specific restriction; it does not guarantee output-only results, so check the actual classification and intended use. The query text is not an instruction to change data.
+
+First run a dry run to inspect the destination and request, then make the real query:
+
+Run commands one at a time. Immediately afterward, use `echo $?` on macOS/Linux or `$LASTEXITCODE` in PowerShell 7 to read the exit code; later commands can replace it. Except for explicitly expected sign-in/error demonstrations, stop on a nonzero code and resolve the error before continuing.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --dry-run --json
+```
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca search flow --input ./flow-search.request.json --json > flow-results.json
+```
+
+`--dry-run` returns `dryRun: true` and a masked `request`. It makes no business query and does not prove that sign-in or access works. Only the second command contacts the platform; search can take longer than an ordinary list request.
+
+## Distinguish no matches from a failed request
+
+Each result uses `id` and `version` for identity; the full flow is under `json.flowDataSet`. Within it, find the name at `flowInformation.dataSetInformation.name.baseName`; language text uses `@xml:lang` and `#text`. Use only fields actually returned.
+
+A successful nonempty result is `{ "data": [...] }`. No matches may be represented as `[]` or `{ "data": [] }`. An empty array alone is not a failure, and retrieval order is not proof that a record fits your study.
+
+Check the exit code before interpreting JSON. If nothing matches, retain the original request and try a more precise name or chemical identifier, or relax `filter` step by step. For `400`, check `query` and JSON syntax. For `401`/`403`, check identity and permissions. `500` means a server-side search failure, not “the database contains no such data.”
+
+Before choosing a candidate, check its flow type, name, classification, geography, and unit/flow property against your study. Keep the original request and response, report the actual result count, and do not ask an AI to invent missing records.
+
+## Retrieve one complete process by ID
+
+Open `processes.json` from the previous tutorial. Select one item in `rows` and copy its `id` and `version`. Replace `PROCESS_ID` and `DATASET_VERSION` below; these words are not real identifiers.
+
+If the public list succeeds but is empty, your first-query task is still complete. Skip this section’s `process get` until a real `id`/`version` is available and do the flow-search exercise above instead. Do not repeatedly sign in or invent IDs.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca process get --id PROCESS_ID --version DATASET_VERSION --json > process.json
+```
+
+`status: resolved_remote_process` confirms a retrieved process. `requested_version` records your request, `resolved_version` is what was actually returned, `resolution` explains the lookup, and `process` contains the full data. An unavailable or missing requested version can fall back to the latest accessible version. For an exact citation, verify that the requested and resolved versions match; exit code `0` is not enough.
+
+## Choose listing, search, or pagination
+
+| Purpose | Command |
+| --- | --- |
+| List records by state, ID, or owner | `process list`; set ordering and a limit explicitly |
+| Find similar content with natural language | `search flow`, `search process`, `search lifecyclemodel` |
+| Retrieve a known process in full | `process get --id … --version …` |
+| Read a controlled batch | Read `process list --help` before choosing `--offset`, `--page-size`, or `--all` |
+
+Pagination spans requests; it is not a transaction snapshot of one instant. Do not start with `--all`: bound the result and inspect it first. Default ordering is `id.asc,version.asc`; for recently updated records, explicitly pass `--order modified_at.desc,id.asc,version.asc`.
+
+Next: [Validate local data and read reports](/en/docs/integration/cli/data-quality/) needs no online sign-in. To have an AI perform the same search, follow [Your first Skills task](/en/docs/integration/skills/first-task/).

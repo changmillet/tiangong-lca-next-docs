@@ -1,0 +1,13 @@
+{
+  "title": "CLI 用户指南",
+  "pages": [
+    "index",
+    "getting-started",
+    "queries",
+    "data-quality",
+    "authentication",
+    "automation",
+    "publishing",
+    "maintenance"
+  ]
+}

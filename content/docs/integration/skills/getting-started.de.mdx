@@ -1,0 +1,85 @@
+---
+title: "Einen Such-Skill installieren"
+description: "Flow Hybrid Search im Projekt installieren und Dateien, Laufzeit sowie CLI-Anmeldung prüfen."
+---
+
+Das Beispiel verwendet `flow-hybrid-search`. Ein einzelner projektbezogener Skill macht den Ablauf nachvollziehbar. Der gesamte Katalog und ein Serverschlüssel sind nicht erforderlich.
+
+## 1. Voraussetzungen prüfen
+
+- Ein Skills-fähiger Client mit lokaler Befehlsausführung. Dieses Handbuch zeigt Codex- und OpenClaw-Pfade; eine reine Chat-Webseite kann diese Skripte nicht ausführen.
+- **Exakt Node.js `24.19.0`** und **pnpm `11.24.0`**. Der aktuelle Starter prüft beide Versionen exakt; nicht jede Node-24-Version funktioniert.
+- Git und Netzwerkzugriff zum Abruf des Skills-Repositorys; der erste Lauf lädt auch die festgelegte CLI.
+- Ein TianGong-LCA-Konto und ein lokaler Projektordner, auf den die KI zugreifen darf.
+
+Fehlen Node.js oder pnpm, folgen Sie der [CLI-Installation](/de/docs/integration/cli/getting-started/). Öffnen Sie ein Terminal in der Wurzel des KI-Projekts und prüfen Sie diese Befehle.
+
+```bash
+node --version
+pnpm --version
+git --version
+```
+
+## 2. Einen Client auswählen und installieren
+
+Codex:
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent codex --copy --yes
+```
+
+OpenClaw:
+
+```bash
+pnpm dlx skills@1.5.23 add tiangong-lca/skills --skill flow-hybrid-search --agent openclaw --copy --yes
+```
+
+Nur bei Nutzung beider Clients für beide installieren. `--skill` wählt den Skill, `--agent` den Client und `--copy` kopiert die Laufzeitdateien. Die Installation gilt für das Projekt. `--yes` überspringt Rückfragen; Quelle und Skill-Namen daher vorher prüfen.
+
+## 3. Projektinstallation bestätigen
+
+| Client | Skill-Verzeichnis im Projekt |
+| --- | --- |
+| Codex | `.agents/skills/flow-hybrid-search/` |
+| OpenClaw | `skills/flow-hybrid-search/` |
+
+Vorhanden sein müssen `SKILL.md`, `scripts/run-flow-hybrid-search.mjs`, `scripts/lib/cli-launcher.mjs` und `assets/example-request.json`. Nicht nur `SKILL.md` kopieren. `skills-lock.json` in der Projektwurzel dokumentiert die Installation für spätere Aktualisierungsprüfungen und enthält keine Anmeldeberechtigung.
+
+Listen Sie die Installationsnachweise des Projekts mit dem folgenden Befehl auf. Öffnen Sie dasselbe Projekt im KI-Client, starten Sie eine neue Sitzung und nennen Sie ausdrücklich `flow-hybrid-search`. Ein Installationseintrag beweist nicht, dass die aktuelle Sitzung den Skill geladen hat; bei Problemen siehe [Fehlerbehebung](/de/docs/integration/skills/troubleshooting/).
+
+```bash
+pnpm dlx skills@1.5.23 list --json
+```
+
+Die geprüfte Installation entspricht Skills-Commit `29039bcc07a7b246acc3d4009ee641d3a6878d01`. Mit diesem Installer muss `skills.flow-hybrid-search.computedHash` in `skills-lock.json` dem folgenden Wert entsprechen. Dies ist ein Installationsfingerabdruck, keine Signatur. Bei Abweichung Quelle und Voraussetzungen erneut prüfen und einen Probelauf ausführen, bevor Sie die verifizierten Aussagen übernehmen.
+
+```json
+{
+  "computedHash": "3f682fcb97616cf20b97ee7f70120616e58f9ff2bf65bead54d9728d94da4c59"
+}
+```
+
+### Bestätigen, dass der Client den Skill gelesen hat
+
+Senden Sie diese Prüfung in einer neuen Sitzung. In der Skill-/Dateileseaktivität muss die passende `SKILL.md` erscheinen; die Antwort soll „Anfrage-JSON → Nur-Lese-Flusssuchergebnis“ erklären. „Das kann ich“ allein ist kein Ladenachweis.
+
+```text
+Führe noch keinen fachlichen Befehl aus. Bestätige, dass du die SKILL.md von flow-hybrid-search in diesem Projekt lesen kannst, und nenne tatsächlichen Pfad, benötigte Eingaben und Ausgaben.
+Codex: .agents/skills/flow-hybrid-search/SKILL.md; OpenClaw: skills/flow-hybrid-search/SKILL.md. Lies nur den Pfad des verwendeten Clients.
+```
+
+Fehlt ein Leseeintrag oder bleibt die Erkennung erfolglos, hängen Sie die passende lokale `SKILL.md` ausdrücklich an und lassen Sie den Client danach arbeiten. Kann er weder Projektdateien lesen noch lokale Befehle ausführen, nutzen Sie das CLI-Tutorial und melden keine erfolgreiche Skills-Abnahme.
+
+## 4. Selbst an der CLI anmelden
+
+Die Remote-Suche verwendet die private lokale CLI-Sitzung. Zuerst Status prüfen; bei `login-required` selbst im vertrauenswürdigen Terminal anmelden und im Browser autorisieren. Passwort oder Token nicht an die KI senden.
+
+```bash
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth status --json
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth login
+pnpm dlx --package=@tiangong-lca/cli@0.1.8 tiangong-lca auth doctor-auth --json
+```
+
+Systemnutzer und Umgebung des Skripts müssen denselben Anmeldekontext verwenden können. Production benötigt keine `.env`, öffentliche Client-ID oder lokalen CLI-Quellcode. Nur eigene Umgebungen erfordern [vollständige passende Konfiguration](/de/docs/integration/cli/authentication/). Skills speichern keine zweite OAuth-Sitzung.
+
+Weiter: [Die erste Flusssuche ausführen](/de/docs/integration/skills/first-task/).

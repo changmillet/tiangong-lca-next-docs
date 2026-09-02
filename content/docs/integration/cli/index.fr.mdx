@@ -1,0 +1,28 @@
+---
+title: "Guide utilisateur CLI"
+description: "Installer le CLI, se connecter, interroger la plateforme et comprendre les résultats avant la validation, l’automatisation et les écritures contrôlées."
+---
+
+`tiangong-lca` est le client en ligne de commande de TianGong LCA. Il permet d’interroger les données de la plateforme, de valider des données locales et, avec les droits requis, d’enregistrer des brouillons ou de publier. Il n’est pas nécessaire de lire le code source ni de cloner un dépôt.
+
+Commencez par [Installer, se connecter et lancer une première requête](/fr/docs/integration/cli/getting-started/). Vous récupérerez jusqu’à 3 procédés publics et apprendrez à distinguer réussite, résultat vide et problème d’accès.
+
+## Choisir le bon outil
+
+| Votre tâche | Outil |
+| --- | --- |
+| Exécuter vous-même une opération précise dans un terminal | `tiangong-lca`, présenté ici |
+| Confier à une IA un déroulement de tâche reproductible | [Guide Agent Skills](/fr/docs/integration/skills/) |
+| Valider, importer ou convertir un paquet de données local | [Outils tidas locaux](/fr/docs/integration/tidas/) |
+
+`tidas` et `tiangong-lca` sont deux commandes distinctes : installer l’une n’installe pas l’autre. Les Skills fournissent des consignes et des scripts d’exécution, pas un autre système de compte. Les commandes de plateforme utilisent la session locale du CLI. MCP est une autre intégration facultative, pas un prérequis du CLI.
+
+## Versions utilisées
+
+Les exemples utilisent `@tiangong-lca/cli@0.1.8`, avec Node.js `>=24.19.0 <25` et pnpm `11.24.0`. Pour utiliser aussi les Skills, choisissez leur version Node.js exacte : `24.19.0`.
+
+La première requête est en lecture seule : elle ne crée, ne modifie ni ne supprime de données. Les chapitres de publication et de maintenance s’adressent aux opérateurs disposant d’entrées préparées et d’une autorisation explicite. La connexion ne confère pas à elle seule des droits de publication ou d’administration.
+
+## Lire selon la tâche
+
+<CategoryDirectory lang="fr" category="integration/cli" />

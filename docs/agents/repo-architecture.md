@@ -34,8 +34,8 @@ checkPaths:
   - context7.json
   - .github/workflows/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: ab890e0785d2dac251aafe301d889f854e864e91
-lastReviewedNote: "Reviewed for Issue #180: CLI 0.1.8 owns the public Production bootstrap; four-locale onboarding no longer asks for client-ID provisioning and preserves custom/headless and MCP boundaries."
+lastReviewedCommit: dec9cc87596cc1d65310b12d7a1dc14a03ee7971
+lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -90,11 +90,21 @@ page.fr.mdx
 
 All four variants must change together when structure, links, examples, or user-visible facts change. Locale metadata files follow the same suffix convention.
 
-Authentication content is cross-page but not a second runtime. `integration/cli*`, `integration/mcp-lca-remote*`, `user-guide/account-profile*`, and `openapi/tidas-package-import*` must describe the same browser OAuth, PKCE, registered-client, connected-app revoke, token-lifetime, headless, and service-identity facts. Remote LCA MCP pages additionally require client-local refresh, direct Supabase access JWT/JWKS verification, independent Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. With DCR disabled and Supabase not advertising authorization-response issuer support, every Codex locale must configure the top-level `mcp_oauth_callback_url` base and matching `mcp_oauth_callback_port` plus per-server `oauth.client_id`; Codex's deterministic callback ID must produce the byte-exact Supabase redirect registration. An unspecified ephemeral callback is not supported. The pages must not describe opaque broker tokens, encrypted server-side Supabase sessions, Redis OAuth state, or local authorization-server endpoints. `scripts/oauth-doc-contract.test.mjs` inventories those exact families and rejects both the broker architecture and LCA user API-key, demo, manual-token, or callback-omission setup. Knowledge Base MCP and server-side GLAD authentication remain independently owned.
+Authentication content is cross-page but not a second runtime. `integration/cli/**`, `integration/skills/**`, `integration/mcp-lca-remote*`, `user-guide/account-profile*`, and `openapi/tidas-package-import*` must describe the same browser OAuth, PKCE, registered-client, connected-app revoke, token-lifetime, headless, and service-identity facts. Remote LCA MCP pages additionally require client-local refresh, direct Supabase access JWT/JWKS verification, independent Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. With DCR disabled and Supabase not advertising authorization-response issuer support, every Codex locale must configure the top-level `mcp_oauth_callback_url` base and matching `mcp_oauth_callback_port` plus per-server `oauth.client_id`; Codex's deterministic callback ID must produce the byte-exact Supabase redirect registration. An unspecified ephemeral callback is not supported. The pages must not describe opaque broker tokens, encrypted server-side Supabase sessions, Redis OAuth state, or local authorization-server endpoints. `scripts/oauth-doc-contract.test.mjs` inventories those exact families and rejects both the broker architecture and LCA user API-key, demo, manual-token, or callback-omission setup. Knowledge Base MCP and server-side GLAD authentication remain independently owned.
 
 Screenshot evidence is stored once under `public/assets/docs/<sha256-prefix>/<semantic-name>.png` and referenced through `/assets/docs/**` by the complete locale family. `scripts/check-screenshots.mjs` validates manifest bindings, references, image metadata, privacy evidence, and add/replace/reuse diff semantics. Replacement creates a new hash path and removes the previous asset only when no current MDX source still references it.
 
 The CLI integration pages pin `@tiangong-lca/cli@0.1.8` and place a public-config-free browser login before any custom environment template. Production URL/key/client/callback/region values belong to the CLI, not to a duplicated docs or Skills configuration. Complete custom project settings and explicitly targeted headless tokens remain separate paths. The guard exercises executable examples and fixed callbacks without changing the remote MCP client-registration contract or site runtime.
+
+## Reader-first tool guides
+
+`integration/cli/index*.mdx` preserves the existing CLI entry URL and leads to installation, a real read-only query, result interpretation, and local validation before advanced authentication, automation, publishing, and maintenance. `integration/skills/` explains task instructions versus CLI execution, one independently installed search skill, a real task, catalogue prerequisites, safe operation, and troubleshooting. `integration/tidas/` owns native local installation, complete sample validation/conversion/roundtrip, and command/report reference; native package work is not a platform login workflow.
+
+All 18 logical guide pages have complete zh/en/de/fr siblings and ordered locale metadata. Guide indexes have substantive reader content and remain in search/llms; only the existing generic category roots are excluded by `lib/ia.ts`. `DocsPortal` provides direct links to all three guides. Shared tutorial JSON lives under `public/assets/docs/tool-guides-v1/`; synthetic data is explicitly non-production and contains fictional references.
+
+`lib/public-doc-inventory.mjs` derives route and index expectations from MDX filenames plus runtime i18n/category policy, rejects duplicate flat/folder-index URLs, and supplies explicit guide coverage. The build checks the retained minimum route/deny contracts as well as all current source routes, complete search/llms/sitemap sets, static search inclusion, and nested guide directories. Publication counts are not manually maintained.
+
+`lib/layout.shared.tsx` supplies explicit German/French search, sidebar, language, copy, and theme labels where the upstream language package has no preset. Reader-facing navigation and search controls must not silently revert to English while the page content is localized.
 
 ## Build and publication
 

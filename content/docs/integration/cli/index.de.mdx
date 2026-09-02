@@ -1,0 +1,28 @@
+---
+title: "CLI-Benutzerhandbuch"
+description: "Installation, Anmeldung und Datenabfragen verstehen; danach Validierung, Automatisierung und abgesicherte Schreibvorgänge nutzen."
+---
+
+`tiangong-lca` ist der Kommandozeilenclient für TianGong LCA. Damit fragen Sie Plattformdaten ab, prüfen lokale Datensätze und speichern mit entsprechender Berechtigung Entwürfe oder veröffentlichen Daten. Quellcodekenntnisse und ein Repository-Klon sind nicht erforderlich.
+
+Beginnen Sie mit [Installation, Anmeldung und erster Abfrage](/de/docs/integration/cli/getting-started/). Sie lesen bis zu 3 öffentliche Prozesse und lernen, Erfolg, leere Ergebnisse und Zugriffsprobleme zu unterscheiden.
+
+## Das passende Werkzeug wählen
+
+| Ihre Aufgabe | Werkzeug |
+| --- | --- |
+| Einen bestimmten Plattformvorgang selbst im Terminal ausführen | `tiangong-lca` in diesem Handbuch |
+| Eine KI einen wiederholbaren Aufgabenablauf ausführen lassen | [Agent-Skills-Handbuch](/de/docs/integration/skills/) |
+| Ein lokales Datenpaket prüfen, importieren oder konvertieren | [Lokale tidas-Werkzeuge](/de/docs/integration/tidas/) |
+
+`tidas` und `tiangong-lca` sind getrennte Befehle. Die Installation des einen installiert nicht den anderen. Skills liefern Aufgabenanweisungen und Startskripte, kein zusätzliches Kontosystem. Plattformbefehle verwenden die lokale CLI-Sitzung. MCP ist eine optionale andere Anbindung, keine Voraussetzung für die CLI.
+
+## Verwendete Versionen
+
+Die Beispiele verwenden `@tiangong-lca/cli@0.1.8` mit Node.js `>=24.19.0 <25` und pnpm `11.24.0`. Für Skills wählen Sie die dort exakt geforderte Node.js-Version `24.19.0`.
+
+Die erste Abfrage liest nur und erstellt, ändert oder löscht keine Plattformdaten. Veröffentlichung und Wartung richten sich an Verantwortliche mit vorbereiteten Eingaben und ausdrücklicher Freigabe. Eine Anmeldung erteilt nicht automatisch Veröffentlichungs- oder Verwaltungsrechte.
+
+## Nach Aufgabe lesen
+
+<CategoryDirectory lang="de" category="integration/cli" />
