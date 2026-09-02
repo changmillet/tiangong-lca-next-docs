@@ -32,7 +32,7 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: 2c4722059780aecf74187f35a9b1b25a1bd98b46
+lastReviewedCommit: dec9cc87596cc1d65310b12d7a1dc14a03ee7971
 lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md

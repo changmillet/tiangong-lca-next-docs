@@ -134,3 +134,11 @@ test('German and French search and navigation controls do not silently fall back
     assert.ok(block.includes(`'Copy Text(code block)(aria-label)': '${copy}'`));
   }
 });
+
+test('flow search does not promise output-only filtering from asInput false', () => {
+  for (const locale of locales) {
+    const query = read(page('cli', 'queries', locale.suffix));
+    assert.match(query, /asInput: false/u);
+    assert.doesNotMatch(query, /输出方向，不是输入资源|output direction rather than input resources|Ausgaberichtung statt eingehender Ressourcen|direction de sortie, plutôt que les ressources entrantes/u);
+  }
+});

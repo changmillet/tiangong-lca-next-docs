@@ -19,7 +19,7 @@ Save the complete JSON below as `flow-search.request.json` in a text editor usin
 }
 ```
 
-`query` describes the flow you need; `filter` is optional. This example selects elementary flows (`Elementary flow`), with `asInput: false` for the output direction rather than input resources. The query text is not an instruction to change data.
+`query` describes the flow you need; `filter` is optional. This example selects elementary flows (`Elementary flow`). `asInput: false` does not apply the input-specific restriction; it does not guarantee output-only results, so check the actual classification and intended use. The query text is not an instruction to change data.
 
 First run a dry run to inspect the destination and request, then make the real query:
 

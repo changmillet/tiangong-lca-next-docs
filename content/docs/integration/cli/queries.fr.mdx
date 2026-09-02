@@ -19,7 +19,7 @@ Enregistrez le JSON complet ci-dessous dans `flow-search.request.json` avec un �
 }
 ```
 
-`query` décrit le flux recherché ; `filter` est facultatif. Cet exemple sélectionne les flux élémentaires (`Elementary flow`), avec `asInput: false` pour la direction de sortie, plutôt que les ressources entrantes. Le texte de recherche ne commande aucune modification de données.
+`query` décrit le flux recherché ; `filter` est facultatif. Cet exemple sélectionne les flux élémentaires (`Elementary flow`). `asInput: false` n’applique pas la restriction propre aux flux d’entrée ; il ne garantit pas des résultats uniquement en sortie. Vérifiez donc classification et usage. Le texte de recherche ne commande aucune modification de données.
 
 Effectuez d’abord une simulation (dry run) pour inspecter la destination et la requête, puis lancez la recherche réelle :
 
