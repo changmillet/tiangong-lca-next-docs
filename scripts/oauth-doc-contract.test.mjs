@@ -64,6 +64,21 @@ test('every CLI locale documents browser login, local status, live doctor, and h
   }
 });
 
+test('CLI first-login examples are pinned and do not require public environment placeholders', () => {
+  for (const relativePath of cliPages) {
+    const text = read(relativePath);
+    const blocks = [...text.matchAll(/```(?:bash|shell|text)\n([\s\S]*?)```/gu)].map((match) => match[1]);
+    const firstLogin = blocks.find((block) => /tiangong-lca auth login/u.test(block));
+    assert.ok(firstLogin, `${relativePath}: missing executable first-login example`);
+    assert.match(firstLogin, /@tiangong-lca\/cli@0\.1\.8/u, relativePath);
+    assert.doesNotMatch(firstLogin, /TIANGONG_LCA_(?:API_BASE_URL|SUPABASE_PUBLISHABLE_KEY|OAUTH_CLIENT_ID)\s*=/u, relativePath);
+    assert.doesNotMatch(text, /@tiangong-lca\/cli@latest/u, relativePath);
+    assert.match(text, /http:\/\/127\.0\.0\.1:49191\/oauth\/callback/u, relativePath);
+    assert.match(text, /TIANGONG_LCA_AUTH_MODE=access-token/u, relativePath);
+    assert.ok(text.indexOf(firstLogin) < text.indexOf('TIANGONG_LCA_API_BASE_URL='), relativePath);
+  }
+});
+
 test('every remote MCP locale documents direct Supabase JWT, effective Codex callback, RLS, and revocation', () => {
   for (const relativePath of mcpPages) {
     const text = read(relativePath);
