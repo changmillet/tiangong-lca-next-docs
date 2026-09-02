@@ -32,7 +32,7 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-02
-lastReviewedCommit: dec9cc87596cc1d65310b12d7a1dc14a03ee7971
+lastReviewedCommit: 2838a4ef98255db8a0d44ce28740a98f160fb838
 lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
 related:
   - AGENTS.md
@@ -69,7 +69,7 @@ DEPLOY_ENV=ci CANONICAL_ORIGIN=http://localhost:3000 NEXT_PUBLIC_SEARCH_MODE=sta
 - Documentation-root hub: all four `/{lang}/docs/` outputs must contain `[data-docs-portal="lca-task-hub"]` and `[data-docs-portal-map="lca-task-route"]`; each portal link must remain inside its locale, resolve successfully, remain visible at 390px, and produce no horizontal overflow at 390px, 1440px, 1633px, 2048px, or 2560px in light and dark themes.
 - Quick-start route: all four `/{lang}/docs/quick-start/` outputs must contain `[data-quick-start-guide="first-session-route"]`, `[data-quick-start-map="three-stage-onboarding"]`, one solid application entry action, and the same canonical onboarding/task targets. Browser proof must show readable completion cues, visible keyboard focus, no fixed-height overlap in German or French, and no horizontal overflow at the standard five widths in both themes.
 - Automatic category directories: all 48 localized directories (the nine existing category directories plus the three tool-guide roots, across four locales) must expose `[data-category-directory]` and a `data-category-count` equal to the non-index entries in their localized `meta*.json`. Every meta target must be emitted in order with a localized title and non-empty metadata or first-paragraph summary. Browser proof must cover the two-column User Guide and a nested-folder category, with no self-links, empty grid cells, overlap, or horizontal overflow.
-- Source-derived publication inventory: search records and llms must equal the full indexable MDX URL set; the sitemap must equal every real source page plus locale and default landing pages. Verify all guide chapters in static search and production locale-filtered Algolia. Keep the retained route and retired-path manifests unchanged.
+- Source-derived publication inventory: search records and llms must equal the full indexable MDX URL set; the sitemap must equal every real source page plus locale and default landing pages. Static search must parse the advanced multilingual `docs.docs` store, require exact normalized URLs from `type: page` records, and validate their locale. Substring matches, child URLs, heading/text links, and token/ID metadata cannot prove a missing guide root. Keep the parent-missing/child-present regression and malformed-store/locale tests. Verify guide discovery in production locale-filtered Algolia; retained route and retired-path manifests stay unchanged.
 - Metadata or route changes: inspect generated HTML for canonical, `x-default`, all real locale alternatives, and Open Graph image metadata; confirm sitemap entries and negative 404 contracts.
 - Production publishing or search reconciliation: run the complete build, verify deployed `/llms.txt` and `/search-records.json` expose the expected SHA, assert indexable robots/canonical metadata, then confirm locale-isolated Algolia search.
 - Preview reconciliation: assert the same deployed SHA but require `Disallow: /`, page `noindex`, and production-origin canonical/sitemap URLs; confirm the production-state job is skipped.

@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { publicLocales, readPublicDocInventory, toolGuideRoutes, normalizeRoute } from '../lib/public-doc-inventory.mjs';
+import { publicLocales, readPublicDocInventory, toolGuideRoutes, normalizeRoute, assertStaticSearchPageCoverage } from '../lib/public-doc-inventory.mjs';
 import { categoryBases } from '../lib/ia.ts';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -293,13 +293,16 @@ if (categoryDirectoryCount === expectedDirectoryCount) passed.push(`${categoryDi
 
 // 13. Every tool-guide chapter is discoverable through both public indexes and
 // the static search payload used by preview/CI, including the three guide roots.
-const staticSearch = read('api/search');
+try {
+  assertStaticSearchPageCoverage(JSON.parse(read('api/search')), toolGuideRoutes());
+} catch (error) {
+  errors.push(`static search: ${error.message}`);
+}
 const searchRouteSet = new Set(sr.records.map((record) => normalizeRoute(record.url)));
 const llmsRouteSet = new Set(llmsRoutes.map(normalizeRoute));
 for (const route of toolGuideRoutes()) {
   if (!searchRouteSet.has(route)) errors.push(`tool guide missing from search records: ${route}`);
   if (!llmsRouteSet.has(route)) errors.push(`tool guide missing from llms.txt: ${route}`);
-  if (!staticSearch.includes(route.replace(/\/$/u, ''))) errors.push(`tool guide missing from static search: ${route}`);
 }
 passed.push(`four-language tool-guide discovery (${toolGuideRoutes().length} chapters)`);
 
