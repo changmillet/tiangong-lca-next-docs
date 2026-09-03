@@ -37,8 +37,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: d85604fb17beddd6529d0874e4ca8a470d995277
-lastReviewedNote: "Reviewed for documentation-root pagination and introduction summary refinement: the task hub now suppresses linear footer navigation, and localized introduction metadata supplies descriptive footer copy; no policy changes were required."
+lastReviewedCommit: c291c272dbc31b8eba76f01fd19544fecd42d392
+lastReviewedNote: "Reviewed for localized TianGong LCA platform-action wording and an explicit external-link icon: navigation ownership, safe new-context behavior, and validation expectations remain unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
