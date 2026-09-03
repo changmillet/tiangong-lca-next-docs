@@ -63,7 +63,7 @@ const copy: Record<Language, HomeCopy> = {
         slug: 'deploy-and-dev',
       },
     ],
-    platformAction: '进入平台',
+    platformAction: '打开 TianGong LCA',
     conceptMap: {
       ariaLabel: '生命周期评价概念图：参考数据连接过程关系，形成产品系统并生成 LCIA 结果。',
       title: '生命周期评价概念图',
@@ -106,7 +106,7 @@ const copy: Record<Language, HomeCopy> = {
         slug: 'deploy-and-dev',
       },
     ],
-    platformAction: 'Open platform',
+    platformAction: 'Open TianGong LCA',
     conceptMap: {
       ariaLabel: 'Life cycle assessment concept map: reference data connects process relationships to a product system and LCIA results.',
       title: 'Life cycle assessment concept map',
@@ -149,7 +149,7 @@ const copy: Record<Language, HomeCopy> = {
         slug: 'deploy-and-dev',
       },
     ],
-    platformAction: 'Zur Plattform',
+    platformAction: 'TianGong LCA öffnen',
     conceptMap: {
       ariaLabel: 'Konzeptkarte der Ökobilanz: Referenzdaten verbinden Prozessbeziehungen mit dem Produktsystem und den LCIA-Ergebnissen.',
       title: 'Konzeptkarte der Ökobilanz',
@@ -192,7 +192,7 @@ const copy: Record<Language, HomeCopy> = {
         slug: 'deploy-and-dev',
       },
     ],
-    platformAction: 'Plateforme ACV',
+    platformAction: 'Ouvrir TianGong LCA',
     conceptMap: {
       ariaLabel: 'Carte conceptuelle de l’ACV : les données de référence relient les relations entre procédés au système de produit et aux résultats d’ACVI.',
       title: 'Carte conceptuelle de l’ACV',
@@ -215,6 +215,14 @@ function Arrow() {
   );
 }
 
+function ExternalLinkIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+      <path d="M8 5H5.75A1.75 1.75 0 0 0 4 6.75v7.5A1.75 1.75 0 0 0 5.75 16h7.5A1.75 1.75 0 0 0 15 14.25V12M11 4h5v5m0-5-7 7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function DocsHome({ lang }: { lang: string }) {
   const language: Language = lang in copy ? (lang as Language) : 'en';
   const content = copy[language];
@@ -225,7 +233,12 @@ export function DocsHome({ lang }: { lang: string }) {
       ...(sharedLayoutOptions.links ?? []),
       {
         type: 'button' as const,
-        text: content.platformAction,
+        text: (
+          <span className="inline-flex items-center gap-1.5">
+            {content.platformAction}
+            <ExternalLinkIcon />
+          </span>
+        ),
         url: 'https://lca.tiangong.earth/',
         secondary: true,
         external: true,
