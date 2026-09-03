@@ -26,8 +26,8 @@ interface HomeCopy {
   openGuide: string;
   paths: HomePath[];
   technicalLabel: string;
-  integrationAction: string;
-  deploymentAction: string;
+  technicalPaths: HomePath[];
+  platformAction: string;
   conceptMap: ConceptMapCopy;
 }
 
@@ -50,9 +50,20 @@ const copy: Record<Language, HomeCopy> = {
       { title: '计算和解读 LCIA', description: '运行影响评价，查看过程或模型的结果。', slug: 'user-guide/lcia' },
       { title: '评审与团队协作', description: '提交数据、处理反馈，并在团队数据空间协作。', slug: 'user-guide/data-review' },
     ],
-    technicalLabel: '面向开发者与运维',
-    integrationAction: '连接 MCP、CLI 与 OpenAPI',
-    deploymentAction: '查看私有部署与开发',
+    technicalLabel: '开发与运维指南',
+    technicalPaths: [
+      {
+        title: '将平台接入外部工具',
+        description: '了解 AI 助手、命令行工具和其他应用如何连接平台，以及 MCP、CLI、OpenAPI 各自的用途。',
+        slug: 'integration',
+      },
+      {
+        title: '私有部署与参与开发',
+        description: '了解部署方式、本地开发环境和贡献流程。',
+        slug: 'deploy-and-dev',
+      },
+    ],
+    platformAction: '进入平台',
     conceptMap: {
       ariaLabel: '生命周期评价概念图：参考数据连接过程关系，形成产品系统并生成 LCIA 结果。',
       title: '生命周期评价概念图',
@@ -82,9 +93,20 @@ const copy: Record<Language, HomeCopy> = {
       { title: 'Calculate and interpret LCIA', description: 'Run impact assessment and read results for processes and models.', slug: 'user-guide/lcia' },
       { title: 'Review and collaborate', description: 'Submit contributions for review, address feedback, and work in team data spaces.', slug: 'user-guide/data-review' },
     ],
-    technicalLabel: 'For developers and operators',
-    integrationAction: 'Connect MCP, CLI, and OpenAPI',
-    deploymentAction: 'View self-hosting and development',
+    technicalLabel: 'Developer and operations guides',
+    technicalPaths: [
+      {
+        title: 'Connect the platform to external tools',
+        description: 'Learn how AI assistants, command-line tools, and other apps connect through MCP, CLI, or OpenAPI.',
+        slug: 'integration',
+      },
+      {
+        title: 'Self-host and contribute',
+        description: 'Explore self-hosting, local development, and how to contribute.',
+        slug: 'deploy-and-dev',
+      },
+    ],
+    platformAction: 'Open platform',
     conceptMap: {
       ariaLabel: 'Life cycle assessment concept map: reference data connects process relationships to a product system and LCIA results.',
       title: 'Life cycle assessment concept map',
@@ -115,8 +137,19 @@ const copy: Record<Language, HomeCopy> = {
       { title: 'Prüfen und zusammenarbeiten', description: 'Daten zur Prüfung einreichen, Rückmeldungen bearbeiten und in Team-Datenräumen arbeiten.', slug: 'user-guide/data-review' },
     ],
     technicalLabel: 'Für Entwicklung und Betrieb',
-    integrationAction: 'MCP, CLI und OpenAPI anbinden',
-    deploymentAction: 'Self-Hosting und Entwicklung ansehen',
+    technicalPaths: [
+      {
+        title: 'Plattform mit externen Werkzeugen verbinden',
+        description: 'Erfahren Sie, wie sich KI-Assistenten, Kommandozeilenwerkzeuge und andere Anwendungen über MCP, CLI oder OpenAPI anbinden lassen.',
+        slug: 'integration',
+      },
+      {
+        title: 'Selbst hosten und mitentwickeln',
+        description: 'Erfahren Sie mehr über Bereitstellung, lokale Entwicklung und Beiträge.',
+        slug: 'deploy-and-dev',
+      },
+    ],
+    platformAction: 'Zur Plattform',
     conceptMap: {
       ariaLabel: 'Konzeptkarte der Ökobilanz: Referenzdaten verbinden Prozessbeziehungen mit dem Produktsystem und den LCIA-Ergebnissen.',
       title: 'Konzeptkarte der Ökobilanz',
@@ -146,9 +179,20 @@ const copy: Record<Language, HomeCopy> = {
       { title: 'Calculer et interpréter l’ACVI', description: 'Lancez l’évaluation des impacts et interprétez les résultats d’un procédé ou d’un modèle.', slug: 'user-guide/lcia' },
       { title: 'Réviser et collaborer', description: 'Soumettez des données à révision, traitez les retours et travaillez dans les espaces d’équipe.', slug: 'user-guide/data-review' },
     ],
-    technicalLabel: 'Pour les équipes techniques',
-    integrationAction: 'Connecter MCP, la CLI et OpenAPI',
-    deploymentAction: 'Voir l’auto-hébergement et le développement',
+    technicalLabel: 'Guides pour le développement et l’exploitation',
+    technicalPaths: [
+      {
+        title: 'Connecter la plateforme à des outils externes',
+        description: 'Découvrez comment connecter des assistants IA, des outils en ligne de commande et d’autres applications via MCP, CLI ou OpenAPI.',
+        slug: 'integration',
+      },
+      {
+        title: 'Auto-héberger la plateforme et contribuer',
+        description: 'Découvrez le déploiement, le développement local et la façon de contribuer.',
+        slug: 'deploy-and-dev',
+      },
+    ],
+    platformAction: 'Plateforme ACV',
     conceptMap: {
       ariaLabel: 'Carte conceptuelle de l’ACV : les données de référence relient les relations entre procédés au système de produit et aux résultats d’ACVI.',
       title: 'Carte conceptuelle de l’ACV',
@@ -174,9 +218,24 @@ function Arrow() {
 export function DocsHome({ lang }: { lang: string }) {
   const language: Language = lang in copy ? (lang as Language) : 'en';
   const content = copy[language];
+  const sharedLayoutOptions = baseOptions(language);
+  const homeLayoutOptions = {
+    ...sharedLayoutOptions,
+    links: [
+      ...(sharedLayoutOptions.links ?? []),
+      {
+        type: 'button' as const,
+        text: content.platformAction,
+        url: 'https://lca.tiangong.earth/',
+        secondary: true,
+        external: true,
+        active: 'none' as const,
+      },
+    ],
+  };
 
   return (
-    <HomeLayout {...baseOptions(language)}>
+    <HomeLayout {...homeLayoutOptions}>
       <div className="min-w-0 max-w-full flex-1 overflow-clip text-fd-foreground">
         <section className="border-b border-fd-border bg-fd-background" data-hero-signature="lca-concept-map">
           <div className="atlas-shell grid min-h-[40rem] grid-cols-[minmax(0,1fr)_minmax(28rem,1fr)] items-center gap-[clamp(2rem,4vw,4rem)] py-[clamp(4.5rem,8vw,7rem)] max-[68rem]:grid-cols-1 max-[40rem]:min-h-0 max-[40rem]:gap-12 max-[40rem]:py-12">
@@ -212,7 +271,7 @@ export function DocsHome({ lang }: { lang: string }) {
           </div>
         </section>
 
-        <section className="bg-fd-background py-[clamp(4.5rem,8vw,7rem)]">
+        <section className="bg-fd-background pt-[clamp(3.5rem,5.5vw,5rem)] pb-[clamp(4.5rem,8vw,7rem)]">
           <div className="atlas-shell">
             <div className="mb-10 grid max-w-[48rem] gap-2.5">
               <p className="docs-eyebrow">{content.pathsEyebrow}</p>
@@ -224,7 +283,7 @@ export function DocsHome({ lang }: { lang: string }) {
             <Cards className="grid-cols-4 gap-3 max-[68rem]:grid-cols-2 max-[40rem]:grid-cols-1">
               {content.paths.map((path) => (
                 <Card
-                  className="grid min-h-56 content-start gap-2.5 rounded-[2px] border-fd-border bg-fd-card p-5 text-inherit transition-colors duration-100 hover:border-fd-primary hover:bg-fd-accent max-[40rem]:min-h-48 [&>div:last-child]:self-end [&_h3]:m-0 [&_h3]:text-lg [&_h3]:leading-[1.35] [&_h3]:font-semibold [&_h3]:tracking-[-0.02em] [&_p]:m-0! [&_p]:text-sm [&_p]:leading-[1.6] [&_p]:text-fd-muted-foreground"
+                  className="grid min-h-56 grid-rows-[auto_1fr_auto] content-start gap-2.5 rounded-[2px] border-fd-border bg-fd-card p-5 text-inherit transition-colors duration-100 hover:border-fd-primary hover:bg-fd-accent max-[40rem]:min-h-48 [&_h3]:m-0 [&_h3]:text-lg [&_h3]:leading-[1.35] [&_h3]:font-semibold [&_h3]:tracking-[-0.02em] [&_p]:m-0! [&_p]:text-sm [&_p]:leading-[1.6] [&_p]:text-fd-muted-foreground"
                   description={path.description}
                   href={`/${language}/docs/${path.slug}/`}
                   key={path.slug}
@@ -240,31 +299,32 @@ export function DocsHome({ lang }: { lang: string }) {
 
             <section
               aria-labelledby="technical-guides-title"
-              className="mt-8 grid grid-cols-[minmax(10rem,0.72fr)_repeat(2,minmax(0,1fr))] items-stretch gap-3 border-t border-fd-border pt-3 max-[48rem]:grid-cols-2 max-[48rem]:gap-2.5 max-[40rem]:grid-cols-1"
+              className="mt-8 border-t border-fd-border pt-4"
               data-home-technical
             >
-              <h3
-                className="m-0 flex min-h-12 items-center text-sm leading-5 font-semibold text-fd-foreground max-[48rem]:col-span-2 max-[48rem]:min-h-0 max-[48rem]:py-1 max-[40rem]:col-span-1"
+              <h2
+                className="m-0 mb-3 text-base leading-6 font-semibold tracking-[-0.01em] text-fd-foreground"
                 id="technical-guides-title"
               >
                 {content.technicalLabel}
-              </h3>
-              <Link
-                className={`${buttonVariants({ variant: 'outline' })} min-h-12 min-w-0 justify-between gap-3 rounded-[2px] border-fd-border bg-fd-card px-4 py-3 text-left leading-5 text-fd-foreground whitespace-normal hover:border-fd-primary`}
-                data-home-technical-link
-                href={`/${language}/docs/integration/`}
-              >
-                <span className="min-w-0">{content.integrationAction}</span>
-                <span className="shrink-0 text-fd-primary"><Arrow /></span>
-              </Link>
-              <Link
-                className={`${buttonVariants({ variant: 'outline' })} min-h-12 min-w-0 justify-between gap-3 rounded-[2px] border-fd-border bg-fd-card px-4 py-3 text-left leading-5 text-fd-foreground whitespace-normal hover:border-fd-primary`}
-                data-home-technical-link
-                href={`/${language}/docs/deploy-and-dev/`}
-              >
-                <span className="min-w-0">{content.deploymentAction}</span>
-                <span className="shrink-0 text-fd-primary"><Arrow /></span>
-              </Link>
+              </h2>
+              <Cards className="grid-cols-2 gap-3 max-[40rem]:grid-cols-1 max-[40rem]:auto-rows-fr">
+                {content.technicalPaths.map((path) => (
+                  <Card
+                    className="grid min-h-32 grid-rows-[auto_1fr_auto] content-start gap-2 rounded-[2px] border-fd-border bg-fd-card p-4 text-inherit transition-colors duration-100 hover:border-fd-primary hover:bg-fd-accent max-[40rem]:min-h-0 [&_h3]:m-0 [&_h3]:text-base [&_h3]:leading-[1.4] [&_h3]:font-semibold [&_h3]:tracking-[-0.015em] [&_p]:m-0! [&_p]:text-sm [&_p]:leading-[1.55] [&_p]:text-fd-muted-foreground"
+                    data-home-technical-link
+                    description={path.description}
+                    href={`/${language}/docs/${path.slug}/`}
+                    key={path.slug}
+                    title={path.title}
+                  >
+                    <span className="inline-flex items-center gap-2 text-xs font-medium text-fd-primary">
+                      {content.openGuide}
+                      <Arrow />
+                    </span>
+                  </Card>
+                ))}
+              </Cards>
             </section>
           </div>
         </section>
