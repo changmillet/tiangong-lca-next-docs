@@ -33,9 +33,9 @@ checkPaths:
   - edgeone.json
   - context7.json
   - .github/workflows/**
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 2838a4ef98255db8a0d44ce28740a98f160fb838
-lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: e529ffacfd81ad4ed17ca0ea0cce811f6194b662
+lastReviewedNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -90,7 +90,7 @@ page.fr.mdx
 
 All four variants must change together when structure, links, examples, or user-visible facts change. Locale metadata files follow the same suffix convention.
 
-Authentication content is cross-page but not a second runtime. `integration/cli/**`, `integration/skills/**`, `integration/mcp-lca-remote*`, `user-guide/account-profile*`, and `openapi/tidas-package-import*` must describe the same browser OAuth, PKCE, registered-client, connected-app revoke, token-lifetime, headless, and service-identity facts. Remote LCA MCP pages additionally require client-local refresh, direct Supabase access JWT/JWKS verification, independent Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. With DCR disabled and Supabase not advertising authorization-response issuer support, every Codex locale must configure the top-level `mcp_oauth_callback_url` base and matching `mcp_oauth_callback_port` plus per-server `oauth.client_id`; Codex's deterministic callback ID must produce the byte-exact Supabase redirect registration. An unspecified ephemeral callback is not supported. The pages must not describe opaque broker tokens, encrypted server-side Supabase sessions, Redis OAuth state, or local authorization-server endpoints. `scripts/oauth-doc-contract.test.mjs` inventories those exact families and rejects both the broker architecture and LCA user API-key, demo, manual-token, or callback-omission setup. Knowledge Base MCP and server-side GLAD authentication remain independently owned.
+Authentication content is cross-page but not a second runtime. `integration/cli/**`, `integration/skills/**`, `integration/mcp-lca-remote*`, `user-guide/account-profile*`, and `openapi/tidas-package-import*` must describe the same browser OAuth, PKCE, registered-client, connected-app revoke, token-lifetime, headless, and service-identity facts. Remote LCA MCP pages additionally require client-local refresh, direct Supabase access JWT/JWKS verification, independent Edge `getClaims()`, and `auth.uid()` plus `client_id` RLS. With DCR disabled and Supabase not advertising authorization-response issuer support, every Codex locale must configure the top-level `mcp_oauth_callback_url` base and matching `mcp_oauth_callback_port` plus per-server `oauth.client_id`; Codex's deterministic callback ID must produce the byte-exact Supabase redirect registration. An unspecified ephemeral callback is not supported. The pages must not describe opaque broker tokens, encrypted server-side Supabase sessions, Redis OAuth state, or local authorization-server endpoints. `scripts/oauth-doc-contract.test.mjs` inventories those exact families and rejects both the broker architecture and LCA user API-key, demo, manual-token, or callback-omission setup. Server-side GLAD authentication remains independently owned.
 
 Screenshot evidence is stored once under `public/assets/docs/<sha256-prefix>/<semantic-name>.png` and referenced through `/assets/docs/**` by the complete locale family. `scripts/check-screenshots.mjs` validates manifest bindings, references, image metadata, privacy evidence, and add/replace/reuse diff semantics. Replacement creates a new hash path and removes the previous asset only when no current MDX source still references it.
 
@@ -118,7 +118,7 @@ All 18 logical guide pages have complete zh/en/de/fr siblings and ordered locale
 
 The package graph contains exact local markdownlint rather than dynamic npx installation. GitHub workflows retain reviewed Node `24.19.0`, exact pnpm `11.24.0`, and immutable executable action commits; local Node major `24`, EdgeOne `24.18.0`, and CI `24.19.0` all satisfy the same `>=24.18.0 <25` runtime contract.
 
-The three retained `manifests/p0b/*.json` files are immutable build contracts for information architecture, expected routes, and retired-path denial. One-time rewrite inventories and executors were removed after cutover; Git history remains the audit source.
+The three retained `manifests/p0b/*.json` files are regression baselines for information architecture, expected routes, and retired-path denial, not regenerated page inventories. Ordinary additions leave them unchanged. An explicitly requested retirement replaces only the affected positive route entries with negative entries for every locale and adds exclusive media to the deny contract; it never relaxes unrelated checks or introduces redirects. Source-derived inventories remain authoritative for all current pages. One-time rewrite inventories and executors were removed after cutover; Git history remains the audit source.
 
 EdgeOne Makers builds and deploys from Git. The managed Node runtime supplies pnpm, so `edgeone.json` invokes the frozen pnpm install directly without running `corepack enable`; Corepack setup remains a local contributor concern. GitHub workflows validate pull requests and first reconcile any allowlisted deployment against its source SHA and environment-specific indexing policy. Preview stays `noindex` and canonicalizes to production. Only the production origin can start the separate production-environment job that replaces Algolia data and refreshes Context7; preview reconciliation is validation-only.
 

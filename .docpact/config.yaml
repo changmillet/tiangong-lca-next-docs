@@ -1,9 +1,9 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-09-02"
-lastReviewedCommit: "2838a4ef98255db8a0d44ce28740a98f160fb838"
-reviewNote: "Reviewed for Issue #182: public content and lib/site-test rules cover the separate four-language CLI, Skills and native tidas guides and source-derived publication inventory; no new ownership or rule exception is needed."
-lastReviewedNote: "Reviewed for Issue #182: reader-first guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
+lastReviewedAt: "2026-09-03"
+lastReviewedCommit: "e529ffacfd81ad4ed17ca0ea0cce811f6194b662"
+reviewNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
+lastReviewedNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
 
 catalog:
   repos:
