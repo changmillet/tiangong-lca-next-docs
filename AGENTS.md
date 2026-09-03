@@ -37,8 +37,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: 04b0daa18b115c1dbcbd72e1e442653688483b06
-lastReviewedNote: "Reviewed for the homepage technical-entry refinement: the compact responsive link row remains within the existing landing architecture, four-locale copy, and validation contract; no documentation changes were required."
+lastReviewedCommit: b46d93cbdc96ef8a90480f4be239d2bf2acbe662
+lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: compact task-style cards, tighter section rhythm, a home-only external action, four-locale copy, and static-output assertions remain within the existing landing architecture; no contract changes were required."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
