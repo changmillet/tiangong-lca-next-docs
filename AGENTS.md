@@ -38,7 +38,7 @@ checkPaths:
   - .githooks/**
 lastReviewedAt: 2026-09-03
 lastReviewedCommit: b46d93cbdc96ef8a90480f4be239d2bf2acbe662
-lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: compact task-style cards, tighter section rhythm, a home-only external action, four-locale copy, and static-output assertions remain within the existing landing architecture; no contract changes were required."
+lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: the architecture guide now records the home-only action boundary, and the validation guide records technical-guide and safe external-action output checks; no policy changes were required."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md

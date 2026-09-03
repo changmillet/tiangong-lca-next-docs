@@ -35,7 +35,7 @@ checkPaths:
   - .github/workflows/**
 lastReviewedAt: 2026-09-03
 lastReviewedCommit: b46d93cbdc96ef8a90480f4be239d2bf2acbe662
-lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: compact task-style cards, tighter section rhythm, a home-only external action, four-locale copy, and static-output assertions remain within the existing landing architecture; no contract changes were required."
+lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: the architecture guide now records the home-only action boundary, and the validation guide records technical-guide and safe external-action output checks; no policy changes were required."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -58,7 +58,7 @@ Retired paths are intentionally absent. No application or hosting configuration 
 
 ## Presentation
 
-`components/SiteBrand`, `components/DocsHome`, and `components/DocsPortal` are the shared shell and entry-point components. `lib/layout.shared.tsx` supplies the same brand, search, theme, language, documentation, and repository controls to `HomeLayout` and `DocsLayout`. Landing and documentation hubs reuse Fumadocs `buttonVariants`, `Card`, and `Cards`; they do not maintain parallel button or card primitives.
+`components/SiteBrand`, `components/DocsHome`, and `components/DocsPortal` are the shared shell and entry-point components. `lib/layout.shared.tsx` supplies the same brand, search, theme, language, documentation, and repository controls to `HomeLayout` and `DocsLayout`. Home-only navigation actions are appended by `DocsHome`; they do not belong in `baseOptions`, because `DocsLayout` renders shared links in the documentation sidebar. Landing and documentation hubs reuse Fumadocs `buttonVariants`, `Card`, and `Cards`; they do not maintain parallel button or card primitives.
 
 `app/global.css` owns the shared contract:
 
