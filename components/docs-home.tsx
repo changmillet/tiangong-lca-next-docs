@@ -238,19 +238,34 @@ export function DocsHome({ lang }: { lang: string }) {
               ))}
             </Cards>
 
-            <div className="mt-12 grid grid-cols-[minmax(11rem,1fr)_minmax(0,3fr)] items-start gap-6 border-t border-fd-border pt-5 max-[40rem]:grid-cols-1">
-              <p className="m-0 text-xs font-semibold tracking-[0.04em] text-fd-muted-foreground uppercase">{content.technicalLabel}</p>
-              <div className="flex flex-wrap gap-x-8 gap-y-3">
-                <Link className="inline-flex items-center gap-2 text-sm font-medium text-fd-primary" href={`/${language}/docs/integration/`}>
-                  {content.integrationAction}
-                  <Arrow />
-                </Link>
-                <Link className="inline-flex items-center gap-2 text-sm font-medium text-fd-primary" href={`/${language}/docs/deploy-and-dev/`}>
-                  {content.deploymentAction}
-                  <Arrow />
-                </Link>
-              </div>
-            </div>
+            <section
+              aria-labelledby="technical-guides-title"
+              className="mt-8 grid grid-cols-[minmax(10rem,0.72fr)_repeat(2,minmax(0,1fr))] items-stretch gap-3 border-t border-fd-border pt-3 max-[48rem]:grid-cols-2 max-[48rem]:gap-2.5 max-[40rem]:grid-cols-1"
+              data-home-technical
+            >
+              <h3
+                className="m-0 flex min-h-12 items-center text-sm leading-5 font-semibold text-fd-foreground max-[48rem]:col-span-2 max-[48rem]:min-h-0 max-[48rem]:py-1 max-[40rem]:col-span-1"
+                id="technical-guides-title"
+              >
+                {content.technicalLabel}
+              </h3>
+              <Link
+                className={`${buttonVariants({ variant: 'outline' })} min-h-12 min-w-0 justify-between gap-3 rounded-[2px] border-fd-border bg-fd-card px-4 py-3 text-left leading-5 text-fd-foreground whitespace-normal hover:border-fd-primary`}
+                data-home-technical-link
+                href={`/${language}/docs/integration/`}
+              >
+                <span className="min-w-0">{content.integrationAction}</span>
+                <span className="shrink-0 text-fd-primary"><Arrow /></span>
+              </Link>
+              <Link
+                className={`${buttonVariants({ variant: 'outline' })} min-h-12 min-w-0 justify-between gap-3 rounded-[2px] border-fd-border bg-fd-card px-4 py-3 text-left leading-5 text-fd-foreground whitespace-normal hover:border-fd-primary`}
+                data-home-technical-link
+                href={`/${language}/docs/deploy-and-dev/`}
+              >
+                <span className="min-w-0">{content.deploymentAction}</span>
+                <span className="shrink-0 text-fd-primary"><Arrow /></span>
+              </Link>
+            </section>
           </div>
         </section>
       </div>
