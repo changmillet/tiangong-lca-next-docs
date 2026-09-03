@@ -32,8 +32,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: b46d93cbdc96ef8a90480f4be239d2bf2acbe662
-lastReviewedNote: "Reviewed for the homepage developer-entry and platform-action refinement: the architecture guide now records the home-only action boundary, and the validation guide records technical-guide and safe external-action output checks; no policy changes were required."
+lastReviewedCommit: d85604fb17beddd6529d0874e4ca8a470d995277
+lastReviewedNote: "Reviewed for documentation-root pagination and introduction summary refinement: the task hub now suppresses linear footer navigation, and localized introduction metadata supplies descriptive footer copy; no policy changes were required."
 related:
   - AGENTS.md
   - .docpact/config.yaml
