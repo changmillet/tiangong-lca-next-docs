@@ -32,8 +32,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-09-03
-lastReviewedCommit: e529ffacfd81ad4ed17ca0ea0cce811f6194b662
-lastReviewedNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
+lastReviewedCommit: 04b0daa18b115c1dbcbd72e1e442653688483b06
+lastReviewedNote: "Reviewed for the homepage technical-entry refinement: the compact responsive link row remains within the existing landing architecture, four-locale copy, and validation contract; no documentation changes were required."
 related:
   - AGENTS.md
   - .docpact/config.yaml
