@@ -291,10 +291,13 @@ for (const lang of ['zh', 'en', 'de', 'fr']) {
 const expectedDirectoryCount = directoryBases.length * publicLocales.length;
 if (categoryDirectoryCount === expectedDirectoryCount) passed.push(`${categoryDirectoryCount} automatic localized category directories`);
 
-// 13. Every tool-guide chapter is discoverable through both public indexes and
-// the static search payload used by preview/CI, including the three guide roots.
+// 13. Static search covers exactly the current source pages and contains no
+// searchable page/heading/text record for a retired path.
 try {
-  assertStaticSearchPageCoverage(JSON.parse(read('api/search')), toolGuideRoutes());
+  const retiredRoutes = deny.oldPages.filter((route) => !newRouteSet.has(normalizeRoute(route)));
+  const expectedSearchPages = sourcePages.map((page) => page.url);
+  const staticSearchPages = assertStaticSearchPageCoverage(JSON.parse(read('api/search')), expectedSearchPages, retiredRoutes);
+  verifyRouteSet('static-search page records', [...staticSearchPages], expectedSearchPages);
 } catch (error) {
   errors.push(`static search: ${error.message}`);
 }

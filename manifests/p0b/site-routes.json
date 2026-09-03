@@ -676,15 +676,6 @@
       "context7": true
     },
     {
-      "route": "/zh/docs/integration/mcp-kb-remote/",
-      "locale": "zh",
-      "pageType": "doc",
-      "sitemap": true,
-      "llms": true,
-      "search": true,
-      "context7": true
-    },
-    {
       "route": "/zh/docs/openapi/tidas-package-import/",
       "locale": "zh",
       "pageType": "doc",
@@ -1001,15 +992,6 @@
     },
     {
       "route": "/en/docs/integration/mcp-lca-remote/",
-      "locale": "en",
-      "pageType": "doc",
-      "sitemap": true,
-      "llms": true,
-      "search": true,
-      "context7": true
-    },
-    {
-      "route": "/en/docs/integration/mcp-kb-remote/",
       "locale": "en",
       "pageType": "doc",
       "sitemap": true,
@@ -1342,15 +1324,6 @@
       "context7": true
     },
     {
-      "route": "/de/docs/integration/mcp-kb-remote/",
-      "locale": "de",
-      "pageType": "doc",
-      "sitemap": true,
-      "llms": true,
-      "search": true,
-      "context7": true
-    },
-    {
       "route": "/de/docs/openapi/tidas-package-import/",
       "locale": "de",
       "pageType": "doc",
@@ -1667,15 +1640,6 @@
     },
     {
       "route": "/fr/docs/integration/mcp-lca-remote/",
-      "locale": "fr",
-      "pageType": "doc",
-      "sitemap": true,
-      "llms": true,
-      "search": true,
-      "context7": true
-    },
-    {
-      "route": "/fr/docs/integration/mcp-kb-remote/",
       "locale": "fr",
       "pageType": "doc",
       "sitemap": true,

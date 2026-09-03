@@ -17,9 +17,9 @@ checkPaths:
   - app/**
   - components/**
   - lib/**
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 84b058cc22427bcc9caf241871c82b89fa6ed3ec
-lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: e529ffacfd81ad4ed17ca0ea0cce811f6194b662
+lastReviewedNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
 related:
   - AGENTS.md
   - README.md

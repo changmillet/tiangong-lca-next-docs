@@ -36,9 +36,9 @@ checkPaths:
   - context7.json
   - .github/workflows/**
   - .githooks/**
-lastReviewedAt: 2026-09-02
-lastReviewedCommit: 2838a4ef98255db8a0d44ce28740a98f160fb838
-lastReviewedNote: "Reviewed for Issue #182: reader-first CLI, Skills and native tidas guides retain runtime/auth ownership, complete four-language routing, source-derived publication coverage, and explicit reader/command/browser acceptance."
+lastReviewedAt: 2026-09-03
+lastReviewedCommit: e529ffacfd81ad4ed17ca0ea0cce811f6194b662
+lastReviewedNote: "Reviewed for Issue #186: explicit four-locale Knowledge Base MCP documentation retirement moves only the affected routes and exclusive media into negative checks; retained guides, shared assets, source-derived indexes, runtime ownership, and production-only publication boundaries remain intact."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -92,7 +92,7 @@ This repository does not own shipped product behavior, route truth, API semantic
 - EdgeOne's managed Node runtime already supplies pnpm. Its install command runs `pnpm install --frozen-lockfile` directly; do not run `corepack enable` in the managed build because that mutates shims beside the platform-owned Node executable. Local contributor setup may still enable Corepack.
 - Markdown lint uses the exact local `markdownlint-cli2` dependency through `pnpm exec`. Active repository automation has no npm/npx fallback, and every external GitHub Action is pinned to a reviewed executable commit rather than a tag object or moving tag.
 - Public AI retrieval is derived at build time through `/llms.txt` and `/search-records.json`; internal governance files remain excluded by `context7.json`.
-- `lib/public-doc-inventory.mjs` derives complete HTML, search, sitemap, and AI expectations from four-language MDX using the runtime locale/category policies. Retained route/deny manifests stay unchanged; do not replace source-derived checks by bumping hard-coded page counts.
+- `lib/public-doc-inventory.mjs` derives complete HTML, search, sitemap, and AI expectations from four-language MDX using the runtime locale/category policies. Ordinary additions do not change the retained route/deny baselines or hard-coded page counts. An explicitly requested retirement must remove only the retired positive routes, add every locale URL and exclusive asset to the deny contract, and prove their absence from sources, search, static output, and the deployed site. All unrelated baseline requirements remain intact.
 - The four CLI, remote LCA MCP, account-profile, and TIDAS-import locale families share one OAuth contract: human browser authorization, exact registered clients/callbacks, PKCE, client-local refresh rotation, direct Supabase access JWTs, downstream `auth.uid()` plus `client_id` authorization, local/connected-app revoke distinction, explicit headless limits, and no broker/Redis session, password/code/token/API-key handoff to AI. Codex uses the top-level callback base and listener port plus its deterministic MCP-server callback ID; its resulting redirect must equal the Supabase registration.
 - Official Production CLI onboarding starts with pinned published CLI 0.1.8 and no public environment setup. The CLI owns the public URL/key/client/callback profile; docs and Skills must not copy its values. Only complete custom environments may override it; a headless token always requires an explicit destination/key. CLI defaults do not change remote MCP registrations or local publish approval gates.
 - Reconciliation has two trust boundaries: production validates indexability and then enters the GitHub production environment for Algolia/Context7 mutation; preview validates `noindex`/robots plus production-canonical policy in a separate job path that cannot access those mutation steps.
@@ -115,7 +115,7 @@ DEPLOY_ENV=ci CANONICAL_ORIGIN=http://localhost:3000 NEXT_PUBLIC_SEARCH_MODE=sta
 - Keep all four locale variants aligned in the same change.
 - Do not add redirects, rewrites, or compatibility copies for retired routes.
 - Do not expose internal agent, plan, incident, TODO, or governance documents through public AI indexes.
-- Do not add LCA user API-key generation in any locale, OAuth demo/code-copy, manual MCP bearer-paste, or password-to-AI instructions. The executable guard must retain negative fixtures for English, Chinese, German, and French generation phrases. The independently owned Knowledge Base MCP and server-side GLAD keys are separate surfaces.
+- Do not add LCA user API-key generation in any locale, OAuth demo/code-copy, manual MCP bearer-paste, or password-to-AI instructions. The executable guard must retain negative fixtures for English, Chinese, German, and French generation phrases. Server-side GLAD keys remain a separately owned surface.
 - Do not introduce npm/npx execution, a second lockfile, movable external action references, or a second compiler generation.
 - Do not treat a successful child merge as workspace delivery completion while the root gitlink remains stale.
 - Record partial product/documentation drift in `TODO.docs-system-gaps.md` during the same session.

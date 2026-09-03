@@ -165,7 +165,12 @@ jobs:
             fi
           done
           # Greenfield negative contract: retired paths must remain 404.
-          for path in intro user-guide/data search agents/repo-validation docs/openapi; do
+          for path in \
+            intro user-guide/data search agents/repo-validation docs/openapi \
+            zh/docs/integration/mcp-kb-remote/ en/docs/integration/mcp-kb-remote/ \
+            de/docs/integration/mcp-kb-remote/ fr/docs/integration/mcp-kb-remote/ \
+            assets/docs/3740cf2c/19.png assets/docs/a1eeb268/22.png \
+            assets/docs/a64a0c3e/23.png assets/docs/1dc3da1f/24.png; do
             code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${origin%/}/${path}")"
             if [ "$code" != "404" ]; then
               echo "::error::${origin%/}/${path} -> HTTP $code (expected 404)" >&2

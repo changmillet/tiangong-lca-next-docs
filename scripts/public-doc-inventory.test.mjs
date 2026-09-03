@@ -78,3 +78,57 @@ test('static search fails closed on an unexpected store or malformed page URL', 
 test('static search rejects a page assigned to the wrong locale', () => {
   assert.throws(() => assertStaticSearchPageCoverage(staticPayload([{ type: 'page', url: guideRoot, locale: 'fr' }]), [guideRoot]), /locale does not match/iu);
 });
+
+test('static search rejects retired pages, headings and text chunks', () => {
+  const retired = '/en/docs/integration/mcp-kb-remote/';
+  for (const type of ['page', 'heading', 'text']) {
+    const payload = staticPayload([
+      { type: 'page', url: guideRoot, locale: 'en' },
+      { type, url: `${retired}#inspector`, locale: 'en' },
+    ]);
+    assert.throws(() => assertStaticSearchPageCoverage(payload, [guideRoot], [retired]), /Retired route in static-search/iu, type);
+  }
+  assert.doesNotThrow(() => assertStaticSearchPageCoverage(staticPayload([
+    { type: 'page', url: guideRoot, locale: 'en' },
+  ]), [guideRoot], [retired]));
+});
+
+test('Knowledge Base MCP pages, public references and exclusive screenshots stay retired in every locale', () => {
+  const root = path.resolve(import.meta.dirname, '..');
+  const contentRoot = path.join(root, 'content', 'docs');
+  const pages = readPublicDocInventory(contentRoot);
+  const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
+  const baseline = JSON.parse(read('manifests/p0b/site-routes.json'));
+  const deny = JSON.parse(read('manifests/p0b/greenfield-deny.json'));
+  const reconciliation = read('.github/workflows/reconcile-docs.yml');
+  const retiredSlugs = /mcp-kb-remote|tiangong_kb_remote|https:\/\/mcp\.tiangong\.earth\/|Search_Sci_Tool/u;
+
+  for (const locale of ['zh', 'en', 'de', 'fr']) {
+    const retired = `/${locale}/docs/integration/mcp-kb-remote/`;
+    assert.ok(deny.oldPages.includes(retired), `${retired} must be explicitly denied`);
+    assert.ok(!baseline.htmlRoutes.some((item) => item.route === retired), `${retired} cannot be a redefined-endpoint exclusion`);
+    assert.ok(!pages.some((page) => page.url === retired), `${retired} has no public source`);
+    assert.ok(reconciliation.includes(retired.slice(1)), `${retired} needs a live 404 check`);
+    for (const retained of ['cli', 'skills', 'tidas', 'mcp-lca-local', 'mcp-lca-remote']) {
+      assert.ok(pages.some((page) => page.url === `/${locale}/docs/integration/${retained}/`), `${locale}/${retained} remains published`);
+    }
+  }
+
+  for (const relative of fs.readdirSync(contentRoot, { recursive: true })) {
+    if (!/\.(?:mdx|json)$/u.test(relative)) continue;
+    assert.doesNotMatch(fs.readFileSync(path.join(contentRoot, relative), 'utf8'), retiredSlugs, relative);
+  }
+
+  for (const asset of ['/assets/docs/3740cf2c/19.png', '/assets/docs/a1eeb268/22.png', '/assets/docs/a64a0c3e/23.png', '/assets/docs/1dc3da1f/24.png']) {
+    assert.ok(deny.oldMediaUrls.includes(asset), `${asset} must stay denied`);
+    assert.ok(!fs.existsSync(path.join(root, 'public', asset)), `${asset} must not be published`);
+    assert.ok(reconciliation.includes(asset.slice(1)), `${asset} needs a live 404 check`);
+  }
+  for (const asset of ['/assets/docs/b4702b56/6.png', '/assets/docs/3b6ff4be/16.png']) {
+    assert.ok(fs.existsSync(path.join(root, 'public', asset)), `${asset} is shared with local LCA MCP`);
+    assert.ok(!deny.oldMediaUrls.includes(asset), `${asset} is not retired`);
+    for (const suffix of ['', '.en', '.de', '.fr']) {
+      assert.ok(read(`content/docs/integration/mcp-lca-local${suffix}.mdx`).includes(asset));
+    }
+  }
+});
