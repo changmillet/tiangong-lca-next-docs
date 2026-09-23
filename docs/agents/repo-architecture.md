@@ -35,9 +35,9 @@ checkPaths:
   - edgeone.json
   - context7.json
   - .github/workflows/**
-lastReviewedAt: 2026-09-16
-lastReviewedCommit: 2168af06c6c9e21b97d94093f008bbdfa1c37e5e
-lastReviewedNote: "Reviewed for Docs #210 SEO Plan v2 (final): `/` is the canonical Chinese home and `/zh/` is only a permanent provider redirect, so it appears in no canonical, hreflang or sitemap target; the sitemap lists each canonical URL once and omits `lastmod`. Page descriptions use the authored frontmatter first, else the page's own structured prose (Unicode-safe truncation); a page with neither publishes no page-specific description and is reported as editorial content debt instead of counted as coverage. Provider ownership verification is environment-driven: `BAIDU_SITE_VERIFICATION` (never committed) publishes the exact Baidu marker and an unset value must publish none, both gated by `verify:out`. The required-check job hashes the generated `scripts/vendor/workspace-seo/` snapshot against its manifest and runs that local checker over the built `out/` — no private action, no token — and uploads its report with `if: always()`. EdgeOne-layer redirect proof and production samples remain pending."
+lastReviewedAt: 2026-09-23
+lastReviewedCommit: ab0aee89d353be3bff8d2ea917ee0f42d94b9a47
+lastReviewedNote: "Current site architecture and ownership map are reviewed."
 related:
   - AGENTS.md
   - .docpact/config.yaml
