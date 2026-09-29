@@ -3,7 +3,7 @@ import { i18nProvider } from 'fumadocs-ui/i18n';
 import { Provider } from '@/components/provider';
 import { translations } from '@/lib/layout.shared';
 import { i18n, toHtmlLang } from '@/lib/i18n';
-import { homePath, languageAlternates, localeMetadata, pageImagePath, siteOrigin, siteVerificationMetadata } from '@/lib/metadata';
+import { homePath, languageAlternates, localeMetadata, pageImagePath, siteOrigin, siteVerificationMetadata, websiteJsonLd } from '@/lib/metadata';
 import '@/app/global.css';
 
 export function generateStaticParams() {
@@ -61,6 +61,10 @@ export default async function RootLayout({
   return (
     <html lang={toHtmlLang(lang)} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()).replace(/</g, "\\u003c") }}
+        />
         <Provider i18n={i18nProvider(translations, lang)}>{children}</Provider>
       </body>
     </html>

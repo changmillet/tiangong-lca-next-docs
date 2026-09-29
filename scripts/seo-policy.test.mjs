@@ -4,6 +4,8 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {
+  breadcrumbJsonLd,
+  breadcrumbTrail,
   classifyPageDescription,
   homePath,
   languageAlternates,
@@ -11,7 +13,9 @@ import {
   maximumPageDescriptionLength,
   pageDescription,
   siteDescription,
+  siteOrigin,
   siteVerificationMetadata,
+  websiteJsonLd,
 } from '../lib/seo-policy.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -131,6 +135,60 @@ test('truncation counts Unicode characters, keeps astral characters whole and ma
   assert.ok(Array.from(unbroken.description).length <= maximumPageDescriptionLength);
   assert.equal(unbroken.description.endsWith('…'), true);
   assert.equal(unbroken.description.endsWith(' …'), false);
+});
+
+test('breadcrumb trails are built from resolved pages and skip folder-only ancestors', () => {
+  const resolve = (slugs) => {
+    if (slugs.length === 0) return undefined; // this fixture's root has no page of its own
+    if (slugs.length === 1 && slugs[0] === 'user-guide') {
+      return { title: 'User Guide', url: '/en/docs/user-guide' };
+    }
+    if (slugs.length === 2) return { title: 'Data Use', url: '/en/docs/user-guide/data-use' };
+    return undefined;
+  };
+
+  const trail = breadcrumbTrail('en', ['user-guide', 'data-use'], (ancestors, lang) => {
+    assert.equal(lang, 'en');
+    return resolve(ancestors);
+  });
+
+  assert.deepEqual(trail, [
+    { name: 'TianGong LCA Docs', url: '/en/' },
+    { name: 'User Guide', url: '/en/docs/user-guide/' },
+    { name: 'Data Use', url: '/en/docs/user-guide/data-use/' },
+  ]);
+
+  // The documentation index carries no trail, and an unresolvable page invents none.
+  assert.deepEqual(breadcrumbTrail('zh', [], resolve), []);
+  assert.deepEqual(breadcrumbTrail('zh', ['missing'], () => undefined), []);
+});
+
+test('breadcrumb JSON-LD lists absolute items in position order', () => {
+  const jsonLd = breadcrumbJsonLd([
+    { name: 'TianGong LCA Docs', url: '/' },
+    { name: 'Data Use', url: '/zh/docs/user-guide/data-use/' },
+  ]);
+
+  assert.equal(jsonLd['@type'], 'BreadcrumbList');
+  assert.deepEqual(
+    jsonLd.itemListElement.map((item) => item.position),
+    [1, 2],
+  );
+  assert.equal(jsonLd.itemListElement[0].item, `${siteOrigin}/`);
+  assert.equal(
+    jsonLd.itemListElement[1].item,
+    new URL('/zh/docs/user-guide/data-use/', `${siteOrigin}/`).href,
+  );
+  assert.equal(breadcrumbJsonLd([]), null);
+});
+
+test('the WebSite entity carries only the site name and origin, never author or date', () => {
+  assert.deepEqual(websiteJsonLd(), {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'TianGong LCA Docs',
+    url: `${siteOrigin}/`,
+  });
 });
 
 test('provider verification metadata is exact when configured and absent when not', () => {
