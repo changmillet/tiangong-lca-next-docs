@@ -1,4 +1,6 @@
 export {
+  breadcrumbJsonLd,
+  breadcrumbTrail,
   homePath,
   languageAlternates,
   localeMetadata,
@@ -6,6 +8,7 @@ export {
   pageDescription,
   siteOrigin,
   siteVerificationMetadata,
+  websiteJsonLd,
   withTrailingSlash,
 } from '@/lib/seo-policy.mjs';
 

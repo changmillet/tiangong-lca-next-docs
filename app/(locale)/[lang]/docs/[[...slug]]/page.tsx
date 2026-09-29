@@ -3,7 +3,14 @@ import { notFound } from 'next/navigation';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 import { getMDXComponents } from '@/components/mdx';
 import { i18n } from '@/lib/i18n';
-import { localeMetadata, pageDescription, pageImagePath, withTrailingSlash } from '@/lib/metadata';
+import {
+  breadcrumbJsonLd,
+  breadcrumbTrail,
+  localeMetadata,
+  pageDescription,
+  pageImagePath,
+  withTrailingSlash,
+} from '@/lib/metadata';
 import { source } from '@/lib/source';
 
 export const dynamicParams = false;
@@ -15,9 +22,23 @@ export default async function Page(props: PageProps<'/[lang]/docs/[[...slug]]'>)
 
   const MDX = page.data.body;
   const isDocsRoot = !params.slug || params.slug.length === 0;
+  const slugs = params.slug ?? [];
+  // Crumbs come from resolved pages only; a folder that has no page of its own is skipped rather
+  // than linked to a URL that would 404.
+  const trail = breadcrumbTrail(params.lang, slugs, (ancestors, lang) => {
+    const found = source.getPage(ancestors.length > 0 ? ancestors : undefined, lang);
+    return found ? { title: found.data.title, url: found.url } : undefined;
+  });
+  const jsonLd = breadcrumbJsonLd(trail);
 
   return (
     <DocsPage toc={page.data.toc} footer={{ className: 'docs-pagination', enabled: !isDocsRoot }}>
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ) : null}
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
