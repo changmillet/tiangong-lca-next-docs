@@ -36,9 +36,9 @@ checkPaths:
   - context7.json
   - .github/workflows/**
   - .githooks/**
-lastReviewedAt: 2026-09-23
-lastReviewedCommit: ab0aee89d353be3bff8d2ea917ee0f42d94b9a47
-lastReviewedNote: "Current Docs ownership, routing, and publication boundaries are reviewed."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 9e1257b21d5ecd422d12b3c051485ea8760ac5d1
+lastReviewedNote: "Reviewed for #214: resources-and-support points at the current Portal Chinese home and the data-use guide adds the anonymous public-databases entry and ILCD distribution node in all four locales; ownership, routing and publication boundaries unchanged."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md

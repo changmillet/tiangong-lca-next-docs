@@ -31,9 +31,9 @@ checkPaths:
   - context7.json
   - .github/workflows/**
   - .githooks/**
-lastReviewedAt: 2026-09-23
-lastReviewedCommit: ab0aee89d353be3bff8d2ea917ee0f42d94b9a47
-lastReviewedNote: "Current documentation, build, SEO, and deployment validation paths are reviewed."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 9e1257b21d5ecd422d12b3c051485ea8760ac5d1
+lastReviewedNote: "Reviewed for #214: four-locale lint, the full test suite, static export with verify:out and check:links, plus rendered desktop/mobile browser review passed for the new public-data links and structured data."
 related:
   - AGENTS.md
   - .docpact/config.yaml

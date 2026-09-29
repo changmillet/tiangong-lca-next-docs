@@ -35,9 +35,9 @@ checkPaths:
   - edgeone.json
   - context7.json
   - .github/workflows/**
-lastReviewedAt: 2026-09-23
-lastReviewedCommit: ab0aee89d353be3bff8d2ea917ee0f42d94b9a47
-lastReviewedNote: "Current site architecture and ownership map are reviewed."
+lastReviewedAt: 2026-09-29
+lastReviewedCommit: 9e1257b21d5ecd422d12b3c051485ea8760ac5d1
+lastReviewedNote: "Reviewed for #214: the data-use guide now links the public databases entry and the ILCD distribution node, and documentation pages carry resolved-page breadcrumb and minimal site metadata; site structure and ownership unchanged."
 related:
   - AGENTS.md
   - .docpact/config.yaml
