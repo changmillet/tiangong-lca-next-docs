@@ -63,7 +63,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()).replace(/</g, "\\u003c") }}
         />
         <Provider i18n={i18nProvider(translations, lang)}>{children}</Provider>
       </body>

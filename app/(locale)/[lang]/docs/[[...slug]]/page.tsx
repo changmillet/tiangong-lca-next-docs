@@ -36,7 +36,7 @@ export default async function Page(props: PageProps<'/[lang]/docs/[[...slug]]'>)
       {jsonLd ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
       ) : null}
       <DocsTitle>{page.data.title}</DocsTitle>
