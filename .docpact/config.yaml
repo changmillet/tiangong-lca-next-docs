@@ -1,9 +1,9 @@
 version: 1
 layout: repo
-lastReviewedAt: "2026-10-08"
-lastReviewedCommit: "063a38f40b609727100f49fc5528d65ec13ab91f"
-reviewNote: "Reviewed for #216: browser-neutral root resolves manual preference, ordered browser languages and English; explicit /zh/ is generated without hosting redirect and shares canonical /. Existing ownership and documentation routing cover the locale module and regression scripts."
-lastReviewedNote: "Reviewed for #216: browser-neutral root resolves manual preference, ordered browser languages and English; explicit /zh/ is generated without hosting redirect and shares canonical /. Existing ownership and documentation routing cover the locale module and regression scripts."
+lastReviewedAt: "2026-10-16"
+lastReviewedCommit: "dde833bbe8b90f4906887a47f591d5fcd0a124d0"
+reviewNote: "Reviewed Docs #219: weekly npm/Actions monitoring reuses the existing read-only PR job; only lock-only maintenance avoids mandatory metadata churn, while exact toolchain pins, public content, locale/site contracts and production reconciliation retain their review boundaries."
+lastReviewedNote: "Reviewed Docs #219: weekly npm/Actions monitoring reuses the existing read-only PR job; only lock-only maintenance avoids mandatory metadata churn, while exact toolchain pins, public content, locale/site contracts and production reconciliation retain their review boundaries."
 
 catalog:
   repos:
@@ -14,6 +14,7 @@ catalog:
       workflowDocs:
         - docs/agents/repo-validation.md
         - docs/agents/repo-architecture.md
+        - docs/agents/dependency-updates.md
       workspaceIntegrationRequired: true
 
 ownership:
@@ -26,6 +27,7 @@ ownership:
           - TODO.docs-system-gaps.md
           - .docpact/config.yaml
           - docs/agents/**
+          - .github/dependabot.yml
           - .github/workflows/**
       ownerRepo: next-docs
     - id: public-doc-content
@@ -85,6 +87,7 @@ coverage:
     - TODO.docs-system-gaps.md
     - .docpact/config.yaml
     - docs/agents/**
+    - .github/dependabot.yml
     - context7.json
     - package.json
     - .nvmrc
@@ -132,6 +135,11 @@ freshness:
 
 routing:
   intents:
+    dependency-maintenance:
+      paths:
+        - .github/dependabot.yml
+        - docs/agents/dependency-updates.md
+        - pnpm-lock.yaml
     local-docpact-gate:
       paths:
         - .githooks/pre-push
@@ -199,12 +207,37 @@ docInventory:
     - .docpact/config.yaml
     - docs/agents/repo-validation.md
     - docs/agents/repo-architecture.md
+    - docs/agents/dependency-updates.md
 
 repo:
   id: next-docs
   owner: next-docs
 
 rules:
+  - id: next-docs-dependency-monitoring-contract
+    scope: repo
+    repo: next-docs
+    triggers:
+      - path: .github/dependabot.yml
+        kind: dependency-monitoring-config
+      - path: docs/agents/dependency-updates.md
+        kind: dependency-maintainer-guide
+    requiredDocs:
+      - path: docs/agents/dependency-updates.md
+        mode: review_or_update
+    reason: Monitoring scope, cadence, compatibility grouping and existing PR validation must agree with the focused maintenance guide.
+  - id: next-docs-dependency-lock-contract
+    scope: repo
+    repo: next-docs
+    triggers:
+      - path: pnpm-lock.yaml
+        kind: dependency-lock
+    requiredDocs:
+      - path: AGENTS.md
+        mode: must_exist
+      - path: docs/agents/dependency-updates.md
+        mode: must_exist
+    reason: Lock resolution maintenance retains dependency guidance without manufactured metadata edits; manifests, runtime, source, public content and publication retain separate review obligations.
   - id: next-docs-bootstrap-contract
     scope: repo
     repo: next-docs
@@ -286,8 +319,6 @@ rules:
       - path: edgeone.json
         kind: site-deploy-config
       - path: postcss.config.mjs
-        kind: site-runtime-config
-      - path: pnpm-lock.yaml
         kind: site-runtime-config
       - path: pnpm-workspace.yaml
         kind: site-runtime-config

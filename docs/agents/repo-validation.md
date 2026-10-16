@@ -31,9 +31,9 @@ checkPaths:
   - context7.json
   - .github/workflows/**
   - .githooks/**
-lastReviewedAt: 2026-10-08
-lastReviewedCommit: 063a38f40b609727100f49fc5528d65ec13ab91f
-lastReviewedNote: "Reviewed for #216: neutral-root browser selection, manual-only localStorage preference and explicit localized homes preserve the static Chinese canonical and sitemap policy; locale unit and browser regression proof added."
+lastReviewedAt: 2026-10-16
+lastReviewedCommit: dde833bbe8b90f4906887a47f591d5fcd0a124d0
+lastReviewedNote: "Reviewed Docs #219: weekly npm/Actions monitoring reuses the existing read-only PR job; only lock-only maintenance avoids mandatory metadata churn, while exact toolchain pins, public content, locale/site contracts and production reconciliation retain their review boundaries."
 related:
   - AGENTS.md
   - .docpact/config.yaml
