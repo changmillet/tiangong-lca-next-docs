@@ -1,87 +1,30 @@
 ---
-title: "Die Beziehung zwischen Modellen, Prozessen und Flüssen"
-description: "Verstehen Sie, wie Flüsse, Prozesse und Modelle wiederverwendbare Datensätze bilden und wie die berechnete Bilanz eines Modells als Prozess für ein weiteres Modell gespeichert wird."
+title: "Modellergebnisse auf der Plattform speichern und wiederverwenden"
+description: "Speichern Sie in TianGong LCA ein Modell mit seinen Ergebnisprozessen, prüfen Sie die gespeicherten Ergebnisse und verwenden Sie sie in weiteren Modellen."
 ---
 
-Modelle, Prozesse und Flüsse sind sich ergänzende Kernobjekte. Sie können ein Modell aus Prozessen zusammensetzen, einen aus einem bestehenden Modell erzeugten Ergebnisprozess wiederverwenden oder von einem Fluss aus nach geeigneten Prozessen für eine Verbindung suchen.
+Auf der Plattform organisiert ein **Modell (Model)** Prozesse und ihre Verbindungen, ein **Prozess (Process)** enthält eine Input-/Output-Bilanz und ein **Fluss (Flow)** identifiziert das über Eingaben und Ausgaben ausgetauschte Objekt. Ein Ergebnisprozess enthält die aus einem Modell berechnete aggregierte Bilanz zur Verwendung in weiteren Modellen.
 
-## Drei Kernobjekte
+> **Zuerst das Beziehungsdiagramm ansehen**: [TIDAS: Die Beziehung zwischen Modellen, Prozessen und Flüssen](https://tidas.tiangong.earth/de/docs/core-modules/data-relationships/) erläutert die allgemeinen Objektbeziehungen, Flüsse im Unterschied zu Austauscheinträgen sowie ergänzende Flusseigenschaften, Einheitengruppen, Quellen und Kontakte. Diese Seite beschreibt das Speichern und Wiederverwenden auf der Plattform.
 
-| Objekt | Was es darstellt | Beziehung zu anderen Objekten |
-| --- | --- | --- |
-| **Fluss (Flow)** | Einen ausgetauschten Stoff, ein Produkt, einen Energieträger oder Abfall mit seinen Messeigenschaften | Wird von Prozesseingaben und -ausgaben referenziert und identifiziert Verbindungen im Modell |
-| **Prozess (Process)** | Eine Input-/Output-Bilanz mit festgelegtem Referenzmaßstab und zugehöriger Dokumentation | Referenziert Flüsse; kann Modellbestandteil sein oder eine aus einem Modell berechnete aggregierte Bilanz enthalten |
-| **Modell (Model)** | Prozessinstanzen, Lieferverbindungen, ein Referenzziel und begleitende Dokumentation | Referenziert Prozesse und organisiert die Berechnung; Ergebnisse können als neue oder aktualisierte Ergebnisprozesse gespeichert werden |
+## Modell speichern und Ergebnisse prüfen
 
-**Prozesse sind nicht auf Unit-Prozesse beschränkt.** Ein Datensatz kann einen Unit-Prozess beschreiben oder ein aggregiertes Ergebnis einer Lieferkette enthalten. Das Modell bewahrt die Struktur zwischen den Prozessen; der Ergebnisprozess liefert eine wiederverwendbare Bilanz.
+1. Wählen Sie im Modelleditor bestimmte Prozessversionen, konfigurieren Sie die Verbindungen und legen Sie Referenzprozess, Referenzaustausch und Zielmenge fest. Den vollständigen Ablauf beschreibt [Meine Daten erstellen](/de/docs/user-guide/create-my-data/); ein Verbindungsbeispiel zeigt [Modellierung des teilweise terminierten Systems](/de/docs/data-collection/case-introduction/model-building/).
+2. Klicken Sie auf **Speichern**. Die Plattform führt die Berechnung aus und speichert das Modell zusammen mit den erzeugten Ergebnisprozessen.
+3. Öffnen Sie nach erfolgreichem Speichern **Modellergebnisse**, um die gespeicherten Ergebnisse zu prüfen. Ein Modell kann ein Hauptergebnis und weitere Produktergebnisse erzeugen; prüfen Sie Referenzprodukt, Menge und Systemgrenze des gewählten Ergebnisses.
 
-## Von Prozessen zum Modell und zurück zum Prozess
+Wenn Sie ein Modell ändern, ohne es erneut erfolgreich zu speichern, beschreiben vorhandene Ergebnisse weiterhin die zuletzt gespeicherte Berechnung. Sie entsprechen nicht den aktuellen ungespeicherten Änderungen. Speichern Sie nach Änderungen an Prozessreferenzen, Verbindungen oder dem Referenzziel erneut und prüfen Sie die Ergebnisse.
 
-```text
-Prozesse A, B, C
-    ↓ Über Flüsse verbinden
-Modell M
-    ↓ Für das Referenzziel berechnen
-Ergebnisbilanz
-    ↓ Als Prozess speichern
-Ergebnisprozess R
-    ↓ Als Prozess referenzieren
-Weiteres Modell N
-```
+## Ergebnisse in einem weiteren Modell verwenden
 
-1. Fügen Sie bestimmte Versionen bestehender Prozesse als Modellknoten hinzu und verbinden Sie die entsprechenden Eingaben und Ausgaben.
-2. Legen Sie Referenzprozess, Referenzaustausch und Zielmenge fest, um den Berechnungsbedarf zu definieren.
-3. Berechnen Sie die aggregierte Input-/Output-Bilanz für dieses Ziel und speichern Sie sie als Ergebnisprozess.
-4. Referenzieren Sie den Ergebnisprozess in einem weiteren Modell, um ein größeres Produktsystem aufzubauen.
+Wählen Sie einen gespeicherten Ergebnisprozess in der Prozessauswahl eines weiteren Modells und verwenden Sie die benötigte Menge seines Referenzprodukts. Prüfen Sie vor der Verwendung:
 
-Ein Modell kann ein Hauptergebnis und weitere Produktergebnisse erzeugen. Prüfen Sie Referenzprodukt, Menge und Systemgrenze des gewählten Ergebnisses.
+- **Genaue Versionen und Eignung**: Prüfen Sie Prozessversion, Flussidentität und genaue Flussversion, Messgrundlage sowie geografische, zeitliche und technologische Bedingungen der Studie. Gleiche Namen allein belegen keine Kompatibilität. Versionsprüfung und Referenzauswahl beschreibt [Datennutzung](/de/docs/user-guide/data-use/).
+- **Systemgrenze**: Prüfen Sie, welche Aktivitäten das Ergebnis bereits umfasst, damit Sie dieselben Aktivitäten nicht zusätzlich als Eingaben zählen.
+- **Nachvollziehbarkeit**: Bewahren Sie das Quellmodell auf, um seine Prozesse und Verbindungen nachzuvollziehen. Eine aggregierte Bilanz allein reicht nicht aus, um die vollständige ursprüngliche Modellstruktur wiederherzustellen.
 
-Ergebnisprozess und Quellmodell sind miteinander verknüpfte Darstellungen. Bleibt das Quellmodell erhalten, lassen sich seine Prozesse und Verbindungen nachvollziehen. Eine aggregierte Bilanz allein reicht nicht aus, um die vollständige ursprüngliche Modellstruktur wiederherzustellen.
-
-## Wie die Plattform Ergebnisse derzeit speichert
-
-Klicken Sie im Modelleditor auf **Speichern**, um die Berechnung auszuführen und sowohl das Modell als auch seine erzeugten Ergebnisprozesse zu speichern. Öffnen Sie nach erfolgreichem Speichern **Modellergebnisse**, um die gespeicherten Ergebnisse zu prüfen. Diese Ergebnisprozesse können auch für nachfolgende Modelle ausgewählt werden. Den Ablauf beschreibt [Meine Daten erstellen](/de/docs/user-guide/create-my-data/).
-
-Wenn Sie ein Modell ändern, ohne es erneut erfolgreich zu speichern, beschreiben die vorhandenen Ergebnisse weiterhin die zuletzt gespeicherte Berechnung. Sie entsprechen nicht den aktuellen ungespeicherten Änderungen. Speichern Sie nach Änderungen an Prozessreferenzen, Verbindungen oder dem Referenzziel erneut und prüfen Sie die Ergebnisse.
+## Ergebnisse vor der Verwendung prüfen
 
 Eine Input-/Output-Bilanz und Indikatoren der Lebenszyklus-Wirkungsabschätzung (LCIA) sind unterschiedliche Ergebnisse. Eine gespeicherte Bilanz garantiert keine vollständige Abdeckung mit Charakterisierungsfaktoren für jede Wirkungskategorie. Prüfen Sie die Abdeckungshinweise und den [LCIA-Leitfaden](/de/docs/user-guide/lcia/), bevor Sie die Ergebnisse verwenden. Auch ein einzelner CO₂-Fußabdruckwert ersetzt keine wiederverwendbare Input-/Output-Bilanz.
 
-**Speichern ist keine Veröffentlichung.** Prüfung, Veröffentlichung und Zugangsbedingungen richten sich weiterhin nach [Datenprüfung](/de/docs/user-guide/data-review/) und [Berechtigungen und Datenbereiche](/de/docs/user-guide/permissions-and-data-scopes/).
-
-## Wie sich ein Fluss von einer Eingabe oder Ausgabe unterscheidet
-
-Ein Fluss definiert, **was ausgetauscht wird**. Ein Austauscheintrag im Prozess erfasst **Richtung und Menge**. Mehrere Prozesse können denselben Fluss mit unterschiedlichen Eingabe- oder Ausgabemengen referenzieren.
-
-- **Produktflüsse** beschreiben Produkte, Materialien oder Energie, die innerhalb des technischen Systems ausgetauscht werden.
-- **Abfallflüsse** beschreiben Abfallaustausche zur anschließenden Behandlung.
-- **Elementarflüsse** beschreiben Ressourcenverbrauch oder Emissionen zwischen dem technischen System und der Umwelt.
-
-Über den Flussanschluss eines Knotens im Modell können Sie nach verbindbaren Prozessen suchen. Gleiche Namen allein belegen keine Kompatibilität: Prüfen Sie die Flussidentität, die genaue Version und die Messgrundlage. Wählen Sie dann einen Prozess, dessen geografische, zeitliche und technologische Bedingungen zur Studie passen.
-
-### Ein vereinfachtes Beispiel
-
-Ein Modell zur Aluminiumblechproduktion referenziert Prozesse für Strom, Primäraluminium und Walzen, verbunden über Strom-, Aluminium- und weitere Flüsse. Berechnen Sie für das Referenzziel **1 kg Aluminiumblech** und speichern Sie die aggregierte Input-/Output-Bilanz als Ergebnisprozess für Aluminiumblech.
-
-Ein Fahrzeugmodell kann diesen Ergebnisprozess anschließend für die benötigte Aluminiumblechmenge referenzieren. Der Aluminiumblech-Fluss identifiziert den Austausch; der Prozess liefert die Bilanz; das Modell bewahrt die Struktur, aus der die Bilanz entstanden ist. Das Beispiel erläutert Beziehungen und stellt keine verifizierten Produktionsdaten dar.
-
-Prüfen Sie beim Wiederverwenden eines Ergebnisprozesses, welche Aktivitäten seine Systemgrenze bereits umfasst, damit Sie dieselben Aktivitäten nicht zusätzlich als Eingaben zählen.
-
-## Vier Arten unterstützender Daten
-
-| Objekt | Zweck | Typischer Ort zur Einsicht |
-| --- | --- | --- |
-| **Flusseigenschaft (Flow property)** | Definiert Messeigenschaften wie Masse, Energie oder Volumen und verknüpft sie mit der entsprechenden Einheitengruppe | Eigenschaftsinformationen des Flusses |
-| **Einheitengruppe (Unit group)** | Definiert verwandte Einheiten und ihre Umrechnungsfaktoren, etwa kg und g | Messdefinitionen zur Flusseigenschaft |
-| **Quelle (Source)** | Erfasst Veröffentlichungen, Berichte und andere Belege | Modell, Prozess oder Fluss, das bzw. der das Material referenziert |
-| **Kontakt (Contact)** | Erfasst Personen, Organisationen und ihre Verantwortlichkeiten | Angaben zu Verantwortung, Eigentum oder Verwaltung des Datensatzes |
-
-Diese Datensätze unterstützen Interpretation, Berechnung und Nachvollziehbarkeit. Verwenden Sie nach Möglichkeit geeignete bestehende Datensätze wieder. Normale Nutzer, die zusätzliche Flusseigenschaften oder Einheitengruppen benötigen, wenden sich wie unter [Überblick Datenplattform](/de/docs/user-guide/data/) beschrieben an einen Administrator.
-
-## Weiterarbeiten
-
-- [Überblick Datenplattform](/de/docs/user-guide/data/): Objekttypen von offenen, kommerziellen, persönlichen und Teamdatenbereichen unterscheiden.
-- [Datennutzung](/de/docs/user-guide/data-use/): Bestimmte Versionen prüfen, Daten referenzieren und kopieren.
-- [Meine Daten erstellen](/de/docs/user-guide/create-my-data/): Prozesse, Modelle und Flüsse erstellen.
-- [Modellierung des teilweise terminierten Systems](/de/docs/data-collection/case-introduction/model-building/): Ein Beispiel für Prozesse ansehen, die durch Verbindungen ein Modell bilden.
-
-Begriffliche Referenzen: [ILCD-Lebenszyklusmodelldatensätze](https://eplca.jrc.ec.europa.eu/LCDN/downloads/ILCD_Format_1.1_Documentation/ILCD_LifeCycleModelDataSet.html), [openLCA-Prozesstypen](https://greendelta.github.io/openLCA2-manual/processes/index.html) und [openLCA-Flusstypen](https://greendelta.github.io/openLCA2-manual/flows/index.html).
+**Speichern ist keine Veröffentlichung.** Prüfung, Veröffentlichung und Zugangsbedingungen richten sich nach [Datenprüfung](/de/docs/user-guide/data-review/) und [Berechtigungen und Datenbereiche](/de/docs/user-guide/permissions-and-data-scopes/). Der [Überblick Datenplattform](/de/docs/user-guide/data/) unterscheidet Objekttypen von offenen, kommerziellen, persönlichen und Teamdatenbereichen.
