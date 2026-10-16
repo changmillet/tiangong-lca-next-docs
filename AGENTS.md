@@ -37,8 +37,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-10-16
-lastReviewedCommit: b1232550fee34011e86a3795689e0ebe32fe320f
-lastReviewedNote: "Reviewed for Docs #224: four-language Model/Process/Flow relationship content and aligned navigation use existing public-content, link, index and validation contracts; verified integrated Model save/result behavior without changing platform UI or publication policy."
+lastReviewedCommit: f33c10e20b80879bba567d910b6ed3de0f0d0467
+lastReviewedNote: "Reviewed for Docs #226: retain the existing four-language URL as a platform Save/results/reuse guide and link the general relationships and schematic to TIDAS #98; preserve locale, link, screenshot and publication contracts."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md

@@ -36,8 +36,8 @@ checkPaths:
   - context7.json
   - .github/workflows/**
 lastReviewedAt: 2026-10-16
-lastReviewedCommit: b1232550fee34011e86a3795689e0ebe32fe320f
-lastReviewedNote: "Reviewed for Docs #224: four-language Model/Process/Flow relationship content and aligned navigation use existing public-content, link, index and validation contracts; verified integrated Model save/result behavior without changing platform UI or publication policy."
+lastReviewedCommit: f33c10e20b80879bba567d910b6ed3de0f0d0467
+lastReviewedNote: "Reviewed for Docs #226: retain the existing four-language URL as a platform Save/results/reuse guide and link the general relationships and schematic to TIDAS #98; preserve locale, link, screenshot and publication contracts."
 related:
   - AGENTS.md
   - .docpact/config.yaml
@@ -84,6 +84,13 @@ The four `content/docs/quick-start/index*.mdx` sources render `components/quick-
 The `overview`, `user-guide`, `data-collection`, `integration`, `openapi`, `deploy-and-dev`, `faq`, and `changelog` roots, plus the nested `data-collection/case-introduction` root, render `components/category-directory.tsx`. Each MDX variant supplies only its locale and category slug. The server component locates the category folder in `source.getPageTree(lang)`, preserves current `meta*.json` order, includes direct pages and folder index pages, and normalizes emitted links to locale-absolute trailing-slash URLs. Titles and descriptions are read from the child page; when description metadata is absent, a bounded first sentence is derived from `structuredData`. Future child-page additions, removals, renames, ordering changes, and copy updates therefore require no category-index edit.
 
 ## Content and locales
+
+The retained `overview/data-relationships` page is a platform workflow guide:
+Save calculates and persists the model and result processes, then Model Results
+shows that saved state. General Model/Process/Flow relationships and their
+schematic are presented by the TIDAS site's localized
+`/docs/core-modules/data-relationships/` page. Cross-site links preserve the
+reader's language; this split changes no existing Docs URL or product behavior.
 
 The static `/` artifact remains the Chinese canonical and `x-default` home. In a browser, only neutral `/` negotiates: a valid manually saved language in localStorage (`tiangong.manual-language`) wins, then the first supported `navigator.languages` entry (regional/script variants map to `zh`, `en`, `de`, or `fr`), then English. An empty language list uses `navigator.language`. Automatic selection never writes storage. Every explicit locale URL, including `/zh/` and `/zh/docs/**`, retains its language. Manual switching saves the chosen language and keeps the page path, query and fragment; every manual home destination is explicit `/{lang}/`. Storage access failures do not block navigation. `/zh/` renders Chinese with canonical `/` and is omitted from sitemap/hreflang to avoid advertising a duplicate. Hosting must not redirect it back to neutral `/`.
 
