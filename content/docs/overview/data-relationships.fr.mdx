@@ -1,0 +1,87 @@
+---
+title: "Relations entre modèles, processus et flux"
+description: "Comprendre comment flux, processus et modèles forment des jeux de données réutilisables, et comment l’inventaire calculé d’un modèle est enregistré comme processus pour un autre modèle."
+---
+
+Les modèles, processus et flux sont des objets fondamentaux complémentaires. Vous pouvez assembler un modèle à partir de processus, réutiliser un processus de résultat généré par un modèle existant, ou partir d’un flux pour trouver des processus adaptés à une connexion.
+
+## Trois objets fondamentaux
+
+| Objet | Ce qu’il représente | Relation avec les autres objets |
+| --- | --- | --- |
+| **Flux (Flow)** | Une substance, un produit, un vecteur énergétique ou un déchet échangé, avec ses propriétés de mesure | Référencé par les entrées et sorties des processus ; identifie aussi les connexions d’un modèle |
+| **Processus (Process)** | Un inventaire d’entrées et de sorties à une échelle de référence définie, avec sa documentation | Référence des flux ; peut être un composant d’un modèle ou contenir un inventaire agrégé calculé à partir d’un modèle |
+| **Modèle (Model)** | Des instances de processus, des connexions d’approvisionnement, une cible de référence et la documentation associée | Référence des processus et organise le calcul ; les résultats peuvent être enregistrés comme processus de résultat nouveaux ou mis à jour |
+
+**Les processus ne se limitent pas aux processus unitaires.** Un enregistrement peut décrire un processus unitaire ou contenir le résultat agrégé d’une chaîne d’approvisionnement. Le modèle conserve la structure entre les processus ; le processus de résultat fournit un inventaire réutilisable.
+
+## Des processus au modèle, puis de nouveau au processus
+
+```text
+Processus A, B, C
+    ↓ Relier par les flux
+Modèle M
+    ↓ Calculer pour la cible de référence
+Inventaire de résultat
+    ↓ Enregistrer comme processus
+Processus de résultat R
+    ↓ Référencer comme processus
+Autre modèle N
+```
+
+1. Ajoutez des versions précises de processus existants comme nœuds du modèle et connectez les entrées et sorties correspondantes.
+2. Définissez le processus de référence, l’échange de référence et la quantité cible pour fixer la demande du calcul.
+3. Calculez l’inventaire agrégé d’entrées et de sorties pour cette cible et enregistrez-le comme processus de résultat.
+4. Référencez le processus de résultat dans un autre modèle pour construire un système de produits plus vaste.
+
+Un modèle peut générer un résultat principal et d’autres résultats de produits. Vérifiez le produit de référence, la quantité et la limite du système du résultat choisi.
+
+Le processus de résultat et son modèle source sont deux représentations liées. Lorsque le modèle source est conservé, vous pouvez retracer ses processus et leurs connexions. Un inventaire agrégé seul ne permet pas de reconstruire toute la structure du modèle d’origine.
+
+## Comment la plateforme enregistre actuellement les résultats
+
+Cliquez sur **Enregistrer** dans l’éditeur de modèle pour lancer le calcul et enregistrer à la fois le modèle et les processus de résultat générés. Après un enregistrement réussi, ouvrez **Résultats du modèle** pour consulter les résultats enregistrés. Ces processus de résultat peuvent aussi être sélectionnés pour des modèles ultérieurs. Voir [Créer mes données](/fr/docs/user-guide/create-my-data/) pour le déroulement.
+
+Si vous modifiez un modèle sans l’enregistrer à nouveau avec succès, les résultats existants décrivent toujours le dernier calcul enregistré, et non les modifications actuelles non enregistrées. Enregistrez à nouveau et vérifiez les résultats après avoir changé les références aux processus, les connexions ou la cible de référence.
+
+Un inventaire d’entrées et de sorties et les indicateurs d’analyse des impacts du cycle de vie (LCIA) sont des résultats différents. Un inventaire enregistré ne garantit pas une couverture complète des facteurs de caractérisation pour chaque catégorie d’impact. Consultez les indications de couverture et le [guide LCIA](/fr/docs/user-guide/lcia/) avant d’utiliser les résultats. Une seule valeur d’empreinte carbone ne remplace pas non plus un inventaire d’entrées et de sorties réutilisable.
+
+**Enregistrer ne signifie pas publier.** La revue, la publication et les conditions d’accès suivent toujours les règles de [Revue de données](/fr/docs/user-guide/data-review/) et [Autorisations et périmètres de données](/fr/docs/user-guide/permissions-and-data-scopes/).
+
+## Ce qui distingue un flux d’une entrée ou d’une sortie
+
+Un flux définit **ce qui est échangé**. Un échange de processus enregistre **la direction et la quantité**. Plusieurs processus peuvent référencer le même flux avec des quantités d’entrée ou de sortie différentes.
+
+- Les **flux de produits** décrivent les produits, matériaux ou énergies échangés au sein du système technique.
+- Les **flux de déchets** décrivent les échanges de déchets destinés à un traitement ultérieur.
+- Les **flux élémentaires** décrivent la consommation de ressources ou les émissions entre le système technique et l’environnement.
+
+Sélectionner le port de flux d’un nœud dans un modèle permet de trouver des processus pouvant être connectés. Des noms identiques ne suffisent pas à établir la compatibilité : vérifiez l’identité du flux, sa version exacte et sa base de mesure, puis choisissez un processus adapté aux conditions géographiques, temporelles et technologiques de l’étude.
+
+### Un exemple simplifié
+
+Un modèle de production de tôle d’aluminium référence des processus d’électricité, d’aluminium primaire et de laminage, reliés par des flux d’électricité, d’aluminium et d’autres flux. Calculez pour une cible de référence de **1 kg de tôle d’aluminium**, puis enregistrez l’inventaire agrégé d’entrées et de sorties comme processus de résultat de tôle d’aluminium.
+
+Un modèle de véhicule peut ensuite référencer ce processus de résultat pour la quantité de tôle d’aluminium requise. Le flux de tôle d’aluminium identifie l’échange ; le processus fournit son inventaire ; le modèle conserve la structure qui a produit cet inventaire. Cet exemple illustre les relations entre objets et ne constitue pas des données de production vérifiées.
+
+Lorsque vous réutilisez un processus de résultat, vérifiez les activités déjà comprises dans sa limite du système afin de ne pas les compter une seconde fois comme entrées supplémentaires.
+
+## Quatre types de données complémentaires
+
+| Objet | Rôle | Où le consulter habituellement |
+| --- | --- | --- |
+| **Propriété de flux (Flow property)** | Définit des propriétés de mesure telles que la masse, l’énergie ou le volume et les relie au groupe d’unités correspondant | Informations sur les propriétés du flux |
+| **Groupe d’unités (Unit group)** | Définit des unités liées et leurs facteurs de conversion, par exemple kg et g | Définitions de mesure associées à une propriété de flux |
+| **Source (Source)** | Consigne les publications, rapports et autres éléments de preuve | Modèle, processus ou flux qui référence le document |
+| **Contact (Contact)** | Consigne les personnes, organisations et leurs responsabilités | Informations de responsabilité, de propriété ou de gestion du jeu de données |
+
+Ces enregistrements permettent l’interprétation, le calcul et la traçabilité. Réutilisez autant que possible des enregistrements existants adaptés. Les utilisateurs ordinaires qui ont besoin de propriétés de flux ou de groupes d’unités supplémentaires doivent contacter un administrateur, comme indiqué dans [Vue d’ensemble de la plateforme de données](/fr/docs/user-guide/data/).
+
+## Poursuivre le travail
+
+- [Vue d’ensemble de la plateforme de données](/fr/docs/user-guide/data/) : distinguer les types d’objets des périmètres de données ouvertes, commerciales, personnelles et d’équipe.
+- [Utilisation des données](/fr/docs/user-guide/data-use/) : consulter des versions précises, référencer et copier des données.
+- [Créer mes données](/fr/docs/user-guide/create-my-data/) : créer des processus, modèles et flux.
+- [Modélisation du système partiellement terminé](/fr/docs/data-collection/case-introduction/model-building/) : consulter un exemple de processus connectés pour former un modèle.
+
+Références conceptuelles : [jeux de données de modèles de cycle de vie ILCD](https://eplca.jrc.ec.europa.eu/LCDN/downloads/ILCD_Format_1.1_Documentation/ILCD_LifeCycleModelDataSet.html), [types de processus openLCA](https://greendelta.github.io/openLCA2-manual/processes/index.html) et [types de flux openLCA](https://greendelta.github.io/openLCA2-manual/flows/index.html).

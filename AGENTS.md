@@ -37,8 +37,8 @@ checkPaths:
   - .github/workflows/**
   - .githooks/**
 lastReviewedAt: 2026-10-16
-lastReviewedCommit: dde833bbe8b90f4906887a47f591d5fcd0a124d0
-lastReviewedNote: "Reviewed Docs #219: weekly npm/Actions monitoring reuses the existing read-only PR job; only lock-only maintenance avoids mandatory metadata churn, while exact toolchain pins, public content, locale/site contracts and production reconciliation retain their review boundaries."
+lastReviewedCommit: b1232550fee34011e86a3795689e0ebe32fe320f
+lastReviewedNote: "Reviewed for Docs #224: four-language Model/Process/Flow relationship content and aligned navigation use existing public-content, link, index and validation contracts; verified integrated Model save/result behavior without changing platform UI or publication policy."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
