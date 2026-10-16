@@ -36,9 +36,9 @@ checkPaths:
   - context7.json
   - .github/workflows/**
   - .githooks/**
-lastReviewedAt: 2026-10-08
-lastReviewedCommit: 063a38f40b609727100f49fc5528d65ec13ab91f
-lastReviewedNote: "Reviewed for #216: neutral-root browser selection, manual-only localStorage preference and explicit localized homes preserve the static Chinese canonical and sitemap policy; locale unit and browser regression proof added."
+lastReviewedAt: 2026-10-16
+lastReviewedCommit: dde833bbe8b90f4906887a47f591d5fcd0a124d0
+lastReviewedNote: "Reviewed Docs #219: weekly npm/Actions monitoring reuses the existing read-only PR job; only lock-only maintenance avoids mandatory metadata churn, while exact toolchain pins, public content, locale/site contracts and production reconciliation retain their review boundaries."
 related:
   - .docpact/config.yaml
   - docs/agents/repo-architecture.md
@@ -91,6 +91,7 @@ This repository does not own shipped product behavior, route truth, API semantic
 - The runtime contract accepts Node `>=24.18.0 <25` while pnpm `11.24.0` and TypeScript `7.0.2` remain exact. `.nvmrc` selects Node major `24`, EdgeOne pins its preinstalled `24.18.0`, and reviewed GitHub workflows use Node `24.19.0`; every selector must satisfy the bounded contract before static generation.
 - EdgeOne's managed Node runtime already supplies pnpm. Its install command runs `pnpm install --frozen-lockfile` directly; do not run `corepack enable` in the managed build because that mutates shims beside the platform-owned Node executable. Local contributor setup may still enable Corepack.
 - Markdown lint uses the exact local `markdownlint-cli2` dependency through `pnpm exec`. Active repository automation has no npm/npx fallback, and every external GitHub Action is pinned to a reviewed executable commit rather than a tag object or moving tag.
+- Dependency monitoring reuses the existing read-only PR validation job. `docs/agents/dependency-updates.md` owns cadence, compatible groups and maintenance review boundaries; hosting and production reconciliation remain separately governed.
 - Public AI retrieval is derived at build time through `/llms.txt` and `/search-records.json`; internal governance files remain excluded by `context7.json`.
 - `lib/public-doc-inventory.mjs` derives complete HTML, search, sitemap, and AI expectations from four-language MDX using the runtime locale/category policies. Ordinary additions do not change the retained route/deny baselines or hard-coded page counts. An explicitly requested retirement must remove only the retired positive routes, add every locale URL and exclusive asset to the deny contract, and prove their absence from sources, search, static output, and the deployed site. All unrelated baseline requirements remain intact.
 - The four CLI, remote LCA MCP, account-profile, and TIDAS-import locale families share one OAuth contract: human browser authorization, exact registered clients/callbacks, PKCE, client-local refresh rotation, direct Supabase access JWTs, downstream `auth.uid()` plus `client_id` authorization, local/connected-app revoke distinction, explicit headless limits, and no broker/Redis session, password/code/token/API-key handoff to AI. Codex uses the top-level callback base and listener port plus its deterministic MCP-server callback ID; its resulting redirect must equal the Supabase registration.
